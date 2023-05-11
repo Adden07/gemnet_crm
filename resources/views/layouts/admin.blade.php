@@ -332,13 +332,18 @@
                             </a>
                         </li> --}}
 
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('admin.areas.index') }}">
                                 <i class="fe-airplay"></i>
                                 <span> Areas </span>
                             </a>
+                        </li> --}}
+                        <li>
+                            <a href="{{ route('admin.settings.index') }}">
+                                <i class="fe-airplay"></i>
+                                <span> Settings </span>
+                            </a>
                         </li>
-
                         {{-- @can('enabled-settings')
                         <li>
                             <a href="{{ route('admin.settings.index') }}">

@@ -80,47 +80,44 @@ class PaymentController extends Controller
                                     return number_format($data->new_balance);
                                 })
                                 ->addColumn('action', function($data){
-                                //     $html = "<button type='button' onclick='ajaxRequest(this)' data-url=".{{ route('admin.areas.delete', ['id'=>$area->hashid]) }}." class='btn btn-danger btn-xs waves-effect waves-light'>
-                                //     <span class='btn-label'><i class='icon-trash></i></span>Delete
-                                // </button>";
-                                $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
-                                    <i class='icon-trash></i>
+                                $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                        <span class='btn-label'><i class='icon-trash></i>
                                         </span>Delete
                                     </button>";
                                 return $html;
                                 })
                                 ->filter(function($query) use ($req){
-                                    // if(isset($req->username)){
-                                    //     $query->where('receiver_id',hashids_decode($req->username));
-                                    // }
-                                    // if(isset($req->added_by)){
-                                    //     if($req->added_by == 'system'){
-                                    //         $query->where('type',0);
-                                    //     }elseif($req->added_by == 'person'){
-                                    //         $query->where('type',1);
-                                    //     }
-                                    // }
-                                    // if(isset($req->from_date) && isset($req->to_date)){
-                                    //     $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
-                                    // }
-                                    // if(isset($req->search)){
-                                    //     $query->where(function($search_query) use ($req){
-                                    //         $search = $req->search;
-                                    //         $search_query->orWhere('created_at', 'LIKE', "%$search%")
-                                    //                     ->orWhere('type', 'LIKE', "%$search%")
-                                    //                     ->orWhere('amount', 'LIKE', "%$search%")
-                                    //                     ->orWhere('old_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhere('new_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhereHas('receiver',function($q) use ($search){
-                                    //                             $q->whereLike(['name','username'], '%'.$search.'%');
+                                    if(isset($req->username)){
+                                        $query->where('receiver_id',hashids_decode($req->username));
+                                    }
+                                    if(isset($req->added_by)){
+                                        if($req->added_by == 'system'){
+                                            $query->where('type',0);
+                                        }elseif($req->added_by == 'person'){
+                                            $query->where('type',1);
+                                        }
+                                    }
+                                    if(isset($req->from_date) && isset($req->to_date)){
+                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+                                    }
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search;
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('type', 'LIKE', "%$search%")
+                                                        ->orWhere('amount', 'LIKE', "%$search%")
+                                                        ->orWhere('old_balance', 'LIKE', "%$search%")
+                                                        ->orWhere('new_balance', 'LIKE', "%$search%")
+                                                        ->orWhereHas('receiver',function($q) use ($search){
+                                                                $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                    //                         })
-                                    //                     ->orWhereHas('admin',function($q) use ($search){
-                                    //                         $q->whereLike(['name','username'], '%'.$search.'%');
+                                                            })
+                                                        ->orWhereHas('admin',function($q) use ($search){
+                                                            $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                    //                     });      
-                                    //     });
-                                    // }
+                                                        });      
+                                        });
+                                    }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
@@ -387,7 +384,7 @@ class PaymentController extends Controller
     }
 
     public function approvePayment($id){
-        Payment::where('id', hashids_decode($id))->update(['status'=>1]);
+        Payment::where('id', hashids_decode($id))->update(['status'=>1, 'approved_by_id'=>auth()->id()]);
         return response()->json([
             'success'   => 'Payment approved successfully',
             'reload'    => true 

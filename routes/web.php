@@ -52,21 +52,53 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::post('/mode','SettingController@mode')->name('mode');
     });
 
+    // //areas routes
+    // Route::prefix('area')->name('areas.')->group(function(){
+    //     Route::get('/','AreaController@index')->name('index');
+    //     Route::post('/store','AreaController@store')->name('store');
+    //     Route::get('/area-list/{id}','AreaController@areaList')->name('area_list');
+    //     Route::get('/subarea-list/{id}', 'AreaController@subareaList')->name('sub_area_list');
+    //     Route::get('/edit/{id}','AreaController@edit')->name('edit');
+    //     Route::get('/delete/{id}','AreaController@delete')->name('delete');
+    //     Route::get('/check-uniuqe-area-name','AreaController@checkUniqueAreaName')->name('check_unique_area_name');
+    //     //subareas routes
+    //     Route::post('/store-subarea','AreaController@storeSubarea')->name('store_subarea');
+    //     Route::get('/check-unique-subarea','AreaController@checkUniqueSubarea')->name('check_unique_subarea');
+    //     Route::get('/edit-subarea/{id}','AreaController@editSubarea')->name('edit_subarea');
+    //     Route::get('/delete-subarea/{id}','AreaController@deleteSubarea')->name('delete_subarea');
+    // }); 
+        //areas routes
     //areas routes
     Route::prefix('area')->name('areas.')->group(function(){
         Route::get('/','AreaController@index')->name('index');
         Route::post('/store','AreaController@store')->name('store');
         Route::get('/area-list/{id}','AreaController@areaList')->name('area_list');
-        Route::get('/subarea-list/{id}', 'AreaController@subareaList')->name('sub_area_list');
         Route::get('/edit/{id}','AreaController@edit')->name('edit');
-        Route::get('/delete/{id}','AreaController@delete')->name('delete');
+        Route::get('/delete/{id}/{type}','AreaController@delete')->name('delete');
         Route::get('/check-uniuqe-area-name','AreaController@checkUniqueAreaName')->name('check_unique_area_name');
         //subareas routes
         Route::post('/store-subarea','AreaController@storeSubarea')->name('store_subarea');
         Route::get('/check-unique-subarea','AreaController@checkUniqueSubarea')->name('check_unique_subarea');
         Route::get('/edit-subarea/{id}','AreaController@editSubarea')->name('edit_subarea');
         Route::get('/delete-subarea/{id}','AreaController@deleteSubarea')->name('delete_subarea');
+        Route::get('/subarea-list/{id}', 'AreaController@subareaList')->name('sub_area_list');
+
     }); 
+        // //areas routes
+    // Route::prefix('area')->name('areas.')->group(function(){
+    //     Route::get('/','AreaController@index')->name('index');
+    //     Route::post('/store','AreaController@store')->name('store');
+    //     Route::get('/area-list/{id}','AreaController@areaList')->name('area_list');
+    //     Route::get('/subarea-list/{id}', 'AreaController@subareaList')->name('sub_area_list');
+    //     Route::get('/edit/{id}','AreaController@edit')->name('edit');
+    //     Route::get('/delete/{id}','AreaController@delete')->name('delete');
+    //     Route::get('/check-uniuqe-area-name','AreaController@checkUniqueAreaName')->name('check_unique_area_name');
+    //     //subareas routes
+    //     Route::post('/store-subarea','AreaController@storeSubarea')->name('store_subarea');
+    //     Route::get('/check-unique-subarea','AreaController@checkUniqueSubarea')->name('check_unique_subarea');
+    //     Route::get('/edit-subarea/{id}','AreaController@editSubarea')->name('edit_subarea');
+    //     Route::get('/delete-subarea/{id}','AreaController@deleteSubarea')->name('delete_subarea');
+    // }); 
 
     //city routes
     Route::prefix('city')->name('cities.')->group(function(){

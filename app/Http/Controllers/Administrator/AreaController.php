@@ -16,8 +16,11 @@ class AreaController extends Controller
         $data = array(
             'title' => 'Areas & Subareas',
             'cities'    => City::get(),
-            'areas'     => Area::with(['city','subAreas'])->get(),
+            'areas'     => Area::with(['city','sub_area'])->get(),
         );
+
+        // \CommonHelpers::activity_logs('all-areas');
+
         return view('admin.area.index')->with($data);
     }
 
@@ -27,7 +30,7 @@ class AreaController extends Controller
             return redirect()->route('admin.home');
         }
 
-
+        
         $rules = [
             'city_id'   => ['required'],
             'area_name' => ['required', 'string', 'max:1000']
@@ -51,16 +54,16 @@ class AreaController extends Controller
         }
 
         $area->city_id   = hashids_decode($req->city_id);
-        $area->area_id   = (!empty($req->area_id)) ? hashids_decode($req->area_id) : 0;
+        $area->area_id   = 0;
         $area->area_name = $req->area_name;
-        $area->type      = (!empty($req->area_id)) ? 'sub_area' : 'area';
+        $area->type      = 'area';
         $area->save();
 
         \CommonHelpers::activity_logs($activity);
         
         return response()->json([
             'success'       => $msg,
-            'redirect'      => route('admin.areas.index'),
+            'redirect'      => route('admin.settings.index'),
         ]);
     }
 
@@ -100,7 +103,7 @@ class AreaController extends Controller
     }
 
     //delete area
-    public function delete($id){
+    public function delete($id,$type){
 
         if((\CommonHelpers::rights('enabled-settings-locations','edit-settings-locations'))){
             return redirect()->route('admin.home');
@@ -110,7 +113,7 @@ class AreaController extends Controller
             //if city is not in use of user then delete otherwise not  
             if(User::where('area_id',hashids_decode($id))->doesntExist()){
 
-                DB::transaction(function() use ($id){
+                DB::transaction(function() use ($id,$type){
                     Area::where('area_id',hashids_decode($id))->delete();//first delete sub_areas
                     
                     $area = Area::find(hashids_decode($id));//delete main area
@@ -122,7 +125,7 @@ class AreaController extends Controller
 
                 return response()->json([
                     'success'   => 'Area Deleted Successfully',
-                    'reload'    => true
+                    'redirect'     => route('admin.settings.index'),
                 ]);
             }
             return response()->json([
@@ -265,8 +268,8 @@ class AreaController extends Controller
         }
         abort(404);
     }
-
-    //subareas list
+    
+        //subareas list
     public function subareaList($id){
         if(isset($id) && !empty($id)){
             if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
