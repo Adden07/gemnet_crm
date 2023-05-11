@@ -43,6 +43,7 @@ class UserController extends Controller
 
 
     public function index(Request $req){
+        
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
@@ -261,7 +262,7 @@ class UserController extends Controller
         $data = array(
             'title'     => 'Add User',
             'cities'    => City::get(),
-            'areas'     => auth()->user()->areas()->where('type','area')->get(),
+            'areas'     => Area::where('area_id',0)->latest()->get(),
         );
         
         return view('admin.user.add_user')->with($data);
@@ -509,42 +510,12 @@ class UserController extends Controller
                                                 $query->where('admin_id',auth()->user()->id);
                                             })
                                             ->latest()->limit(6)->get(),
+                'packages'      =>      Package::get(),
+                'areas'         =>      Area::latest()->get(),
             );
             //update user last profile visit column
             User::where('id',hashids_decode($id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
             
-            if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
-                $data['areas']    = Area::where('city_id',$data['user_details']->city_id)->where('type','area')->get();
-                $data['subareas'] = Area::where('area_id',$data['user_details']->area_id)->get();
-            }else{
-                $data['areas']    = auth()->user()->areas()->where('type','area')->get();
-                $data['subareas'] = auth()->user()->areas()->where('type','sub_area')->get()->where('area_id',$data['user_details']->area_id);
-            }
-
-            $user_packages  = FranchisePackage::where('added_to_id',auth()->user()->id)->get();
-            
-            
-            $cost = $user_packages->where('package_id',$data['user_details']->package)->pluck('cost')->first();
-       
-            $packages               = Package::get();
-            $user_packages          = $user_packages->where('cost','<=',$cost);//get user packages where cost less then or equal to cost
-
-            if(auth()->user()->user_type == 'franchise'){//if user is franchise 
-                $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
-                $data['packages'] = $packages->whereIn('id',$ids);
-            }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and active in franchise
-                $ids = DealerController::getParentActivePacakges($user_packages);
-                $data['packages'] = $packages->whereIn('id',$ids);
-            }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigned  active in franchise and dealer
-                $data['user_packages'] = $user_packages;
-                $ids                   = SubDealerController::getParentActivePacakges($data['user_packages']);
-                $data['packages']      = $packages->whereIn('id',$ids);
-                $data['ids']           = $ids;
-            }else{
-                $data['packages'] = $packages;
-            }
-
-
             return view('admin.user.user_profile')->with($data);
         }
     }
@@ -2005,6 +1976,12 @@ class UserController extends Controller
             'task'  => UserTmp::where('task_id', $req->task_id)->first(),
         );
         return view('admin.user.update_users_expiration_task_history')->with($data);
+    }
+
+    public function getUserCurrentBalance($id){
+        return response()->json([
+            'user'  => User::findOrFail(hashids_decode($id))->pluck('user_current_balance'),
+        ]);
     }
 
 }

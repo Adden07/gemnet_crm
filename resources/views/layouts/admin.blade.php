@@ -314,6 +314,9 @@
                                 <li>
                                     <a href="{{ route('admin.accounts.payments.index') }}">Payments</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.accounts.payments.approve_payments') }}">Approve Payments</a>
+                                </li>
                                 @endcan
                                 <li>
                                     <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
@@ -322,12 +325,12 @@
                         </li>
                         @endcan
 
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('admin.customizes.index') }}">
                                 <i class="fe-airplay"></i>
                                 <span> Customize </span>
                             </a>
-                        </li>
+                        </li> --}}
 
                         <li>
                             <a href="{{ route('admin.areas.index') }}">
@@ -336,14 +339,14 @@
                             </a>
                         </li>
 
-                        @can('enabled-settings')
+                        {{-- @can('enabled-settings')
                         <li>
                             <a href="{{ route('admin.settings.index') }}">
                                 <i class="fe-airplay"></i>
                                 <span> Settings </span>
                             </a>
                         </li>
-                        @endcan
+                        @endcan --}}
 
                     </ul>
 

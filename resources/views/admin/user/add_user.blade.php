@@ -96,9 +96,9 @@
                         <label for="area_id">Area</label>
                         <select class="form-control"name="area_id" id="area_id">
                             <option value="">Select Area</option>
-                            @foreach($areas AS $area)
+                            {{-- @foreach($areas AS $area)
                                 <option value="{{ $area->hashid }}" @if(@$edit_user->area_id == $area->id) selected @endif>{{ $area->area_name }}</option>
-                            @endforeach
+                            @endforeach --}}
                         </select>
                         <div class="area_err"></div>
                     </div>

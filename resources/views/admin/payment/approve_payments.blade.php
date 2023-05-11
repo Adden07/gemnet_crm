@@ -20,7 +20,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <h4 class="header-title">Filters</h4>
             </div>
-            <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
+            {{-- <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
                 @csrf
                 <div class="row">
                     <div class="form-group col-md-3">
@@ -48,11 +48,8 @@
                         <label for="">To Date</label>
                         <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
                     </div>
-                    {{-- <div class="col-md-12">
-                        <input type="submit" class="btn btn-primary float-right" value="Search">
-                    </div> --}}
                 </div>
-            </form>
+            </form> --}}
         </div>
     </div>
 </div>
@@ -64,11 +61,6 @@
                     <a href="{{ route('admin.accounts.payments.add') }}" class="btn btn-primary float-right">Add Payment</a>
                  @endcan
             </div>
-
-            {{-- <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title">All Payments List</h4>
-            </div> --}}
-            {{-- <p class="sub-header">Following is the list of all the Payments.</p> --}}
             <p class="font-weight-bold text-center" style="font-size:17px">Total : <span id="total"></span></p>
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
@@ -81,72 +73,11 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @php $total = 0; @endphp
-                    @foreach($transactions AS $transaction)
-                        <tr>
-                            <td>{{ $transactions->firstItem() + $loop->index }}</td>
-                            <td>
-                                @if(date('l',strtotime($transaction->created_at)) == 'Saturday')
-                                    <span class="badge" style="background-color: #0071bd
-                                    ">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Sunday')
-                                    <span class="badge" style="background-color: #f3872f">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Monday') 
-                                    <span class="badge" style="background-color: #236e96">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Tuesday')
-                                    <span class="badge" style="background-color: #ef5a54">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Wednesday')
-                                    <span class="badge" style="background-color: #8b4f85" style="background-color: #000">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Thursday')
-                                    <span class="badge" style="background-color: #ca4236
-                                    ">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Friday')
-                                    <span class="badge" style="background-color: #6867ab">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @endif
-                            </span></td>
-                            <td>
-                                @if($transaction->receiver->user_type == 'franchise')
-                                    <span class="badge" style="background-color:#2875F3">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @elseif($transaction->receiver->user_type == 'dealer')
-                                    <span class="badge" style="background-color:#3ABC01">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @elseif($transaction->receiver->user_type == 'sub_dealer')
-                                    <span class="badge" style="background-color:#F19806">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                @if(@$transaction->admin->id == 10)
-                                    <span class="badge badge-danger">{{ $transaction->admin->name }}</span>
-                                @else 
-                                    {{ @$transaction->admin->name }} (<strong>{{ @$transaction->admin->username }}</strong>)
-                                @endif
-                            </td>
-                            <td>
-                                @if($transaction->type == 0)
-                                    <span class="badge badge-danger">System</span>
-                                @else   
-                                    <span class="badge badge-success">Person</span>
-                                @endif
-                            </td>
-                            <td>{{ number_format($transaction->amount) }}</td>
-                            <td>{{ number_format($transaction->old_balance) }}</td>
-                            <td>{{ number_format($transaction->new_balance) }}</td>
-                            @php  $total += $transaction->amount @endphp
-                        </tr>
-                    @endforeach --}}
-                    {{-- <tr>
-                        <td colspan="3" class="border-right-0">Total</td>
-                        <td colspan="3" class="text-right pr-4">{{ number_format($total,2) }}</td>
-                    </tr> --}}
                 </tbody>
                 <tbody>
                 </tbody>
@@ -179,7 +110,7 @@
                     "dom": '<"top"ifl<"clear">>rt<"bottom"ip<"clear">>',
 
                     ajax:{
-                        url : "{{ route('admin.accounts.payments.index') }}",
+                        url : "{{ route('admin.accounts.payments.approve_payments') }}",
                         data:function(d){
                                     d.username        = $('#username').val(),
                                     d.added_by        = $('#added_by').val(),
@@ -204,6 +135,7 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
+                        {data:'status', name:'payments.status',orderable:false,searchable:false},
                         {data:'action', name:'payments.action',orderable:false,searchable:false},
 
                     ],

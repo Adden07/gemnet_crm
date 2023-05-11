@@ -174,9 +174,9 @@
                                 <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
                                     <select class="form-control border-0" name="subarea_id" id="subarea_id" disabled data-ov="{{ hashids_encode($user_details->subarea_id) }}">
                                         <option value="">Select Subarea</option>
-                                            @foreach($subareas AS $subarea)
+                                            {{-- @foreach($subareas AS $subarea)
                                                 <option value="{{ $subarea->hashid }}" @if($user_details->subarea_id == $subarea->id) selected @endif>{{ $subarea->area_name }}</option>
-                                            @endforeach
+                                            @endforeach --}}
                                     </select>
                                 </td>
                             </tr>

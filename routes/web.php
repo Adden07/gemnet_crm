@@ -126,7 +126,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::post('/delete-multiple-update-user-expiration', 'UserController@deleteMultipleUpdateUserExpiration')->name('delete_multiple_update_user_expiration');
         Route::get('/update-users-expiraiton-history', 'UserController@updateUsersExpirationHistory' )->name('update_users_expiration_history');
         Route::get('/update-users-expiraiton-task-history/{task_id}', 'UserController@updateUsersExpirationTaskHistory' )->name('update_users_expiration_task_history');
-
+        //new routes
+        Route::get('/get-user-current-balance/{id}', 'UserController@getUserCurrentBalance')->name('get_user_current_balance');
     });
 
     //package routes
@@ -173,6 +174,10 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::post('/store','PaymentController@store')->name('store');
             Route::get('/edit/{id}','PaymentController@edit')->name('edit');
             Route::get('/available-balance/{id}','PaymentController@getBalance')->name('balance');
+            Route::get('/delete/{id}', 'PaymentController@delete')->name('delete');
+            Route::get('/approve-payments', 'PaymentController@approvePayments')->name('approve_payments');
+            Route::get('/approve-payment/{id}', 'PaymentController@approvePayment')->name('approve_payment');
+
         });
 
         Route::prefix('transactions')->name('transactions.')->group(function(){

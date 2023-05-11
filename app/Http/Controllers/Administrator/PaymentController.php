@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -9,30 +10,23 @@ use Illuminate\Validation\Rule;
 use App\Models\Ledger;
 use App\Models\Admin;
 use App\Models\Payment;
+use App\Models\User;
 use DB;
 use DataTables;
+use Exception;
+
 class PaymentController extends Controller
 {
     public function index(Request $req){
         
-        if(\CommonHelpers::rights('enabled-finance','enabled-payments')){
+        if(CommonHelpers::rights('enabled-finance','enabled-payments')){
             return redirect()->route('admin.home');
         }
-
         $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
         
         if($req->ajax()){
-            $data =                 Payment::with(['admin'=>function($query){
-                                                // $query->select(\DB::raw('CONCAT(admins.name)'));
-                                                $query->select('admins.*');
-                                            },'receiver'])
-                                            ->select('payments.*')
-                                            ->when(auth()->user()->user_type == 'admin',function($query) use ($admin_ids){
-                                                $query->whereIn('admin_id',$admin_ids);
-                                            },function($query){
-                                                $query->where('admin_id',auth()->user()->id);
-                                            });
-                                            
+            $data =                 Payment::with(['admin', 'receiver'])
+                                            ->select('payments.*');
 
             return DataTables::of($data)
                                 ->addIndexColumn()
@@ -56,15 +50,7 @@ class PaymentController extends Controller
                                     return $date;
                                 })
                                 ->addColumn('reciever_name',function($data){
-                                    $name = '';
-                                    if($data->receiver->user_type == 'franchise')
-                                        $name = "<span class='badge' style='background-color:#2875F3'>".$data->receiver->name." (".$data->receiver->username.")</span>";
-                                    elseif($data->receiver->user_type == 'dealer')
-                                        $name = "<span class='badge' style='background-color:#3ABC01'>".$data->receiver->name." (".$data->receiver->username.")</span>";
-                                    elseif($data->receiver->user_type == 'sub_dealer')
-                                        $name = "<span class='badge' style='background-color:#3ABC01'>".$data->receiver->name." (".$data->receiver->username.")</span>";
-
-                                    return $name;
+                                    return $data->receiver->username;
                                 })
                                 ->addColumn('added_by',function($data){
                                     $added_by = '';
@@ -93,43 +79,53 @@ class PaymentController extends Controller
                                 ->addColumn('new_balance',function($data){
                                     return number_format($data->new_balance);
                                 })
+                                ->addColumn('action', function($data){
+                                //     $html = "<button type='button' onclick='ajaxRequest(this)' data-url=".{{ route('admin.areas.delete', ['id'=>$area->hashid]) }}." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                //     <span class='btn-label'><i class='icon-trash></i></span>Delete
+                                // </button>";
+                                $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    <i class='icon-trash></i>
+                                        </span>Delete
+                                    </button>";
+                                return $html;
+                                })
                                 ->filter(function($query) use ($req){
-                                    if(isset($req->username)){
-                                        $query->where('receiver_id',hashids_decode($req->username));
-                                    }
-                                    if(isset($req->added_by)){
-                                        if($req->added_by == 'system'){
-                                            $query->where('type',0);
-                                        }elseif($req->added_by == 'person'){
-                                            $query->where('type',1);
-                                        }
-                                    }
-                                    if(isset($req->from_date) && isset($req->to_date)){
-                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
-                                    }
-                                    if(isset($req->search)){
-                                        $query->where(function($search_query) use ($req){
-                                            $search = $req->search;
-                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
-                                                        ->orWhere('type', 'LIKE', "%$search%")
-                                                        ->orWhere('amount', 'LIKE', "%$search%")
-                                                        ->orWhere('old_balance', 'LIKE', "%$search%")
-                                                        ->orWhere('new_balance', 'LIKE', "%$search%")
-                                                        ->orWhereHas('receiver',function($q) use ($search){
-                                                                $q->whereLike(['name','username'], '%'.$search.'%');
+                                    // if(isset($req->username)){
+                                    //     $query->where('receiver_id',hashids_decode($req->username));
+                                    // }
+                                    // if(isset($req->added_by)){
+                                    //     if($req->added_by == 'system'){
+                                    //         $query->where('type',0);
+                                    //     }elseif($req->added_by == 'person'){
+                                    //         $query->where('type',1);
+                                    //     }
+                                    // }
+                                    // if(isset($req->from_date) && isset($req->to_date)){
+                                    //     $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+                                    // }
+                                    // if(isset($req->search)){
+                                    //     $query->where(function($search_query) use ($req){
+                                    //         $search = $req->search;
+                                    //         $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                    //                     ->orWhere('type', 'LIKE', "%$search%")
+                                    //                     ->orWhere('amount', 'LIKE', "%$search%")
+                                    //                     ->orWhere('old_balance', 'LIKE', "%$search%")
+                                    //                     ->orWhere('new_balance', 'LIKE', "%$search%")
+                                    //                     ->orWhereHas('receiver',function($q) use ($search){
+                                    //                             $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                                            })
-                                                        ->orWhereHas('admin',function($q) use ($search){
-                                                            $q->whereLike(['name','username'], '%'.$search.'%');
+                                    //                         })
+                                    //                     ->orWhereHas('admin',function($q) use ($search){
+                                    //                         $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                                        });      
-                                        });
-                                    }
+                                    //                     });      
+                                    //     });
+                                    // }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
+                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type', 'action'])
                                 ->make(true);
                                 // ->with('total_amount',function() use ($data){
                                 //     return $data->sum('amount');
@@ -137,29 +133,6 @@ class PaymentController extends Controller
         }
         $data = array(
             'title' => 'Payments',
-            // 'transactions'  => Payment::with(['admin','receiver'])
-            //                                 ->when(isset($req->username),function($query) use ($req){
-            //                                     $query->where('receiver_id',hashids_decode($req->username));
-            //                                 })
-            //                                 ->when(isset($req->from_date) && isset($req->to_date),function($query) use ($req){
-            //                                     $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
-            //                                 })
-            //                                 ->when(isset($req->added_by), function($query) use ($req){
-            //                                     if($req->added_by == 'system'){
-            //                                         $query->where('type',0);
-            //                                     }elseif($req->added_by == 'person'){
-            //                                         $query->where('type',1);
-            //                                     }
-            //                                 })
-            //                                 ->when(auth()->user()->user_type == 'admin',function($query) use ($admin_ids){
-            //                                     $query->whereIn('admin_id',$admin_ids);
-            //                                 },function($query){
-            //                                     $query->where('admin_id',auth()->user()->id);
-            //                                 })
-            //                                 ->latest()
-            //                                 // ->dd(),
-            //                                 ->paginate(50)
-            //                                 ->withQueryString(),
             'admins'        => Admin::where('user_type','!=','superadmin')->get(),
         );
         return view('admin.payment.all_payments')->with($data);
@@ -167,24 +140,15 @@ class PaymentController extends Controller
 
     public function add(Request $req){
 
-        if(\CommonHelpers::rights('enabled-finance','add-payments')){
+        if(CommonHelpers::rights('enabled-finance','add-payments')){
             return redirect()->route('admin.home');
         }
 
         $data = array(
             'title'     => 'Add Payment',
             'user_type' => auth()->user()->user_type,
+            'users'     => User::latest()->get(),
         );
-
-        if(auth()->user()->user_type == 'admin'){//if user is admin display franchise
-            $data['franchises']    = Admin::where('user_type','franchise')->latest()->where('is_active','active')->get();
-        }elseif(auth()->user()->user_type == 'franchise'){//is user is franchise only display dealer
-            $data['dealers']       = Admin::where('added_to_id',auth()->user()->id)->where('user_type','dealer')->where('is_active','active')->get();
-        }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer only display subdealers
-            $data['subdealers']    = Admin::where('added_to_id',auth()->user()->id)->where('user_type','sub_dealer')->where('is_active','active')->get();
-        }
-
-        // \CommonHelpers::activity_logs('add-payment');
 
         return view('admin.payment.add_payment')->with($data);
     }
@@ -193,56 +157,50 @@ class PaymentController extends Controller
     public function store(Request $req){
         
         $rules = [
-            'type'              => ['required', 'in:franchise,dealer,subdealer'],
-            'user_type'         => ['required', 'in:admin,franchise,dealer,sub_dealer'],
-            'franchise_id'      => [Rule::requiredIf($req->user_type == 'admin')],
-            'dealer_id'         => [Rule::requiredIf($req->user_type == 'franchise')],
-            'subdealer_id'      => [Rule::requiredIf($req->user_type == 'dealer')],
+            'type'              => ['required', 'in:cash,online'],
+            'receiver_id'       => ['required','string', 'max:100'],
+            'amount'            => ['required', 'integer', 'min:1'],
+            'transaction_id'    => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
+            'transaction_image' => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
+            'payment_id'        => ['nullable', 'string', 'max:100']
         ];
-
+        
         $validator = Validator::make($req->all(),$rules);
 
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
+        $msg = '';
 
-        // $msg         = 'Payment Added Successfully';
-        $transaction_id = rand(1111111111,9999999999);
-
-        DB::transaction(function() use ($req, $transaction_id){
-            #0 means system 1 means person
-            $username = '';
-            if(auth()->user()->user_type == 'admin'){//if user is admin then add transaction itself too
-                if($req->type == 'franchise' && isset($req->franchise_id)){//is type is franchise add transaction only in franchise
-                    $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->franchise_id, $req->amount, $transaction_id,1,);
-                }elseif($req->type == 'dealer' && isset($req->dealer_id)){//if type is dealer add transaciton in dealer and franchise
-                    $this->makeTransaction(auth()->user()->id, $req->franchise_id, $req->amount, $transaction_id,0,);
-                    $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->dealer_id, $req->amount, $transaction_id,1,);
-                }elseif($req->type == 'subdealer' && isset($req->subdealer_id)){//if type is subdealer add transction in subdealer,dealer,franchise
-                    $this->makeTransaction(auth()->user()->id, $req->franchise_id, $req->amount, $transaction_id,0,);
-                    $this->makeTransaction(auth()->user()->id, $req->dealer_id, $req->amount, $transaction_id,0,);
-                    $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->subdealer_id, $req->amount, $transaction_id,1,);
-                }
-            }elseif(auth()->user()->user_type == 'franchise'){//is user is franchsie
-                if($req->type == 'dealer' && isset($req->dealer_id)){//if type is dealer add transaction in dealer
-                    $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->dealer_id, $req->amount, $transaction_id,1,);
-                }elseif($req->type == 'subdealer' && isset($req->subdealer_id)){//is type is subdealer add transaction in subdealer and dealer
-                    $this->makeTransaction(auth()->user()->id, $req->dealer_id, $req->amount, $transaction_id,0,);
-                    $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->subdealer_id, $req->amount, $transaction_id,1,);
-                }
-            }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer add transaction only in subdealer
-                $GLOBALS['username'] = $this->makeTransaction(auth()->user()->id, $req->subdealer_id, $req->amount, $transaction_id,1,);
+        DB::transaction(function() use (&$req, &$msg){
+            
+            if($req->hasFile('transaction_image')){
+                
+                $req->transaction_image  = CommonHelpers::uploadSingleFile($req->transaction_image, 'admin_uploads/transactions/', "png,jpeg,jpg", 2000);
             }
-
+        
+            $user = User::findOrFail(hashids_decode($req->receiver_id));//get the user
+            
+            if(isset($req->payment_id) && !empty($req->payment_id)){
+                $msg = [
+                    'success'   => 'Transaction added successfully',
+                    'redirect'    => route('admin.accounts.payments.index')
+                ];
+            }else{
+                Payment::create($this->createPaymentArr($req, $user));
+                $msg = [
+                    'success'   => 'Transaction added successfully',
+                    'redirect'    => route('admin.accounts.payments.index')
+                ];
+            }
+            $user->increment('user_current_balance', $req->amount);
+            $user->save();
 
         });
 
-        \CommonHelpers::activity_logs("added payment-(".$GLOBALS['username'].")");
+        // CommonHelpers::activity_logs("added payment-(".$GLOBALS['username'].")");
 
-        return response()->json([
-            'success'   => "Payment Added Successfully",
-            'redirect'     => route('admin.accounts.payments.index')
-        ]);
+        return response()->json($msg);
 
     }
     //insert record in transaciton table and also update the receiver balance in admin table
@@ -292,7 +250,7 @@ class PaymentController extends Controller
                 'is_update'         => TRUE
             );
             
-            // \CommonHelpers::activity_logs('edit-payment');
+            // CommonHelpers::activity_logs('edit-payment');
 
             return view('admin.payment.add_payment')->with($data);
         }
@@ -303,6 +261,136 @@ class PaymentController extends Controller
         $user = Admin::findOrFail(hashids_decode($id));
         return response()->json([
             'balance'   => $user->balance,
+        ]);
+    }
+
+    public function createPaymentArr(object $arr, object $user_arr){
+        return [    
+            'admin_id'  => auth()->id(),
+            'transaction_id'    => $arr->transaciton_id,
+            'receiver_id'       => $user_arr->id,
+            'amount'            => (int) $arr->amount,
+            'new_balance'       => (int) $user_arr->user_current_balance + $arr->amount,
+            'old_balance'       => (int) $user_arr->user_current_balance,
+            'type'              => $arr->type,
+            'transaction_image' => $arr->transaction_image,
+            'created_at'        => date('y-m-d H:i:s')
+        ];
+    }
+
+    public function delete($id){
+        $msg = '';
+        try{
+            DB::transaction(function() use (&$id, &$msg){
+                $payment = Payment::findOrFail(hashids_decode($id));
+                User::findOrFail($payment->receiver->id)->decrement('user_current_balance', $payment->amount);
+                $payment->delete();
+            });
+            $msg = [
+                'success'   => 'Transaction deleted successfully',
+                'reload'    => true
+            ];
+        }catch(Exception $e){
+            $msg = [
+                'error' => 'Some errors occured transaciton could not be deleted',
+            ];            
+        }
+        return response()->json($msg);
+    }
+
+    public function approvePayments(Request $req){
+        
+        if(CommonHelpers::rights('enabled-finance','enabled-payments')){
+            return redirect()->route('admin.home');
+        }
+
+        if($req->ajax()){
+            $data =                 Payment::with(['admin', 'receiver'])
+                                            ->select('payments.*');
+
+            return DataTables::of($data)
+                                ->addIndexColumn()
+                                ->addColumn('date',function($data){
+                                    $date = '';
+                                    if(date('l',strtotime($data->created_at)) == 'Saturday')
+                                        $date = "<span class='badge' style='background-color: #0071bd'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Sunday')
+                                        $date = "<span class='badge' style='background-color: #f3872f'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Monday') 
+                                        $date = "<span class='badge' style='background-color: #236e96'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Tuesday')
+                                        $date = "<span class='badge' style='background-color: #ef5a54'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Wednesday')
+                                        $date = "<span class='badge' style='background-color: #8b4f85'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Thursday')
+                                        $date = "<span class='badge' style='background-color: #ca4236'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Friday')
+                                        $date = "<span class='badge' style='background-color: #6867ab'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+
+                                    return $date;
+                                })
+                                ->addColumn('reciever_name',function($data){
+                                    return $data->receiver->username;
+                                })
+                                ->addColumn('added_by',function($data){
+                                    $added_by = '';
+                                    if(@$data->admin->id == 10)
+                                        $added_by = "<span class='badge badge-danger'>".$data->admin->name."</span>";
+                                    else 
+                                        $added_by =  @$data->admin->name."(<strong>".@$data->admin->username."</strong>)";
+                                    
+                                    return $added_by;
+                                })
+                                ->addColumn('type',function($data){
+                                    $type = '';
+                                    if($data->type == 0)
+                                        $type = "<span class='badge badge-danger'>System</span>";
+                                    else   
+                                        $type = "<span class='badge badge-success'>Person</span>";
+                                    
+                                    return $type;
+                                })
+                                ->addColumn('amount',function($data){
+                                    return number_format($data->amount);
+                                })
+                                ->addColumn('old_balance',function($data){
+                                    return number_format($data->old_balance);
+                                })
+                                ->addColumn('new_balance',function($data){
+                                    return number_format($data->new_balance);
+                                })
+                                ->addColumn('status', function($data){
+                                        if($data->status == 0){
+                                            $html = '<span class="badge badge-danger">Pending</span>';
+                                        }else{
+                                            $html = '<span class="badge badge-success">Approved</span>';
+                                        }
+                                        return $html;
+                                    })
+                                ->addColumn('action', function($data){
+                                    $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    <i class='icon-trash></i>
+                                        </span>Delete
+                                    </button>";
+                                return $html;
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                    })
+                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type', 'status', 'action'])
+                                ->make(true);
+        }
+        $data = array(
+            'title'         => 'Approve payments',
+        );
+        return view('admin.payment.approve_payments')->with($data);
+    }
+
+    public function approvePayment($id){
+        Payment::where('id', hashids_decode($id))->update(['status'=>1]);
+        return response()->json([
+            'success'   => 'Payment approved successfully',
+            'reload'    => true 
         ]);
     }
 }

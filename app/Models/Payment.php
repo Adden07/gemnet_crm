@@ -11,6 +11,7 @@ class Payment extends Model
     use HasFactory,DianujHashidsTrait;
 
     protected $table = 'payments';
+    protected $guarded  = [];
 
     public $timestamps = false;
 
@@ -19,6 +20,8 @@ class Payment extends Model
     }
 
     public function receiver(){
-        return $this->belongsTo(Admin::class, 'receiver_id', 'id');
+        return $this->belongsTo(User::class, 'receiver_id', 'id');
     }
+
+
 }
