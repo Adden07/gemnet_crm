@@ -326,6 +326,12 @@ class PaymentController extends Controller
 
                                     return $date;
                                 })
+                                ->addColumn('approved_date',function($data){
+                                    if($data->approved_date != null){
+                                        return date('d-M-Y H:i:s', strtotime($data->approved_date));
+                                    }
+                                    return '';
+                                })
                                 ->addColumn('reciever_name',function($data){
                                     return $data->receiver->username;
                                 })
@@ -365,16 +371,19 @@ class PaymentController extends Controller
                                         return $html;
                                     })
                                 ->addColumn('action', function($data){
-                                    $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    $html = '';
+                                    if($data->approved_by_id == null){
+                                        $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
                                     <i class='icon-trash></i>
                                         </span>Delete
                                     </button>";
+                                    }
                                 return $html;
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type', 'status', 'action'])
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'type', 'status', 'action'])
                                 ->make(true);
         }
         $data = array(
@@ -384,7 +393,7 @@ class PaymentController extends Controller
     }
 
     public function approvePayment($id){
-        Payment::where('id', hashids_decode($id))->update(['status'=>1, 'approved_by_id'=>auth()->id()]);
+        Payment::where('id', hashids_decode($id))->update(['status'=>1, 'approved_by_id'=>auth()->id(), 'approved_date'=>date('Y-m-d H:i:s')]);
         return response()->json([
             'success'   => 'Payment approved successfully',
             'reload'    => true 
