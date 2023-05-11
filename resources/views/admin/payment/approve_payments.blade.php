@@ -15,12 +15,12 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12">
+    {{-- <div class="col-lg-12">
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
                 <h4 class="header-title">Filters</h4>
             </div>
-            {{-- <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
+            <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
                 @csrf
                 <div class="row">
                     <div class="form-group col-md-3">
@@ -49,19 +49,13 @@
                         <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
                     </div>
                 </div>
-            </form> --}}
+            </form>
         </div>
-    </div>
+    </div> --}}
 </div>
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
-            <div class="col-md-12 mb-4">
-                @can('add-payments')
-                    <a href="{{ route('admin.accounts.payments.add') }}" class="btn btn-primary float-right">Add Payment</a>
-                 @endcan
-            </div>
-            <p class="font-weight-bold text-center" style="font-size:17px">Total : <span id="total"></span></p>
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
                     <tr>
@@ -74,7 +68,7 @@
                         <th>Old Balance</th>
                         <th>New Balance</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Approve</th>
                     </tr>
                 </thead>
                 <tbody>
