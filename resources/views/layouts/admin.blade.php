@@ -278,26 +278,10 @@
                                         <a href="{{ route('admin.users.mac_vendor_user') }}">Mac Vendor User</a>
                                     </li>
                                 @endcan
-                                {{-- @if(auth()->id() == 2) --}}
-                                @if(auth()->user()->user_type == 'admin')
-                                    <li>
-                                        <a href="{{ route('admin.users.all_imported') }}">Import Users</a>
-                                    </li>
-                                @endif
-                                
-                                {{-- @endif --}}
                                 
                                 <li>
                                     <a href="{{ route('admin.users.search') }}">Search User</a>
                                 </li>
-                                @if(auth()->user()->user_type == 'admin')
-                                    <li>
-                                        <a href="{{ route('admin.users.update_users') }}">Update Users</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('admin.users.update_users_expiration') }}">Update Users Expiration</a>
-                                    </li>
-                                @endif
                             </ul>
                         </li>
                     @endcan
@@ -342,6 +326,13 @@
                             <a href="{{ route('admin.customizes.index') }}">
                                 <i class="fe-airplay"></i>
                                 <span> Customize </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.areas.index') }}">
+                                <i class="fe-airplay"></i>
+                                <span> Areas </span>
                             </a>
                         </li>
 

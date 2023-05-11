@@ -1180,7 +1180,7 @@
     $('#city_id').change(function(){
         var city_id = $(this).val();
         if(city_id.length != 0){
-            var route   = "{{ route('admin.franchises.area_list',':city_id') }}";
+            var route   = "";
             route       = route.replace(':city_id',city_id);
             getAjaxRequests(route,'','GET',function(resp){
                 $('#subarea_id').empty();

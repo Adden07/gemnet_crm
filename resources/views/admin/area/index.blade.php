@@ -32,7 +32,7 @@
                         <select class="form-control" parsley-trigger="change" data-parsley-required name="city_id" id="city_id">
                             <option value="">Select City</option>
                             @foreach($cities AS $city)
-                                <option value="{{ $city->hashid }}" @if(@$edit_area->city_id == $city->id) selected @endif>{{ $city->name }}</option>
+                                <option value="{{ $city->hashid }}" @if(@$edit_area->city_id == $city->id) selected @endif>{{ $city->city_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -80,7 +80,6 @@
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
                 <h4 class="header-title">Areas</h4>
-                {{-- <a href="{{ route('admin.staffs.add') }}" class="btn btn-sm btn-primary">Add Staff</a> --}}
             </div>
             <p class="sub-header">Following is the list of all the areas.</p>
             <table class="table dt_table table-bordered w-100 nowrap" id="laravel_datatable">
@@ -98,8 +97,8 @@
                     @foreach($areas AS $area)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $area->city->name}}</td>
-                            <td>{{ ($area->area_id == 0) ? $area->area_name : $area->sub_area->area_name  }}</td>
+                            <td>{{ $area->city->city_name}}</td>
+                            <td>{{ ($area->area_id == 0) ? $area->area_name : @$area->sub_area->area_name  }}</td>
                             <td>{{ ($area->area_id != 0) ? $area->area_name  : '' }}</td>
                             <td>
                                 @if($area->area_id == 0)
@@ -112,44 +111,14 @@
                                 <a href="{{ route('admin.areas.edit',['id'=>$area->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
                                     <span class="btn-label"><i class="fa fa-edit"></i></span>Edit
                                 </a>
-                                <button type="button" onclick="ajaxRequest(this)" data-url="" class="btn btn-danger btn-xs waves-effect waves-light">
+                                <button type="button" onclick="ajaxRequest(this)" data-url="{{ route('admin.areas.delete', ['id'=>$area->hashid]) }}" class="btn btn-danger btn-xs waves-effect waves-light">
                                     <span class="btn-label"><i class="icon-trash"></i></span>Delete
                                 </button>
                             </td>
                         </tr>
                     @endforeach
-                    {{-- @php @$counter =  0 @endphp
-                    @foreach($areas AS $area)
-                        <tr>
-                            <td>{{ ++$counter }}</td>
-                            <td>{{ $area->city->name}}</td>
-                            <td>{{ $area->area_name }}</td>
-                            <td></td>
-                            <td><span class="badge badge-success">Main Area</span></td>
-                            <td>
-                                <a href="{{ route('admin.areas.edit',['id'=>$area->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="fa fa-edit"></i></span>Edit
-                                </a>
-                            </td>
-                        </tr>
-                        @foreach($area->sub_areas AS $sub_area)
-                            <tr>
-                                <td>{{ ++$counter }}</td>
-                                <td>{{ $area->city->name }}</td>
-                                <td>{{ $area->area_name }}</td>
-                                <td>{{ @$sub_area->area_name }}</td>
-                                <td><span class="badge badge-info">Sub Area</span></td>
-                                <td>
-                                    <a href="{{ route('admin.areas.edit',['id'=>$sub_area->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
-                                        <span class="btn-label"><i class="fa fa-edit"></i></span>Edit
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endforeach --}}
                 </tbody>
             </table>
-            {{-- <span class="float-right">{{ $areas->links()  }} --}}
             </span>
         </div>
     </div>
@@ -157,7 +126,6 @@
 
 @endsection
 @section('page-scripts')
-{{-- @include('admin.partials.datatable', ['load_swtichery' => true]) --}}
 
 <script>
     //get area list of specified city

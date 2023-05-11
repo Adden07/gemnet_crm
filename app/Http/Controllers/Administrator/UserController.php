@@ -264,8 +264,6 @@ class UserController extends Controller
             'areas'     => auth()->user()->areas()->where('type','area')->get(),
         );
         
-        // CommonHelpers::activity_logs('add-user');
-
         return view('admin.user.add_user')->with($data);
     }
 
@@ -285,11 +283,12 @@ class UserController extends Controller
             'user_form_front'   => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'user_form_back'    => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'area_id'           => ['nullable'],
-            'subarea_id'        => ['nullable']
+            'subarea_id'        => ['nullable'],
+            'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin'), 'nullable']
         ];
 
         $validator = Validator::make($req->all(),$rules);
-        
+
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
@@ -343,6 +342,7 @@ class UserController extends Controller
         $user->nic         = $req->nic;
         $user->mobile      = '92'.$req->mobile;
         $user->address     = $req->address;
+        $user->is_tax      = (!empty($req->is_tax)) ? (int) $req->is_tax : 1;
         $user->save();
 
         CommonHelpers::activity_logs($activity.' '.$user->username);
@@ -487,6 +487,7 @@ class UserController extends Controller
     }
     //dispaly user profile
     public function profile($id){
+    
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
@@ -509,7 +510,6 @@ class UserController extends Controller
                                             })
                                             ->latest()->limit(6)->get(),
             );
-            // dd($data['user_records']->sortByDesc('id')->first());
             //update user last profile visit column
             User::where('id',hashids_decode($id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
             
@@ -523,18 +523,12 @@ class UserController extends Controller
 
             $user_packages  = FranchisePackage::where('added_to_id',auth()->user()->id)->get();
             
-            // if(auth()->user()->user_type != 'admin'){//get priamry pacakge cost
-            //     $cost = $user_packages->where('package_id',$data['user_details']->c_package)->pluck('cost')->first();
-            // }else{//get current current package cost
-            //     $cost = $user_packages->where('package_id',$data['user_details']->pacakge)->pluck('cost')->first();
-            // }
             
             $cost = $user_packages->where('package_id',$data['user_details']->package)->pluck('cost')->first();
        
-            // dd($cost);
             $packages               = Package::get();
             $user_packages          = $user_packages->where('cost','<=',$cost);//get user packages where cost less then or equal to cost
-            // dd($user_packages);
+
             if(auth()->user()->user_type == 'franchise'){//if user is franchise 
                 $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
                 $data['packages'] = $packages->whereIn('id',$ids);
@@ -542,19 +536,15 @@ class UserController extends Controller
                 $ids = DealerController::getParentActivePacakges($user_packages);
                 $data['packages'] = $packages->whereIn('id',$ids);
             }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigned  active in franchise and dealer
-                // $ids = SubDealerController::getParentActivePacakges($user_packages);
-                // $data['packages'] = $packages->whereIn('id',$ids);
                 $data['user_packages'] = $user_packages;
                 $ids                   = SubDealerController::getParentActivePacakges($data['user_packages']);
                 $data['packages']      = $packages->whereIn('id',$ids);
                 $data['ids']           = $ids;
-                // dd($user_packages);
             }else{
                 $data['packages'] = $packages;
             }
 
-            // CommonHelpers::activity_logs('view-user-profile');
-            // dd($data['user_invoices']);
+
             return view('admin.user.user_profile')->with($data);
         }
     }
@@ -1403,464 +1393,6 @@ class UserController extends Controller
                 
     }
     
-    //shows the all imported users
-    public function allImportedUsers(Request $req){
-        if($req->ajax()){
-            $data = UserTmp::with(['packages', 'city'])->where('task_complete', 0);
-            
-            return DataTables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('task_id', function($data){
-                                return $data->task_id;
-                            })
-                            ->addColumn('task_datetime', function($data){
-                                return date('d-M-Y', strtotime($data->task_datetime));
-                            })
-                            ->addColumn('name', function($data){
-                                return $data->name;
-                            })
-                            ->addColumn('username', function($data){
-                                return "<a href='javascript:void(0)' route='".route('admin.users.import_modal', ['id'=>$data->hashid])."' class='users_form'>".$data->username."</a>";
-                            })
-                            ->addColumn('password', function($data){
-                                return $data->password;
-                            })
-                            ->addColumn('nic', function($data){
-                                return $data->nic;
-                            })
-                            ->addColumn('mobile', function($data){
-                                return $data->mobile;
-                            })
-                            ->addColumn('address', function($data){
-                                return wordwrap($data->address, 20, "<br>\n");
-                            })
-                            ->addColumn('package', function($data){
-                                return @$data->packages->name;
-                            })
-                            ->addColumn('expiration', function($data){
-                                return date('d-m-Y', strtotime($data->expiration));
-                            })
-                            ->addColumn('city', function($data){
-                                return @$data->city->city_name;
-                            })
-                            ->addColumn('status', function($data){
-                                $status = '';
-                                if($data->result == 0){
-                                    $status = '<span class="badge badge-danger">Pending</span>';
-                                }elseif($data->result == 1){
-                                    $status = '<span class="badge badge-success">Passed</span>';
-                                }elseif($data->result == 2){
-                                    $status = '<span class="badge badge-warning">Failed</span>';
-                                }elseif($data->result == 3){
-                                    $status = '<span class="badge badge-primary">Partial</span>';
-                                }
-                                return $status;
-                            })
-                            ->filter(function($query) use ($req){
-                                if(isset($req->search)){
-                                    $query->where(function($search_query) use ($req){
-                                        $search = $req->search;
-
-                                        $search_query->whereLike([
-                                                    'task_id',
-                                                    'name',
-                                                    'username',
-                                                    'nic',
-                                                    'mobile',
-                                                    'address',
-                                                    'expiration'
-                                                ], 
-                                        $search)
-                                        ->orWhereHas('packages', function($q) use ($search) {
-                                            $q->whereLike(['groupname'], '%'.$search.'%');
-                                        });
-                                    });
-                                }
-                            })
-                            ->orderColumn('DT_RowIndex', function($q, $o){
-                                $q->orderBy('id', $o);
-                            })
-                            ->rawColumns(['task_datetime', 'address', 'expiration', 'status', 'username'])
-                            // ->rawColumns(['login', 'logoff', 'username', 'uptime', 'upload', 'download', 'total'])
-                            ->make(true);
-        }
-        
-        $data = array(
-            'title'     => 'All imported users',
-            'cities'    => City::get(),
-            'task_ids'  => UserTmp::groupBy('task_id')->where('task_complete', 0)->get(),
-            'admins'    => Admin::whereNotIn('user_type', ['admin', 'superadmin'])->get()
-        );
-        return view('admin.user.all_imported_users')->with($data);
-    }
-
-    //this function imports the excel file
-    public function importExcel(Request $req){
-        
-        $rules = [
-            'excel_file'    => ['required', 'file', 'mimes:xlsx'],
-            'city_id'       => ['required'],
-        ];  
-
-        $validator = Validator::make($req->all(), $rules);
-
-        if($validator->fails()){
-            return ['errors'    => $validator->errors()];
-        }
-     
-        //import users form excel and the insert in database
-        Excel::import(new UsersImport(hashids_decode($req->city_id)), $req->file('excel_file'));
-        
-        return response()->json([
-            'success'   => 'Users imported successfully',
-            'reload'    => true,
-        ]);
-        
-    }
-
-    //this function will validate users 
-    public function validateUsers(Request $req){
-        if(isset($req->task_id) && !empty($req->task_id)){
-            
-            $users = UserTmp::where('task_id', $req->task_id)->get();//get all users of specified task_id
-            $validation_arr = array();
-            
-            $rules = [//set rules
-                'password_check'    => ['nullable'],
-                'nic_check'         => ['nullable'],
-                'mobile_check'      => ['nullable'],
-                'city_id'           => ['required'],
-                'name'              => ['required', 'string', 'max:50'],
-                'address'           => ['required', 'string' ],
-            ];
-
-            //condition based validation rules 
-            if(isset($req->password_check)){
-                $rules['password'] = ['required', 'min:6', 'max:12'];
-                $validation_arr['password_check'] = true;
-            }
-            if(isset($req->nic_check)){
-                $rules['nic'] = ['required', 'string', 'min:15', 'max:15', 'unique:users'];
-                $validation_arr['nic_check'] = true;
-            }
-            if(isset($req->mobile_check)){
-                $rules['mobile'] = ['required', 'between:10,12', 'unique:users'];
-                $validation_arr['mobile_check'] = true;
-
-            }
-            if(isset($req->username_check)){
-                $rules['username'] = ['required', 'string', 'min:1', 'max:14', 'unique:users'];
-                $validation_arr['username_check'] = true;
-            }else{
-                $rules['username'] = ['required', 'string','unique:users'];
-            }
-
-            $failed_user_ids    = array();
-            $passed_user_ids    = array();
-            $user_errors        = array();
-            $user_arr           = array();
-            $partial_passed_ids = array();
-            foreach($users AS $key=>$user){
-                $validator = Validator::make($user->toArray(),$rules); //validate each row
-                if($validator->fails()){ //if valdiation fails then store the errors
-                    /*
-                        this condition is for those users whom passed all the validation except unique username
-                        so we will set their ids in partial_passed_ids and update the rows with result 3 which specify 
-                        this user is partial passed and when migrating it will update the user information instead of insert
-                     */
-                    
-                    if(count($validator->errors()->toArray()) == 1 && isset($validator->errors()->toArray()['username'])){
-                        $partial_passed_ids[] = $user->id;
-                    }else{
-                        $failed_user_ids[] = $user->id;
-                    }
-                    
-                    $user_errors[$key] = Arr::flatten($validator->errors()->toArray());
-                    //update users table
-                    UserTmp::where('id', $user->id)->update(['errors'=>json_encode($user_errors[$key]), 'validaiton_checks'=>json_encode($validation_arr)]);//update user_tmp table
-                }else{
-                    $passed_user_ids[] = $user->id;//store passed user ids
-                    // UserTmp::where('id', $user->id)->update(['errors'=>json_encode($user_errors[$key]), 'validaiton_checks'=>json_encode($validation_arr)]);//update user_tmp table
-
-                }
-            }
-            
-            UserTmp::whereIn('id', $partial_passed_ids)->update(['result'=> 3]);
-
-            if(!empty($failed_user_ids)){ //if there is a single row which doesn't pass the test then update users_tmp table and return errors
-                UserTmp::whereIn('id', $failed_user_ids)->update(['result'=> 2]);
-                UserTmp::whereIn('id', $passed_user_ids)->update(['result'=> 1,'errors'=>null, 'validaiton_checks'=>null]);
-                
-                return response()->json([
-                    'error' => 'Data is not valid please make changes',
-                    'reload' => True,
-                ]);
-            }else{
-                UserTmp::whereIn('id', $passed_user_ids)->update(['result'=> 1, 'errors'=>null, 'validaiton_checks'=>null]);
-                return response()->json([
-                    'success'   => 'Users validated successfully',
-                    'reload'    => true
-                ]);            
-            }
-        }
-    }
-
-    public function importUserModal($id){//display the form for import users
-
-        $user = UserTmp::findOrFail(hashids_decode($id));
-        $errors = ($user->errors != null) ? json_decode($user->errors) : null;
-        $html =  view('admin.user.import_users_modal')->with(compact('user', 'errors'))->render();
-        
-        return response()->json([
-            'html'  => $html
-        ]);
-    }
-
-    //this function update the impoted users
-    public function updateImportUser(Request $req){
-
-        $user              = UserTmp::findOrFail(hashids_decode($req->user_id));
-        $validation_checks = json_decode($user->validaiton_checks, true);        
-
-        $rules = [
-            'name'              => ['required', 'string', 'max:50'],
-            'address'           => ['required', 'string' ],
-            'user_id'           => ['required']
-        ];
-        //only validation these fields if their check are set to vlaidate them
-        if(isset($validation_checks['password_check'])){
-            $rules['password'] =  ['min:6', 'max:12'];
-
-        }
-        if(isset($validation_checks['nic_check'])){
-            $rules['nic'] =  ['required', 'string', 'min:15', 'max:15', 'unique:users,nic'];
-
-        }
-        if(isset($validation_checks['mobile_check'])){
-            $rules['mobile'] =  ['required', 'numeric', 'digits:12', 'unique:users,mobile'];
-
-        }
-        if(isset($validation_checks['username_check'])){
-            $rules['username'] =  ['required', 'string', 'min:1', 'max:14', 'unique:users,username'];
-        }else{
-            $rules['username'] =  ['required', 'string', 'unique:users,username'];
-        }
-
-        $validator = Validator::make($req->all(),$rules);
-        
-        if($validator->fails()){
-            return ['errors'    => $validator->errors()];
-        }
-        
-        
-        $user->name     = $req->name;
-        $user->username = $req->username;
-        $user->password = $req->password;
-        $user->nic      = $req->nic;
-        $user->mobile   = $req->mobile;
-        $user->address  = $req->address;
-        $user->errors   = null;
-        $user->save();
-
-        return response()->json([
-            'success'   => 'User updated successfully',
-            'reload'    => true,
-        ]);
-    }
-
-    //this function checks if all users are passed shows import otherwise valdiate
-    public function checkTaskStatus($id){
-        
-        if(isset($id) && !empty($id)){
-            $status = UserTmp::where('task_id', $id)->whereIn('result', [0, 2])->exists();            
-            $status = ($status == 'true') ? 'validate' : 'import';
-            $total_users = UserTmp::where('task_id', $id)->where('result', 1)->count();
-
-            return response()->json([
-                'status' => $status,
-                'total_users' => $total_users
-            ]);
-        }
-
-        abort(404);
-    }
-
-    //this function migrate the users from users tmp table to users table only passed users will be migrated
-    public function migrateUsers(Request $req){ 
-
-        $rules = [
-            'task_id'   => ['required'], 
-            'type'      => ['required'],
-            'admin_id'  => ['required_if:type,import']
-        ];
-
-        $validator = Validator::make($req->all(), $rules);
-
-        if($validator->fails()){
-            return ['errors'    => $validator->errors()];
-        }
-
-        //validation for importing users
-        // $imp_user_rules = [
-        //     'name'              => ['required', 'string', 'max:50'],
-        //     'address'           => ['required', 'string' ],
-        //     'nic'               => ['required', 'string', 'min:15', 'max:15', 'unique:users'],
-        //     'mobile'            => ['required', 'between:10,12', 'unique:users'],
-        //     'username'          => ['required', 'string', 'min:1', 'max:14', 'unique:users']
-        // ];
-        //get users form users_tmp
-        $users      = UserTmp::with(['packages'])->where('task_id', $req->task_id)->where('result', 1)->get();
-        $update_user= UserTmp::with(['packages'])->where('task_id', $req->task_id)->where('result',3)->get();
-        $user_arr   = array();
-        $rad_user_group_arr = array();
-        $rad_check_arr      = array();
-        $failed_user        = array();
-        // $new_user_arr       = array();
-        // $update_user_arr    = array();
-        global $updated_user_count;
-        $updated_user_count  = 0;
-
-        foreach($users As $key=>$user){
-            $user_arr[]       = [ //store those users which passed the tests
-                'admin_id'  => hashids_decode($req->admin_id),
-                'city_id'   => $user->city_id,
-                'name'      => $user->name,
-                'username'  => $user->username,
-                'password'  => $user->password,
-                'nic'       => $user->nic,
-                'mobile'    => $user->mobile,
-                'address'   => $user->address,
-                'package'   => $user->package_id,
-                'c_package' => $user->package_id,
-                'activation_by' => auth()->id(),
-                'activation_date' => date('Y-m-d H:i:s'),
-                'status'    => 'active',
-                'current_expiration_date'   => $user->expiration,
-                'created_at'    => date('Y-m-d H:i:s'),
-                'updated_at'    => date('Y-m-d H:i:s'),
-                'user_type'     => 'Imported', 
-                'qt_enabled'    => 1,
-                'qt_used'       => 0,
-                'qt_total'      => @$user->packages->volume,
-                // 'result'        => $user->result,
-
-            ];
-
-            // $validator = Validator::make($user->toArray(), $imp_user_rules);
-
-            // if($validator->fails()){
-            //     $user_errors[$key] = Arr::flatten($validator->errors()->toArray());
-            //     $failed_user[] = $user->id;
-            //     UserTmp::where('id', $user->id)->update(['errors'=>json_encode($user_errors[$key])]);//update user_tmp table
-            // }
-
-            $rad_user_group_arr[]   = array(
-                'username'  => $user->username,
-                'groupname' => $user->packages->groupname,
-            );
-
-            $rad_check_arr[] = array(
-                'username'  => $user->username,
-                'attribute' => 'Expiration',
-                'op'        => ':=',
-                'value'     => str_replace('-', ' ', date('d-M-Y 12:00', strtotime($user->expiration))),
-            );
-
-            $rad_check_arr[] = array(
-                'username'  => $user->username,
-                'attribute' => 'Cleartext-Password',
-                'op'        => ':=',
-                'value'     => $user->password,
-            );
-        }
-        if(!empty($failed_user)){ //if a validtion for even for a single user don't migrate the users and update failed users result
-            UserTmp::whereIn('id', $failed_user)->update(['result'=> 2]);
-            return response()->json([
-                'error' => count($failed_user).' users failed',
-                'reload' => true,
-            ]);
-        }
-
-        
-        DB::transaction(function () use ($user_arr, $users, $rad_user_group_arr, $rad_check_arr,$req, $update_user ){
-            
-            global $updated_user_count;
-            
-            foreach($update_user As $key=>$user){
-                $u_user                          = User::where('username', $user->username)->first();
-                $u_user->admin_id                =  hashids_decode($req->admin_id);            
-                $u_user->city_id                 = $user->city_id;
-                $u_user->name                    = $user->name;
-                $u_user->password                = $user->password;
-                $u_user->nic                     = $user->nic;
-                $u_user->mobile                  = $user->mobile;
-                $u_user->address                 = $user->address;
-                $u_user->package                 = $user->package_id;
-                $u_user->c_package               = $user->package_id;
-                $u_user->current_expiration_date = $user->expiration;
-                $u_user->status                  = 'active';
-                $u_user->user_status             = 1;
-                // $u_user->user_type                    = 'updated';
-                $u_user->qt_enabled              = 1;
-                $u_user->qt_used                 = 0;
-                $u_user->qt_total                = @$user->packages->volume;
-                $u_user->created_at               = date('Y-m-d H:i:s');
-                $u_user->save();
-                
-                //update rad check
-                $rad_check = RadCheck::where('username',$user->username)->where('attribute','Expiration')->first();
-                $rad_check->value = date('d M Y 12:00',strtotime($user->expiration));;
-                $rad_check->save();
-                //update rad user group
-                RadUserGroup::where('username',$user->username)->update(['groupname'=>$user->packages->groupname]);
-
-                ++$updated_user_count;
-            }
-            // dd($updated_user_count);
-            User::insert($user_arr); //insert users_tmp data in users table
-            // UserTmp::destroy($users->pluck('id')->toArray());//deleted the imported users from users_tmp table
-            // UserTmp::destroy($update_user->pluck('id')->toArray());//deleted the imported users from users_tmp table
-            UserTmp::whereIn('id', $users->pluck('id')->toArray())->update(['task_complete'=>1, 'import_type'=>'new', 'errors'=>null]);//update users_tmp table
-            UserTmp::whereIn('id', $update_user->pluck('id')->toArray())->update(['task_complete'=>1, 'import_type'=>'updated', 'errors'=>null]);//update users_tmp table
-            RadUserGroup::insert($rad_user_group_arr);
-            RadCheck::insert($rad_check_arr);
-            $admin    = Admin::where('id',hashids_decode($req->admin_id))->first();
-            $activity = count($user_arr).' Users Imported For '.$admin->username;
-            \CommonHelpers::activity_logs($activity);
-        });
-        // global $updated_user_count;
-        return response()->json([
-            'success'   => count($user_arr)." Users imported and {$updated_user_count} users updated successfully" ,
-            'reload'    => true
-        ]);
-    }
-
-
-    public function deleteImportUser(Request $req){
-
-        $rules = [
-            'task_id'   => ['required'],
-            'type'      => ['required', 'string', 'in:delete']
-        ];
-
-        $validator = Validator::make($req->all(), $rules);
-
-        if($validator->fails()){
-            return ['errors'    => $validator->errors()];
-        }
-
-        UserTmp::where('task_id', $req->task_id)->delete();
-
-        return response()->json([
-            'success'   => 'Import users deleted successfully',
-            'reload'    => true,
-        ]);
-    }
-
-    //export users from user_tmp table
-    public function exportUserTmp(Request $req){
-        return Excel::download(new UserTmpExport($req->task_id), 'users.xlsx');
-    }
 
     public function userSearch(Request $req){
         if($req->ajax()){

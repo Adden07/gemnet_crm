@@ -208,6 +208,17 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="subarea_id">Tax</label>
+                        <select class="form-control" name="is_tax" id="is_tax">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                        <div class="subarea_err"></div>
+                    </div>
+                </div>
+
 
                 <div class="form-group mb-3 text-right">
                     <input type="hidden" value="{{ @$edit_user->hashid }}" name="user_id">
@@ -272,7 +283,7 @@
         $('#city_id').change(function(){
             var city_id = $(this).val();
             if(city_id.length != 0){
-                var route   = "{{ route('admin.franchises.area_list',':city_id') }}";
+                var route   = "{{ route('admin.areas.area_list',':city_id') }}";
                 route       = route.replace(':city_id',city_id);
                 getAjaxRequests(route,'','GET',function(resp){
                     $('#subarea_id').empty();
@@ -463,7 +474,7 @@
         //subareas
         $('#area_id').change(function(){
             var area_id = $(this).val();
-            var route = "{{ route('admin.users.subareas',':id') }}";
+            var route = "{{ route('admin.areas.sub_area_list',':id') }}";
             route = route.replace(':id',area_id);
             
             if(area_id.length != 0){

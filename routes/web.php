@@ -57,8 +57,9 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/','AreaController@index')->name('index');
         Route::post('/store','AreaController@store')->name('store');
         Route::get('/area-list/{id}','AreaController@areaList')->name('area_list');
+        Route::get('/subarea-list/{id}', 'AreaController@subareaList')->name('sub_area_list');
         Route::get('/edit/{id}','AreaController@edit')->name('edit');
-        Route::get('/delete/{id}/{type}','AreaController@delete')->name('delete');
+        Route::get('/delete/{id}','AreaController@delete')->name('delete');
         Route::get('/check-uniuqe-area-name','AreaController@checkUniqueAreaName')->name('check_unique_area_name');
         //subareas routes
         Route::post('/store-subarea','AreaController@storeSubarea')->name('store_subarea');
@@ -105,16 +106,6 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/reset-qouta/{id}','UserController@resetQouta')->name('reset_qouta');
         Route::get('/remarks','UserController@remarks')->name('remarks');
         Route::get('/login-details', 'UserController@loginDetail')->name('login_detail');
-        Route::get('/all-imported-users', 'UserController@allImportedUsers')->name('all_imported');
-        Route::post('/import-excel', 'UserController@importExcel')->name('import_excel');
-        Route::post('/migrate-users', 'UserController@validateUsers')->name('validate');
-        Route::get('/import-user-modal/{id}', 'UserController@importUserModal')->name('import_modal');
-        Route::post('/update-import-user', 'UserController@updateImportUser')->name('update_import');
-        Route::get('/check-task-status/{id}', 'UserController@checkTaskStatus')->name('task_status');
-        Route::post('/migrate-passed-users', 'UserController@migrateUsers')->name('migrate');
-        Route::post('/delete-import-users', 'UserController@deleteImportUser')->name('delete_import');
-        Route::post('/export', 'UserController@exportUserTmp')->name('export_user_tmp');
-        // Route::get('/login-details-data','UserController@displayLoginDetails')->name('display_login_detail');
         Route::get('/search-user', 'UserController@userSearch')->name('search');
         Route::get('/get-package-count', 'UserController@getPackageCount')->name('get_pacakge_count');
         //update user routes
