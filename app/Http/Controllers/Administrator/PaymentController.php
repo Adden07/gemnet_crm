@@ -50,7 +50,9 @@ class PaymentController extends Controller
                                     return $date;
                                 })
                                 ->addColumn('reciever_name',function($data){
-                                    return $data->receiver->username;
+                                    
+                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";
+
                                 })
                                 ->addColumn('added_by',function($data){
                                     $added_by = '';
@@ -63,10 +65,10 @@ class PaymentController extends Controller
                                 })
                                 ->addColumn('type',function($data){
                                     $type = '';
-                                    if($data->type == 0)
-                                        $type = "<span class='badge badge-danger'>System</span>";
+                                    if($data->type == 'cash')
+                                        $type = "<span class='badge badge-success'>Cash</span>";
                                     else   
-                                        $type = "<span class='badge badge-success'>Person</span>";
+                                        $type = "<span class='badge badge-primary'>Online</span>";
                                     
                                     return $type;
                                 })
@@ -81,7 +83,7 @@ class PaymentController extends Controller
                                 })
                                 ->addColumn('action', function($data){
                                 $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
-                                        <span class='btn-label'><i class='icon-trash></i>
+                                        <span class='btn-label'><i class='icon-trash'></i>
                                         </span>Delete
                                     </button>";
                                 return $html;
@@ -167,36 +169,29 @@ class PaymentController extends Controller
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
-        $msg = '';
+        $msg  = '';
+        $user = User::findOrFail(hashids_decode($req->receiver_id));//get the user
 
-        DB::transaction(function() use (&$req, &$msg){
-            
-            if($req->hasFile('transaction_image')){
-                
-                $req->transaction_image  = CommonHelpers::uploadSingleFile($req->transaction_image, 'admin_uploads/transactions/', "png,jpeg,jpg", 2000);
-            }
-        
-            $user = User::findOrFail(hashids_decode($req->receiver_id));//get the user
-            
-            if(isset($req->payment_id) && !empty($req->payment_id)){
-                $msg = [
+        try{
+            DB::transaction(function() use (&$req, &$msg, &$user){
+                if($req->hasFile('transaction_image')){ //store image
+                    $req->transaction_image  = CommonHelpers::uploadSingleFile($req->transaction_image, 'admin_uploads/transactions/', "png,jpeg,jpg", 2000);
+                }
+                Payment::create($this->createPaymentArr($req, $user));//add payment
+                $msg = [//success message
                     'success'   => 'Transaction added successfully',
                     'redirect'    => route('admin.accounts.payments.index')
                 ];
-            }else{
-                Payment::create($this->createPaymentArr($req, $user));
-                $msg = [
-                    'success'   => 'Transaction added successfully',
-                    'redirect'    => route('admin.accounts.payments.index')
-                ];
-            }
-            $user->increment('user_current_balance', $req->amount);
-            $user->save();
-
-        });
-
-        // CommonHelpers::activity_logs("added payment-(".$GLOBALS['username'].")");
-
+                $user->increment('user_current_balance', $req->amount);//update user balance
+                $user->save();
+            });
+            CommonHelpers::activity_logs("Added payment - $user->username");//add the activity log
+        }catch(Exception $e){
+            $msg = [
+                'error' => "Transaction failed some errors occured",
+            ];
+            CommonHelpers::activity_logs("failed payment - $user->username");//add the activity log
+        }
         return response()->json($msg);
 
     }
@@ -303,7 +298,8 @@ class PaymentController extends Controller
 
         if($req->ajax()){
             $data =                 Payment::with(['admin', 'receiver'])
-                                            ->select('payments.*');
+                                            ->select('payments.*')
+                                            ->where('type', 'online');
 
             return DataTables::of($data)
                                 ->addIndexColumn()
@@ -333,7 +329,7 @@ class PaymentController extends Controller
                                     return '';
                                 })
                                 ->addColumn('reciever_name',function($data){
-                                    return $data->receiver->username;
+                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";
                                 })
                                 ->addColumn('added_by',function($data){
                                     $added_by = '';
@@ -346,10 +342,10 @@ class PaymentController extends Controller
                                 })
                                 ->addColumn('type',function($data){
                                     $type = '';
-                                    if($data->type == 0)
-                                        $type = "<span class='badge badge-danger'>System</span>";
+                                    if($data->type == 'cash')
+                                        $type = "<span class='badge badge-success'>Cash</span>";
                                     else   
-                                        $type = "<span class='badge badge-success'>Person</span>";
+                                        $type = "<span class='badge badge-primary'>Online</span>";
                                     
                                     return $type;
                                 })
@@ -373,9 +369,9 @@ class PaymentController extends Controller
                                 ->addColumn('action', function($data){
                                     $html = '';
                                     if($data->approved_by_id == null){
-                                        $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
-                                    <i class='icon-trash></i>
-                                        </span>Delete
+                                        $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-success btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    <i class='icon-check'></i>
+                                        </span>Approve
                                     </button>";
                                     }
                                 return $html;

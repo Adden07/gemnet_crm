@@ -85,68 +85,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @php $total = 0; @endphp
-                    @foreach($transactions AS $transaction)
-                        <tr>
-                            <td>{{ $transactions->firstItem() + $loop->index }}</td>
-                            <td>
-                                @if(date('l',strtotime($transaction->created_at)) == 'Saturday')
-                                    <span class="badge" style="background-color: #0071bd
-                                    ">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Sunday')
-                                    <span class="badge" style="background-color: #f3872f">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Monday') 
-                                    <span class="badge" style="background-color: #236e96">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Tuesday')
-                                    <span class="badge" style="background-color: #ef5a54">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Wednesday')
-                                    <span class="badge" style="background-color: #8b4f85" style="background-color: #000">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Thursday')
-                                    <span class="badge" style="background-color: #ca4236
-                                    ">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @elseif(date('l',strtotime($transaction->created_at)) == 'Friday')
-                                    <span class="badge" style="background-color: #6867ab">{{ date('d-M-Y H:i A',strtotime($transaction->created_at)) }}
-                                @endif
-                            </span></td>
-                            <td>
-                                @if($transaction->receiver->user_type == 'franchise')
-                                    <span class="badge" style="background-color:#2875F3">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @elseif($transaction->receiver->user_type == 'dealer')
-                                    <span class="badge" style="background-color:#3ABC01">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @elseif($transaction->receiver->user_type == 'sub_dealer')
-                                    <span class="badge" style="background-color:#F19806">
-                                        {{ $transaction->receiver->name }} ({{ $transaction->receiver->username }})
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                @if(@$transaction->admin->id == 10)
-                                    <span class="badge badge-danger">{{ $transaction->admin->name }}</span>
-                                @else 
-                                    {{ @$transaction->admin->name }} (<strong>{{ @$transaction->admin->username }}</strong>)
-                                @endif
-                            </td>
-                            <td>
-                                @if($transaction->type == 0)
-                                    <span class="badge badge-danger">System</span>
-                                @else   
-                                    <span class="badge badge-success">Person</span>
-                                @endif
-                            </td>
-                            <td>{{ number_format($transaction->amount) }}</td>
-                            <td>{{ number_format($transaction->old_balance) }}</td>
-                            <td>{{ number_format($transaction->new_balance) }}</td>
-                            @php  $total += $transaction->amount @endphp
-                        </tr>
-                    @endforeach --}}
-                    {{-- <tr>
-                        <td colspan="3" class="border-right-0">Total</td>
-                        <td colspan="3" class="text-right pr-4">{{ number_format($total,2) }}</td>
-                    </tr> --}}
                 </tbody>
                 <tbody>
                 </tbody>
@@ -155,7 +93,6 @@
             <div class="row mt-3">
                 <div class="col-md-12">
                     <div class="float-right"> 
-                        {{-- {{ $transactions->links() }} --}}
                     </div>
                 </div>
             </div>
@@ -213,31 +150,6 @@
        $('#username,#from_date,#to_date,#added_by').change(function(){
             table.draw();
        });
-    });
-    //get dealers of selected franchise
-    $('#franchise_id').change(function(){
-        var id = $(this).val();
-        var route = ""
-        route = route.replace(':id',id);
-        //send ajax request when value is set
-        if(id.length != 0){
-            getAjaxRequests(route,'','GET',function(resp){
-                $('#dealer_id').html("<option value='' selected>Select Dealer</option>"+resp.html);
-            });
-        }
-    });
-
-    //get subdealers of selected dealer
-    $('#dealer_id').change(function(){
-        var id   = $(this).val();
-        var route = "{{ route('admin.accounts.invoices.get_subdealers',':id') }}";
-        var route = route.replace(':id',id);
-        //send ajax request when value is set
-        if(id.length != 0){
-            getAjaxRequests(route, '', 'GET', function(resp){
-                $('#subdealer_id').html("<option value=''>Select Sub Dealer</option>"+resp.html);
-            });
-        }
     });
 
     //select 2

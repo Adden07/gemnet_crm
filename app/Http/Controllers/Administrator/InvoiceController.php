@@ -12,7 +12,7 @@ use DataTables;
 class InvoiceController extends Controller
 {
     public function index(Request $req){
-
+  
         if(\CommonHelpers::rights('enabled-finance','enabled-invoices')){
             return redirect()->route('admin.home');
         }

@@ -227,7 +227,7 @@
     //get dealers of selected franchise
     $('#franchise_id').change(function(){
         var id = $(this).val();
-        var route = "{{ route('admin.sub_dealers.get_dealer',':id') }}"
+        var route = ""
         route = route.replace(':id',id);
         //send ajax request when value is set
         if(id.length != 0){
@@ -240,7 +240,7 @@
     //get subdealers of selected dealer
     $('#dealer_id').change(function(){
         var id   = $(this).val();
-        var route = "{{ route('admin.accounts.invoices.get_subdealers',':id') }}";
+        var route = "";
         var route = route.replace(':id',id);
         //send ajax request when value is set
         if(id.length != 0){
