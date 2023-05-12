@@ -169,6 +169,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/change-user-package','PackageController@changeUserPackage')->name('change_user_package');
         Route::get('/upgrade-user-package-modal/{id}','PackageController@upgradeUserPackageModal')->name('upgrade_user_package_modal');
         Route::get('/upgrade-user-package','PackageController@upgradeUserPackage')->name('upgrade_user_package');
+        Route::get('/get-packages/{user_type}', 'PackageController@getPackages')->name('get_packages');
+        Route::get('/create-expiration-date/{package_id}/{user_id}', 'PackageController@createExpirationDate')->name('create_expiration_date');
     });
 
     //permisson type routes

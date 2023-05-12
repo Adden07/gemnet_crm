@@ -45,20 +45,25 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 @endphp --}}
 
 <div class="form-group mt-2">
-    <label for="">Billing Cycle</label>
+    <label for="">User type</label>
     <select class="form-control" name="month_type" id="month_type">
-        @can('monthly')
+        <option value="monthly">Monthly</option>
+        <option value="half_year">Half year</option>
+        <option value="full_year">Full Year</option>
+        <option value="promo">Promo</option>
+
+        {{-- @can('monthly')
             <option value="monthly">Monthly</option>
-        @endcan
+        @endcan --}}
         {{-- @if($half_month == true) --}}
-        @can('half-month')
+        {{-- @can('half-month')
             <option value="half_month">Half Month</option>
-        @endcan    
+        @endcan     --}}
         {{-- @endif
         @if($full_month == true) --}}
-        @can('full-month')
+        {{-- @can('full-month')
             <option value="full_month">Full Month</option>
-        @endcan    
+        @endcan     --}}
         {{-- @endif --}}
     </select>
 </div>
@@ -76,7 +81,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 
     @if($user->status == 'expired' || $user->status == 'registered' || $current_date > $exp) 
         <label for="package">Packages:</label>
-        <select class="form-control @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
+        <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
             <option value="">Select Package</option>
             @if(isset($user_packages))<!--when user is subdealer-->
                 @foreach($user_packages AS $s_package)

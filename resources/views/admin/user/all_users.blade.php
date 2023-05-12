@@ -265,60 +265,82 @@
     });
 
     //when there in modal month_type
-    $(document).on('change','#month_type',function(){
-        var min_date = '';
-        var max_date = '';
-        var date = new Date();//js date
-        // var current_date = "{{ date('Y-m-d') }}";//php date
-        if($(this).val() == 'monthly'){
-            min_date = '';
-            max_date = '';
-        }else if($(this).val() == 'half_month'){
-            if(date.getDate() > 15){
-                min_date = "{{ date('Y-m-01',strtotime('+1 month')) }}";
-                max_date = "{{ date('Y-m-15',strtotime('+1 month')) }}";
-            }else{
-                min_date = "{{ date('Y-m-d',strtotime('+1 day')) }}";
-                max_date = "{{ date('Y-m-15') }}";
-            }
+    // $(document).on('change','#month_type',function(){
+    //     var min_date = '';
+    //     var max_date = '';
+    //     var date = new Date();//js date
+    //     // var current_date = "{{ date('Y-m-d') }}";//php date
+    //     if($(this).val() == 'monthly'){
+    //         min_date = '';
+    //         max_date = '';
+    //     }else if($(this).val() == 'half_month'){
+    //         if(date.getDate() > 15){
+    //             min_date = "{{ date('Y-m-01',strtotime('+1 month')) }}";
+    //             max_date = "{{ date('Y-m-15',strtotime('+1 month')) }}";
+    //         }else{
+    //             min_date = "{{ date('Y-m-d',strtotime('+1 day')) }}";
+    //             max_date = "{{ date('Y-m-15') }}";
+    //         }
 
-        }else if($(this).val() == 'full_month'){
-            if(date.getDate() > 29){
-                min_date = "{{ date('Y-m-1',strtotime('+1 month')) }}";
-                max_date = "{{ date('Y-m-t',strtotime('+1 month')) }}";
-            }else{
-                min_date = "{{ date('Y-m-d',strtotime('+1 day')) }}";
-                max_date = "{{ date('Y-m-t') }}";
-            }
-        }
+    //     }else if($(this).val() == 'full_month'){
+    //         if(date.getDate() > 29){
+    //             min_date = "{{ date('Y-m-1',strtotime('+1 month')) }}";
+    //             max_date = "{{ date('Y-m-t',strtotime('+1 month')) }}";
+    //         }else{
+    //             min_date = "{{ date('Y-m-d',strtotime('+1 day')) }}";
+    //             max_date = "{{ date('Y-m-t') }}";
+    //         }
+    //     }
 
-        $('#calendar').attr('min',min_date);
-        $('#calendar').attr('max',max_date);
-        //if billing cycle is monthy then hide the calendar otherwise show the calendar
-        if($(this).val() == 'monthly'){
-            $('#calendar_form').addClass('d-none');
-        }else{
-            $('#calendar_form').removeClass('d-none');
-        }
+    //     $('#calendar').attr('min',min_date);
+    //     $('#calendar').attr('max',max_date);
+    //     //if billing cycle is monthy then hide the calendar otherwise show the calendar
+    //     if($(this).val() == 'monthly'){
+    //         $('#calendar_form').addClass('d-none');
+    //     }else{
+    //         $('#calendar_form').removeClass('d-none');
+    //     }
 
-        $('#new_expiration').html($('#hidden_new_expiry_date').val());
+    //     $('#new_expiration').html($('#hidden_new_expiry_date').val());
 
-    });
+    // });
     //when there is change in calendar date
-    $(document).on('change','#calendar',function(){
-        //make date using js
-        var expiration_date = new Date($('#calendar').val());
-        var date            = expiration_date.getDate();
-        var month           = expiration_date.toLocaleString('en-us', { month: 'short' });
-        var year            = expiration_date.getFullYear();
+    // $(document).on('change','#calendar',function(){
+    //     //make date using js
+    //     var expiration_date = new Date($('#calendar').val());
+    //     var date            = expiration_date.getDate();
+    //     var month           = expiration_date.toLocaleString('en-us', { month: 'short' });
+    //     var year            = expiration_date.getFullYear();
         
-        var new_expiration_date = date+'-'+month+'-'+year+' 12:00';//concate date
+    //     var new_expiration_date = date+'-'+month+'-'+year+' 12:00';//concate date
 
-        $('#new_expiration').html(new_expiration_date);//update the new_expiration date
+    //     $('#new_expiration').html(new_expiration_date);//update the new_expiration date
         
+    // });
+
+    $(document).on('change', '#month_type', function(){//get the packages according to the user type
+        var type    = $(this).val();
+        var route   = "{{ route('admin.packages.get_packages', ':user_type') }}";
+        var user_id = $('#user_id').val();
+        
+        route = route.replace(':user_type', type);
+  
+        getAjaxRequests(route, '', 'GET', function(resp){
+            $('.package_id').html(resp.html);
+        });
     });
 
-
+    $(document).on('change', '.package_id', function(){//get the new expiration date
+        var package_id  = $(this).val();
+        var user_id     = $('#user_id').val();
+        var route       = "{{ route('admin.packages.create_expiration_date', [':package_id', ':user_id']) }}";
+        route           = route.replace(':package_id', package_id);
+        route           = route.replace(':user_id', user_id);
+        
+        getAjaxRequests(route, '', 'GET', function(resp){
+            $('#new_expiration').html(resp.new_expiration_date);
+        });
+    });
 
 </script>
 @endsection

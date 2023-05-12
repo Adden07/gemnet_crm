@@ -28,29 +28,8 @@ class PackageController extends Controller
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
                 'user_package_id'  => UserPackageRecord::where('user_id',hashids_decode($id))->latest()->first(),
-                'packages'       => Package::where('usertype', 1)->get(),
+                'packages'         => Package::whereBetween('usertype',[1,10] )->get(),
             );
-            // $user_packages = FranchisePackage::with(['package'])->where('added_to_id',auth()->user()->id)->where('status','active')->get();
-            // $packages      = Package::get();
-
-            // if(auth()->user()->user_type == 'franchise'){//if user is franchise 
-  
-            //     $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
-            //     $data['packages'] = $packages->whereIn('id',$ids);
-            
-            // }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and  active in franchise
-            //     $ids = DealerController::getParentActivePacakges($user_packages);
-            //     $data['packages'] = $packages->whereIn('id',$ids);
-            
-            // }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigend and active in franchise and dealer
-            //     $data['user_packages'] = $user_packages;
-            //     $ids                   = SubDealerController::getParentActivePacakges($data['user_packages']);
-            //     $data['packages']      = $packages->whereIn('id',$ids);
-            //     $data['ids']           = $ids;
-            //     // dd($user_packages);
-            // }else{
-            //     $data['packages'] = $packages;
-            // }
          
             $html = view('admin.user.package_modal')->with($data)->render();
             // dd($html);
@@ -793,5 +772,42 @@ class PackageController extends Controller
         $parent_pkg_cost = $parent_pkg_cost-$remaining_days_amount;//minus remaing amount from pkg cost
      
         return $parent_pkg_cost;
+    }
+    //this funciton get the packages according to the user type while user package activation
+    public function getPackages($user_type){
+        $html     = '<option value="">Select package</option>';
+        $packages = Package::when($user_type == 'monthly', function($query){
+                        $query->whereBetween('usertype', [1,10]);
+                    })->when($user_type == 'half_year', function($query){
+                        $query->whereBetween('usertype', [11,20]);
+                    })->when($user_type == 'full_year', function($query){
+                        $query->whereBetween('usertype', [21,30]);
+                    })->when($user_type == 'promo', function($query){
+                        $query->whereBetween('usertype', [31,40]);
+                    })->get();
+        
+        foreach($packages AS $package){
+            $html .= "<option value='$package->hashid'>$package->name</option>";
+        }
+        
+        return response()->json([
+            'html'  => $html
+        ]);
+    }
+
+    public function createExpirationDate($package_id, $user_id){//create the expiration date
+        $package             = Package::findOrFail(hashids_decode($package_id));
+        $user                = User::findOrFail(hashids_decode($user_id));
+        $new_expiration_date = null;
+
+        if(is_null($user->current_expiration_date)){
+            $new_expiration_date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
+        }else{
+            $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
+        }
+          
+        return response()->json([
+            'new_expiration_date'   => $new_expiration_date,
+        ]);
     }
 }
