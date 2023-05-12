@@ -222,7 +222,7 @@
 
         if(user_id != ''){
             getAjaxRequests(route, '', 'GET', function(resp){//run ajax 
-            $('#available_balance').val(resp.user[0]);//put the value in input
+            $('#available_balance').val(resp.user);//put the value in input
         });
         }
     });

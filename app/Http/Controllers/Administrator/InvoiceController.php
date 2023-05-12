@@ -16,15 +16,14 @@ class InvoiceController extends Controller
         if(\CommonHelpers::rights('enabled-finance','enabled-invoices')){
             return redirect()->route('admin.home');
         }
-
+        
         $data = array(
             'title' => 'Invoices',
             'invoices'  => Invoice::with(['admin','user','package'])
                                     ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
-                                        // $query->whereBetween('created_at',[$req->from_date,$req->to_date]);
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     },function($query){
-                                        $query->whereDay('created_at',date('Y-m-d'));
+                                        $query->whereDay('created_at',date('d'));
                                     })->when(isset($req->package_id),function($query) use ($req){//when package id is set
                                         $query->where('pkg_id',hashids_decode($req->package_id));
                                     })->when(isset($req->type),function($query) use ($req){//when type is iset
@@ -39,7 +38,7 @@ class InvoiceController extends Controller
                                         $query->whereIn('admin_id',\CommonHelpers::getChildIds());
                                     })->orderBy('admin_id','DESC')->orderBy('id','DESC')->paginate(1000)->withQueryString(),
                                     
-            'invoices_total'  => Invoice::select('type','total_cost')->when(isset($req->from_date),function($query) use ($req){//when from and to date set
+            'invoices_total'  => Invoice::select('type')->when(isset($req->from_date),function($query) use ($req){//when from and to date set
                                         // $query->whereBetween('created_at',[$req->from_date,$req->to_date]);
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
 
@@ -60,18 +59,18 @@ class InvoiceController extends Controller
                                     })->orderBy('admin_id','DESC')->orderBy('id','DESC')->get(),
                                     
             'packages'    => Package::orderBy('id','DESC')->get(),
-            'franchises'  => Admin::where('user_type','franchise')->latest()->get(),
+            // 'franchises'  => Admin::where('user_type','franchise')->latest()->get(),
             'user_type'   => auth()->user()->user_type,      
         );
-        // dd($data['invoices_total']);
-        if(auth()->user()->user_type != 'admin'){
-            if(auth()->user()->user_type == 'franchise'){
-                $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','dealer')->get();
-            }elseif(auth()->user()->user_type == 'dealer'){
-                $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','sub_dealer')->get();
-            }
-        }
-        
+        // // dd($data['invoices_total']);
+        // if(auth()->user()->user_type != 'admin'){
+        //     if(auth()->user()->user_type == 'franchise'){
+        //         $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','dealer')->get();
+        //     }elseif(auth()->user()->user_type == 'dealer'){
+        //         $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','sub_dealer')->get();
+        //     }
+        // }
+  
         return view('admin.invoice.all_invoices')->with($data);
     }
 

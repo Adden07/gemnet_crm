@@ -498,7 +498,7 @@ class UserController extends Controller
                 'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew'])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
-                'user_invoices' => Invoice::select(['id','created_at','current_exp_date','new_exp_date','total_cost','pkg_id','user_id','paid'])
+                'user_invoices' => Invoice::select(['id','created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid'])
                                             ->with(['package'=>function($query){
                                                 $query->select('id','name');
                                             },'user'=>function($query){
@@ -1978,8 +1978,9 @@ class UserController extends Controller
     }
 
     public function getUserCurrentBalance($id){
+        $user = User::findOrFail(hashids_decode($id));
         return response()->json([
-            'user'  => User::findOrFail(hashids_decode($id))->pluck('user_current_balance'),
+            'user'  => $user->user_current_balance
         ]);
     }
 

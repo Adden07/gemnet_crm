@@ -23,34 +23,35 @@ class PackageController extends Controller
 {
     //add user package
     public function addUserPackage($id){
-
+        
         if(isset($id) && !empty($id)){
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
                 'user_package_id'  => UserPackageRecord::where('user_id',hashids_decode($id))->latest()->first(),
+                'packages'       => Package::get(),
             );
-            $user_packages = FranchisePackage::with(['package'])->where('added_to_id',auth()->user()->id)->where('status','active')->get();
-            $packages      = Package::get();
+            // $user_packages = FranchisePackage::with(['package'])->where('added_to_id',auth()->user()->id)->where('status','active')->get();
+            // $packages      = Package::get();
 
-            if(auth()->user()->user_type == 'franchise'){//if user is franchise 
+            // if(auth()->user()->user_type == 'franchise'){//if user is franchise 
   
-                $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
-                $data['packages'] = $packages->whereIn('id',$ids);
+            //     $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
+            //     $data['packages'] = $packages->whereIn('id',$ids);
             
-            }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and  active in franchise
-                $ids = DealerController::getParentActivePacakges($user_packages);
-                $data['packages'] = $packages->whereIn('id',$ids);
+            // }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and  active in franchise
+            //     $ids = DealerController::getParentActivePacakges($user_packages);
+            //     $data['packages'] = $packages->whereIn('id',$ids);
             
-            }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigend and active in franchise and dealer
-                $data['user_packages'] = $user_packages;
-                $ids                   = SubDealerController::getParentActivePacakges($data['user_packages']);
-                $data['packages']      = $packages->whereIn('id',$ids);
-                $data['ids']           = $ids;
-                // dd($user_packages);
-            }else{
-                $data['packages'] = $packages;
-            }
-
+            // }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigend and active in franchise and dealer
+            //     $data['user_packages'] = $user_packages;
+            //     $ids                   = SubDealerController::getParentActivePacakges($data['user_packages']);
+            //     $data['packages']      = $packages->whereIn('id',$ids);
+            //     $data['ids']           = $ids;
+            //     // dd($user_packages);
+            // }else{
+            //     $data['packages'] = $packages;
+            // }
+         
             $html = view('admin.user.package_modal')->with($data)->render();
             // dd($html);
             return response()->json([
@@ -61,7 +62,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-
+        
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -86,6 +87,9 @@ class PackageController extends Controller
         }
         
         $msg    = '';
+        $user   = User::findOrFail(hashids_decode($validated['user_id']));
+        $package= Package::findOrFail(hashids_decode($validated['package_id']));
+
         //when renew the package then check package exists or not
         if(auth()->user()->user_type != 'admin'){//if user is not admin
             if($validated['status'] == 'active'){//if its renew
@@ -96,15 +100,21 @@ class PackageController extends Controller
                 }
             }
         }
-        
-        DB::transaction(function() use ($validated,$date){
 
-            $user                   = User::findOrFail(hashids_decode($validated['user_id']));
-            $package                = Package::findOrFail(hashids_decode($validated['package_id']));
+        //if user curen balance is less than the package price than throw error
+        if($user->user_current_balance < $package->price){
+            return [
+                'error' => 'User balance is less than the package price'
+            ];
+        }
+        
+        DB::transaction(function() use ($validated,$date, &$user, &$package){
+
             $user_status            = $user->status;
             $last_expiration_date   = $user->current_expiration_date;
             $last_package           = $user->c_package;
-       
+            $user_current_balance   = $user->user_current_balance;
+            $user_new_balance       = $user->user_current_balance-$package->price;
             //when renew the package add the one month in last expiration date
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
@@ -165,6 +175,7 @@ class PackageController extends Controller
             $user->current_expiration_date  = $new_exp_date;
             $user->qt_expired               = 0;
             $user->macs                     = auth()->user()->user_mac;
+            $user->user_current_balance     = $user_new_balance;
             // $user->last_expiration_date     = $current_exp_date;
             $user->save();
             //if its renew then find if its registered then create new record
@@ -222,136 +233,36 @@ class PackageController extends Controller
             $user_package_record->created_at     = date('y-m-d H:i:s');
             $user_package_record->save();
 
-            //insert record in transactions table
-            $transaction_arr = array();//empty array for transaction table
             $transaction_id  = rand(1111111111,9999999999);
+            $transaction_arr = array(// array for transaction table
+                'transaction_id'    => $transaction_id,
+                'admin_id'          => auth()->id(),
+                'user_id'           => $user->id,
+                'amount'            => $package->price,
+                'old_balance'       => $user_current_balance,
+                'new_balance'       => $user_new_balance,
+                'type'              => 0,
+                'created_at'        => date('Y-m-d H:i:s')
+            );
 
-            $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id']);
+            // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id']);
             
-            // if(auth()->user()->user_type == 'franchise'){//if user is franchise
-            //     $franchise      = Admin::where('id',auth()->user()->id)->firstOrFail();//find franchise
-            //     $franchise_pkg  = $this->getParentPackageDetails($franchise->id, $validated['package_id']);//find franchise pkg details
-                
-            //     if(isset($validated['calendar'])){//if calendar expiry date is set then divide the pkg price
-            //         $franchise_pkg_cost = number_format($this->dividePkgPrice($new_exp_date,$franchise_pkg->cost));
-            //     }else{
-            //         $franchise_pkg_cost = $franchise_pkg->cost;
-            //     }
-
-            //     $this->checkBalanceAndCredit($franchise->balance, $franchise->credit_limit, $franchise_pkg_cost, 'Franchise');//check balance and credit limit
-             
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $franchise->id, $validated['user_id'], $franchise_pkg_cost,$franchise->balance);//put franchise pkg details in arr
-
-            //     $franchise->decrement('balance',$franchise_pkg->cost); //minus cost from franchise balanace
-            //     $franchise->save();
-                
-            //     $package_price      = $franchise_pkg->cost;
-            //     $franchise_pkg_cost = $franchise_pkg_cost;
             
-            // }elseif(auth()->user()->user_type == 'dealer'){//is user is dealer
-
-            //     $parent_franchise = Admin::where('id',auth()->user()->added_to_id)->firstOrFail();//find franchsie
-            //     $dealer           = Admin::where('id',auth()->user()->id)->firstOrFail();//find dealer
-            //     $franchise_pkg    = $this->getParentPackageDetails($parent_franchise->id, $validated['package_id']);//find franchise pkg dealils
-            //     $dealer_pkg       = $this->getParentPackageDetails($dealer->id, $validated['package_id']);//find details pkg details
-
-            //     if(isset($validated['calendar'])){//if calendar expiry date is set then divide the pkg price
-            //         $franchise_pkg_cost = number_format($this->dividePkgPrice($new_exp_date,$franchise_pkg->cost));
-            //         $dealer_pkg_cost    = number_format($this->dividePkgPrice($new_exp_date,$dealer_pkg->cost));
-            //     }else{
-            //         $franchise_pkg_cost = $franchise_pkg->cost;
-            //         $dealer_pkg_cost    = $dealer_pkg->cost;
-            //     }
-
-            //     $this->checkBalanceAndCredit($dealer->balance, $dealer->credit_limit, $dealer_pkg_cost, 'Dealer');//check balance and credit limit
-            //     $this->checkBalanceAndCredit($parent_franchise->balance, $parent_franchise->credit_limit, $franchise_pkg_cost, 'Franchise');//check balance and credit limit
-
-
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $parent_franchise->id, $validated['user_id'], $franchise_pkg_cost,$parent_franchise->balance);//put franchsie pkg details in arr
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $dealer->id, $validated['user_id'], $dealer_pkg_cost,$dealer->balance);//put dealer pkg details in arr
-                
-                
-            //     $parent_franchise->decrement('balance',$franchise_pkg->cost);//minus pkg cost from franchise balance
-            //     $parent_franchise->save();
-                
-            //     $dealer->decrement('balance',$dealer_pkg->cost);//minus pkg cost from dealer balance
-            //     $dealer->save();
-
-            //     $package_price      = $dealer_pkg->cost;
-            //     $dealer_pkg_cost    = $dealer_pkg_cost;
-            //     $franchise_pkg_cost = $franchise_pkg_cost;
-
-            // }elseif(auth()->user()->user_type == 'sub_dealer'){
-
-            //     $subdealer        = Admin::where('id',auth()->user()->id)->firstOrFail();//find subdealer
-            //     $parent_dealer    = Admin::where('id',$subdealer->added_to_id)->firstOrFail();//find dealer
-            //     $parent_franchise = Admin::where('id',$parent_dealer->added_to_id)->firstOrFail();//find franchise
-
-            //     $franchise_pkg    = $this->getParentPackageDetails($parent_franchise->id, $validated['package_id']); //find franchier pkg details
-            //     $dealer_pkg       = $this->getParentPackageDetails($parent_dealer->id, $validated['package_id']);//fiind dealer pkg details
-            //     $subdealer_pkg    = $this->getParentPackageDetails($subdealer->id, $validated['package_id']);//find sbdealer pkg details
-
-            //     if(isset($validated['calendar'])){//if calendar expiry date is set then divide the pkg price
-            //         $franchise_pkg_cost = number_format($this->dividePkgPrice($new_exp_date,$franchise_pkg->cost));
-            //         $dealer_pkg_cost    = number_format($this->dividePkgPrice($new_exp_date,$dealer_pkg->cost));
-            //         $subdealer_pkg_cost = number_format($this->dividePkgPrice($new_exp_date,$subdealer_pkg->cost));
-            //     }else{
-            //         $franchise_pkg_cost = $franchise_pkg->cost;
-            //         $dealer_pkg_cost    = $dealer_pkg->cost;
-            //         $subdealer_pkg_cost = $subdealer_pkg->cost;
-            //     }
-            //     // dd($subdealer_pkg_cost);
-            //     $this->checkBalanceAndCredit($subdealer->balance, $subdealer->credit_limit, $subdealer_pkg_cost, 'Subdealer');//check balance and credit limit
-            //     $this->checkBalanceAndCredit($parent_dealer->balance, $parent_dealer->credit_limit, $dealer_pkg_cost, 'Dealer');//check balance and credit limit
-            //     $this->checkBalanceAndCredit($parent_franchise->balance, $parent_franchise->credit_limit, $franchise_pkg_cost, 'Franchise');//check balance and credit limit
-
-
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $parent_franchise->id, $validated['user_id'], $franchise_pkg_cost,$parent_franchise->balance);//put franchise pkg details in arr
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $parent_dealer->id, $validated['user_id'], $dealer_pkg_cost,$parent_dealer->balance);//put dealer pkg details in arr
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $subdealer->id, $validated['user_id'], $subdealer_pkg_cost,$subdealer->balance);//put subdealer pkg details in arr
-
-            //     $parent_franchise->decrement('balance',$franchise_pkg_cost);//minus pkg cost from franchsie balance
-            //     $parent_franchise->save();
-                
-            //     $parent_dealer->decrement('balance',$dealer_pkg_cost);//minus pkg cost from dealer balance
-            //     $parent_dealer->save();
-
-            //     $subdealer->decrement('balance',$subdealer_pkg_cost);//minus pkg cost form subdealer
-            //     $subdealer->save();
-                
-            //     $package_price      = $subdealer_pkg->cost;
-            //     $subdealer_pkg_cost = $subdealer_pkg_cost;
-            //     $dealer_pkg_cost    = $dealer_pkg_cost;
-            //     $franchise_pkg_cost = $franchise_pkg_cost;
-
-            //     #note franchise, dealer and subdealer same package cost could be different 
-            // }else{
-            //     $all_packages = Package::get();                
-                
-            //     $admin           = Admin::where('id',auth()->user()->id)->firstOrFail();//find franchise
-            //     $admin_pkg       = $all_packages->where('id',hashids_decode($validated['package_id']))->first();//find franchise pkg details
-            //     $admin_pkg_cost  = $admin_pkg->price;
-
-            //     $transaction_arr[] = $this->transactionArr($transaction_id, $admin->id, $validated['user_id'], $admin_pkg_cost,null);//put franchise pkg details in arr
-
-            //     $package_price      = $admin_pkg_cost;
-                
+            // if(auth()->user()->user_type != 'admin'){
+            //     // Ledger::insert($arr['transaction_arr']);
             // }
-            
-            if(auth()->user()->user_type != 'admin'){
-                Ledger::insert($arr['transaction_arr']);
-            }
+            Ledger::insert($transaction_arr);
             //insert data in invoices
             $invoice                    = new Invoice;
             $invoice->invoice_id        = rand(1111111111,9999999999);
             $invoice->transaction_id    = $transaction_id;
-            $invoice->admin_id          = auth()->user()->id;
+            $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
-            $invoice->total_cost        = $arr['package_price'];
-            $invoice->franchise_cost    = $arr['franchise_pkg_cost'] ?? 0.00;
-            $invoice->dealer_cost       = $arr['dealer_pkg_cost'] ?? 0.00;
-            $invoice->subdealer_cost    = $arr['subdealer_pkg_cost'] ?? 0.00;
+            $invoice->pkg_price         = $package->price;
+            // $invoice->franchise_cost    = $arr['franchise_pkg_cost'] ?? 0.00;
+            // $invoice->dealer_cost       = $arr['dealer_pkg_cost'] ?? 0.00;
+            // $invoice->subdealer_cost    = $arr['subdealer_pkg_cost'] ?? 0.00;
             $invoice->type              = $package_status;
             $invoice->current_exp_date  = $current_exp_date;
             $invoice->new_exp_date      = $new_exp_date;
