@@ -177,44 +177,44 @@
     });
 
     //change action when update package  
-    // $('#submit').click(function(e){
-    //     e.preventDefault();
-    //     $('#form').valid(); //validate form
+    $('#submit').click(function(e){
+        e.preventDefault();
+        $('#form').valid(); //validate form
 
-    //     if($('#form').valid()){ //check if form is valid
+        if($('#form').valid()){ //check if form is valid
             
-    //         number_format = new Intl.NumberFormat('en-US')
+            number_format = new Intl.NumberFormat('en-US')
 
-    //         var current_package = "{{ @$user_details->current_package->name }}";
-    //         var new_package     = $('#current_package_ddl').find(':selected').text();
-    //         var nopopup         = false;
-    //         var btn_txt         = 'yes, confirm it!';
-    //         var data_msg        = '';
-    //         var amount          = $('#amount').val();
-    //         var available_bal   = $('#available_balance').val();
-    //         var total           = parseInt(amount) + parseInt(available_bal);
-    //         var msg             = "Available balance is "+number_format.format(available_bal)+
-    //                             "\n Adding amount is "+number_format.format(amount)+
-    //                             "\n New balance amount is "+number_format.format(total)+
-    //                             "\n Are you sure you want to add "+amount+" to "+reciever_name;
+            // var current_package = "{{ @$user_details->current_package->name }}";
+            // var new_package     = $('#current_package_ddl').find(':selected').text();
+            var nopopup         = false;
+            var btn_txt         = 'yes, confirm it!';
+            var data_msg        = '';
+            var amount          = $('#amount').val();
+            var available_bal   = $('#available_balance').val();
+            var total           = parseInt(amount) + parseInt(available_bal);
+            var msg             = "Available balance is "+number_format.format(available_bal)+
+                                "\n Adding amount is "+number_format.format(amount)+
+                                "\n New balance amount is "+number_format.format(total)+
+                                "\n Are you sure you want to add "+amount+" to "+reciever_name;
 
-    //         if (!nopopup) {
-    //             Swal.fire({
-    //                 title: "Want to add payment?",
-    //                 text:  msg,
-    //                 type: "warning",
-    //                 showCancelButton: !0,
-    //                 confirmButtonColor: "#3085d6",
-    //                 cancelButtonColor: "#d33",
-    //                 confirmButtonText: (btn_txt && btn_txt != '') ? btn_txt : "Yes, confirm it!"
-    //             }).then(function (t) {
-    //                 if (t.value){
-    //                     $('#form').submit();
-    //                 }
-    //             });
-    //         }
-    //     }
-    // });
+            if (!nopopup) {
+                Swal.fire({
+                    title: "Want to add payment?",
+                    text:  msg,
+                    type: "warning",
+                    showCancelButton: !0,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: (btn_txt && btn_txt != '') ? btn_txt : "Yes, confirm it!"
+                }).then(function (t) {
+                    if (t.value){
+                        $('#form').submit();
+                    }
+                });
+            }
+        }
+    });
     $('#receiver_id').change(function(){//when there is change is user id get the user current balance
         var user_id = $(this).val();
         var route   = "{{ route('admin.users.get_user_current_balance', ':id') }}";

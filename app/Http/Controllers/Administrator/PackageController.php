@@ -28,7 +28,7 @@ class PackageController extends Controller
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
                 'user_package_id'  => UserPackageRecord::where('user_id',hashids_decode($id))->latest()->first(),
-                'packages'       => Package::get(),
+                'packages'       => Package::where('usertype', 1)->get(),
             );
             // $user_packages = FranchisePackage::with(['package'])->where('added_to_id',auth()->user()->id)->where('status','active')->get();
             // $packages      = Package::get();
@@ -403,7 +403,7 @@ class PackageController extends Controller
 
     //upgrade user package modal
     public function upgradeUserPackageModal($id){
-
+        
         if(CommonHelpers::rights('enabled-user','upgrade-user-package')){
             return redirect()->route('admin.home');
         }
