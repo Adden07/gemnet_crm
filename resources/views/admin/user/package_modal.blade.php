@@ -45,7 +45,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 @endphp --}}
 
 <div class="form-group mt-2">
-    <label for="">User type</label>
+    <label for="">Package type</label>
     <select class="form-control" name="month_type" id="month_type">
         <option value="monthly">Monthly</option>
         <option value="half_year">Half year</option>
