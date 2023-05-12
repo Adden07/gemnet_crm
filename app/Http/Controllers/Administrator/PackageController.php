@@ -41,33 +41,36 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-        
+    
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
             'package_id' => ['required'],
             'user_id'    => ['required'],
             'month_type' => ['required','in:monthly,half_month,full_month'],
-            'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')] 
+            'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
+            'otc'        => ['required', 'in:1,0'] 
         ];
 
         $validator = Validator::make($req->all(),$rules);
-
+        
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
 
-        $validated = $validator->validated();
-        
+        $validated  = $validator->validated();
+        $msg        = '';
+        $user       = User::findOrFail(hashids_decode($validated['user_id']));
+        $package    = Package::findOrFail(hashids_decode($validated['package_id']));
+
         if(isset($validated['calendar']) && !empty($validated['calendar'])){
             $date    = $validated['calendar'];
         }else{
-            $date    = Carbon::now()->addMonth()->format('d-M-Y 12:00');//get date of 1 month from today date 
+            // $date    = Carbon::now()->addMonth()->format('d-M-Y 12:00');//get date of 1 month from today date 
+            $date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
         }
         
-        $msg    = '';
-        $user   = User::findOrFail(hashids_decode($validated['user_id']));
-        $package= Package::findOrFail(hashids_decode($validated['package_id']));
+
 
         //when renew the package then check package exists or not
         if(auth()->user()->user_type != 'admin'){//if user is not admin
@@ -80,6 +83,13 @@ class PackageController extends Controller
             }
         }
 
+        if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
+            if($user->user_current_balance < ($package->price+$package->otc)){
+                return [
+                    'error' => 'User balance is less than the package price and OTC price'
+                ];
+            }
+        }
         //if user curen balance is less than the package price than throw error
         if($user->user_current_balance < $package->price){
             return [
@@ -223,7 +233,7 @@ class PackageController extends Controller
                 'type'              => 0,
                 'created_at'        => date('Y-m-d H:i:s')
             );
-
+            
             // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id']);
             
             
@@ -239,15 +249,41 @@ class PackageController extends Controller
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
             $invoice->pkg_price         = $package->price;
-            // $invoice->franchise_cost    = $arr['franchise_pkg_cost'] ?? 0.00;
-            // $invoice->dealer_cost       = $arr['dealer_pkg_cost'] ?? 0.00;
-            // $invoice->subdealer_cost    = $arr['subdealer_pkg_cost'] ?? 0.00;
             $invoice->type              = $package_status;
             $invoice->current_exp_date  = $current_exp_date;
             $invoice->new_exp_date      = $new_exp_date;
             $invoice->created_at        = date('Y-m-d H:i:s');
             $invoice->save();
 
+            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is true then creat another transaction and invoice
+              
+                $transaction_id = rand(1111111111,9999999999);
+                $transaction_arr = array(// array for transaction table
+                    'transaction_id'    => $transaction_id,
+                    'admin_id'          => auth()->id(),
+                    'user_id'           => $user->id,
+                    'amount'            => $package->otc,
+                    'old_balance'       => $user_new_balance,
+                    'new_balance'       => ($user_new_balance-$package->otc),
+                    'type'              => 0,
+                    'created_at'        => date('Y-m-d H:i:s')
+                );
+                Ledger::insert($transaction_arr);
+                //insert data in invoices
+                $invoice                    = new Invoice;
+                $invoice->invoice_id        = rand(1111111111,9999999999);
+                $invoice->transaction_id    = $transaction_id;
+                $invoice->admin_id          = auth()->id();
+                $invoice->user_id           = $user->id;
+                $invoice->pkg_id            = $package->id;
+                $invoice->pkg_price         = $package->otc;
+                $invoice->type              = $package_status;
+                $invoice->current_exp_date  = $current_exp_date;
+                $invoice->new_exp_date      = $new_exp_date;
+                $invoice->created_at        = date('Y-m-d H:i:s');
+                $invoice->save();
+            }
+         
             //if user status is expired and user is online then kick user
             if($validated['status'] == 'expired' && $user->last_logout_time == null){
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user

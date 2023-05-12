@@ -103,6 +103,13 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         <input type="hidden" name="package_id" value="{{ hashids_encode($user->package) }}">
     @endif
 </div>
+<div class="form-group">
+    <label for="">OTC</label>
+    <select class="form-control" name="otc" id="otc">
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+    </select>
+</div>
 @if(!empty($user->current_expiration_date))
 <div class="">
     <label>Current Expiration:</label>
