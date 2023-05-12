@@ -74,7 +74,16 @@
                     <li class="breadcrumb-item active">Profile </li>
                 </ol>
             </div>
-            <h4 class="page-title">Profile-{{ $user_details->username }} -- Balance-{{ number_format($user_details->user_current_balance, 2) }}</h4>
+            <h4 class="page-title">Profile-{{ $user_details->username }} -- 
+                Balance 
+                @if($user_details->user_current_balance < 0)
+                    <span class="text-danger">{{ number_format($user_details->user_current_balance, 2) }}</span>
+                @elseif($user_details->user_current_balance == 0)
+                    {{ number_format($user_details->user_current_balance, 2) }}
+                @else
+                    <span class="text-success">{{ number_format($user_details->user_current_balance, 2) }}</span>
+                @endif
+            </h4>
         </div>
     </div>
 </div>
