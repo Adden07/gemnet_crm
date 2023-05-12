@@ -77,7 +77,7 @@
                         <th>Date</th>
                         <th>Receiver Name</th>
                         <th>Added By</th>
-                        <th>Type</th>
+                        <th>Mode</th>
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>

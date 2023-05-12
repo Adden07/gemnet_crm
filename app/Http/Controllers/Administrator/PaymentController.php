@@ -340,15 +340,15 @@ class PaymentController extends Controller
                                     
                                     return $added_by;
                                 })
-                                ->addColumn('type',function($data){
-                                    $type = '';
-                                    if($data->type == 'cash')
-                                        $type = "<span class='badge badge-success'>Cash</span>";
-                                    else   
-                                        $type = "<span class='badge badge-primary'>Online</span>";
+                                // ->addColumn('type',function($data){
+                                //     $type = '';
+                                //     if($data->type == 'cash')
+                                //         $type = "<span class='badge badge-success'>Cash</span>";
+                                //     else   
+                                //         $type = "<span class='badge badge-primary'>Online</span>";
                                     
-                                    return $type;
-                                })
+                                //     return $type;
+                                // })
                                 ->addColumn('amount',function($data){
                                     return number_format($data->amount);
                                 })
@@ -379,7 +379,7 @@ class PaymentController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'type', 'status', 'action'])
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action'])
                                 ->make(true);
         }
         $data = array(

@@ -7,10 +7,10 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active">Finance</li>
-                    <li class="breadcrumb-item active">Payments</li>
+                    <li class="breadcrumb-item active">Approve online payments</li>
                 </ol>
             </div>
-            <h4 class="page-title">Payments</h4>
+            <h4 class="page-title">Approve online payments</h4>
         </div>
     </div>
 </div>
@@ -64,7 +64,7 @@
                         <th>Approved <br />Date</th>
                         <th>Receiver Name</th>
                         <th>Added By</th>
-                        <th>Type</th>
+                        {{-- <th>Type</th> --}}
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
@@ -127,7 +127,7 @@
                         {data:'approved_date', name:'payments.approved_date', orderable:true, searchable:true},  
                         {data:'reciever_name', name:'receiver.name',orderable:false,searchable:true},
                         {data:'added_by', name:'admin.name',orderable:false,searchable:true},
-                        {data:'type', name:'payments.type',orderable:true,searchable:true},
+                        // {data:'type', name:'payments.type',orderable:true,searchable:true},
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
