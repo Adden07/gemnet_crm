@@ -90,7 +90,7 @@ class AdminController extends Controller
             $admin->image = $image;
         }
 
-        $admin->edit_by_id  = auth()->user()->id;
+        // $admin->edit_by_id  = auth()->user()->id;
         $admin->name        = $req->name;
         $admin->username    = $req->username;
         $admin->password    = Hash::make(@$req->password);

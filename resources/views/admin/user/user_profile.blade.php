@@ -793,7 +793,7 @@
                                         @endif
                                     </td>
                                     <td>{{ date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) }}</td>
-                                    <td>{{ round($invoice->total_cost) }}</td>
+                                    <td>{{ round($invoice->pkg_price) }}</td>
                                     <td>
                                         @if($invoice->paid == 0)
                                             <label class="switch mb-0">

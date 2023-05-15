@@ -104,7 +104,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     @endif
 </div>
 <div class="form-group">
-    <label for="">OTC</label>
+    <label for="">One Time Charges</label>
     <select class="form-control" name="otc" id="otc">
         <option value="1">Yes</option>
         <option value="0">No</option>

@@ -65,8 +65,7 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::with(['admin:id,username,name','primary_package:id,name'])
-                        ->selectRaw('id,admin_id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package')
+            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package')
                         ->when(auth()->user()->user_type != 'admin', function($query){
                             $query->whereIn('admin_id',$this->getChildIds());
                         });
@@ -82,9 +81,9 @@ class UserController extends Controller
                                 ->addColumn('mobile',function($data){
                                     return $data->mobile;
                                 })
-                                ->addColumn('sales_person',function($data){
-                                    return wordwrap($data->admin->name."(<strong>".$data->admin->username."</strong>)",10,"<br>\n");
-                                })
+                                // ->addColumn('sales_person',function($data){
+                                //     return wordwrap($data->admin->name."(<strong>".$data->admin->username."</strong>)",10,"<br>\n");
+                                // })
                                 ->addColumn('package',function($data){
                                     return wordwrap(@$data->primary_package->name,10,"<br>\n");
                                 })
@@ -129,8 +128,7 @@ class UserController extends Controller
                                 $action = "<a href=".route('admin.users.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
                                             <i class='icon-pencil'></i>
                                            </a>";
-
-                                if($data->admin_id == auth()->user()->id){
+                                // if($data->admin_id == auth()->user()->id){
                                     if($data->status == 'registered'){
                                         if(auth()->user()->can('active-user')){
                                             $action .= " <a href=".route('admin.packages.add_user_package',['id'=>$data->hashid])." class='btn btn-primary btn-xs add_package ml-2' title='Activate Package' data-status='".$data->status."' onclick=\"addPackage('".$data->hashid ."','".$data->status ."',event)\">
@@ -143,7 +141,7 @@ class UserController extends Controller
                                                 <i class='icon-refresh'></i>
                                             </a>";
                                     }
-                                }
+                                //}
                                 return $action;           
                                 })
                                 ->filter(function($query) use ($req){
@@ -306,7 +304,7 @@ class UserController extends Controller
             $activity   = "updated-user";
         }else{
             $user              = new User;
-            $user->admin_id    = auth()->user()->id;
+            // $user->admin_id    = auth()->user()->id;
             // $user->user_status = 'registered';
             $msg               = 'user Added Successfully';
             $activity          = "added-user";
@@ -488,6 +486,7 @@ class UserController extends Controller
     }
     //dispaly user profile
     public function profile($id){
+        
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
@@ -498,7 +497,7 @@ class UserController extends Controller
                 'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew'])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
-                'user_invoices' => Invoice::select(['id','created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid'])
+                'user_invoices' => Invoice::select(['id','created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price'])
                                             ->with(['package'=>function($query){
                                                 $query->select('id','name');
                                             },'user'=>function($query){
@@ -878,7 +877,6 @@ class UserController extends Controller
 
     //display all failed logins
     public function loginFailLogs(Request $req){
-        
         if(CommonHelpers::rights('enabled-user','login-fail-users')){
             return redirect()->route('admin.home');
         }
@@ -886,7 +884,7 @@ class UserController extends Controller
 
 
         //get users of login user
-        $users = User::where('admin_id',auth()->user()->id)->get()->pluck('username')->toArray();
+        $users = User::get()->pluck('username')->toArray();
 
         if($req->ajax()){
             
@@ -1048,11 +1046,10 @@ class UserController extends Controller
                                 ->make(true);
                                 // ->toJson();
         }
-
         $data = array(
             'title' => 'Mac Vendor Users',
             'macvendors'    => DB::table('users')
-                                ->select(DB::raw('count(id) as total, macvendor, admin_id'))
+                                ->select(DB::raw('count(id) as total, macvendor'))
                                 ->when(auth()->user()->user_type != 'admin',function($query){
                                     $query->whereIn('admin_id',$this->getChildIds());
                                 })
@@ -1454,7 +1451,7 @@ class UserController extends Controller
                                 return @$data->packages->name;
                             })
                             ->addColumn('expiration', function($data){
-                                return date('d-m-Y', strtotime($data->expiration));
+                                return date('d-m-Y', strtrime($data->expiration));
                             })
                             ->addColumn('city', function($data){
                                 return @$data->city->city_name;

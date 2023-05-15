@@ -277,9 +277,9 @@ class PackageController extends Controller
                 $invoice->user_id           = $user->id;
                 $invoice->pkg_id            = $package->id;
                 $invoice->pkg_price         = $package->otc;
-                $invoice->type              = $package_status;
-                $invoice->current_exp_date  = $current_exp_date;
-                $invoice->new_exp_date      = $new_exp_date;
+                $invoice->type              = (int) 2;
+                $invoice->current_exp_date  = null;
+                $invoice->new_exp_date      = null;
                 $invoice->created_at        = date('Y-m-d H:i:s');
                 $invoice->save();
             }
@@ -418,7 +418,7 @@ class PackageController extends Controller
 
     //upgrade user package modal
     public function upgradeUserPackageModal($id){
-        
+
         if(CommonHelpers::rights('enabled-user','upgrade-user-package')){
             return redirect()->route('admin.home');
         }

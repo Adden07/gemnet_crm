@@ -99,7 +99,7 @@
                         <th>Name</th>
                         <th>Username</th>
                         <th>Mobile</th>
-                        <th>Sales Person</th>
+                        {{-- <th>Sales Person</th> --}}
                         <th>Package</th>
                         <th>Status</th>
                         <th>Expiration</th>
@@ -168,7 +168,7 @@
                         {data:'name', name:'users.name', orderable:true},  
                         {data:'username', name:'users.username'},
                         {data:'mobile', name:'users.mobile'},
-                        {data:'sales_person', name:'admin.username', orderable:false},
+                        // {data:'sales_person', name:'admin.username', orderable:false},
                         {data:'package', name:'primary_package.name'},
                         {data:'status',name:'users.status'},
                         {data:'expiration', name:'users.current_expiration_date'},
