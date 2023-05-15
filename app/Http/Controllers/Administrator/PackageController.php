@@ -108,7 +108,7 @@ class PackageController extends Controller
             //calculate the tax value
             $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
             $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-            $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0) ? ($package->otc * $site_setting->mrc_adv_inc_tax)/100: 0;
+            $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
             $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
             $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
             $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
