@@ -135,7 +135,6 @@ class AdminController extends Controller
     }
     //disaply details in modal
     public function details($id){
-        
         if(\CommonHelpers::rights('enabled-admin','view-admin')){
             return redirect()->route('admin.home');
         }

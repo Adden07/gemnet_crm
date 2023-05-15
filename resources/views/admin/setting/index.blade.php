@@ -121,6 +121,30 @@
                                 <input type="text" class="form-control"  placeholder="Enter copyright" value="{{ @$edit_setting->copyright }}" name="copyright" id="copyright" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">MRC Sales Tax<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control"  placeholder="MRC sales tax" value="{{ @$edit_setting->mrc_sales_tax }}" name="mrc_sales_tax" id="mrc_sales_tax" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                <label for="copyright">MRC Advance Income Tax</label>
+                                <input type="text" class="form-control"  placeholder="Enter MRC advance INC tax" value="{{ @$edit_setting->mrc_adv_inc_tax }}" name="mrc_adv_inc_tax" id="mrc_adv_inc_tax" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">OTC Sales Tax<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control"  placeholder="OTC sales tax" value="{{ @$edit_setting->otc_sales_tax }}" name="otc_sales_tax" id="otc_sales_tax" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                <label for="copyright">OTC Advance Income Tax</label>
+                                <input type="text" class="form-control"  placeholder="Enter MRC advance INC tax" value="{{ @$edit_setting->otc_adv_inc_tax }}" name="otc_adv_inc_tax" id="otc_adv_inc_tax" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+                        </div>
                         
                         <div class="row">
                             <div class="form-group col-md-6">

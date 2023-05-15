@@ -45,7 +45,11 @@ class SettingController extends Controller
             'logo'          => ['nullable', Rule::requiredIf(!isset($req->setting_id)), 'mimes:jpg,jpeg,png', 'max:1000'],
             'favicon'       => ['nullable', Rule::requiredIf(!isset($req->setting_id)), 'mimes:jpg,jpeg,png', 'max:1000'],
             'zipcode'       => ['required', 'numeric'],
-            'copyright'     => ['required', 'string', 'max:191']
+            'copyright'     => ['required', 'string', 'max:191'],
+            'mrc_sales_tax' => ['required', 'numeric'],
+            'mrc_adv_inc_tax' => ['required', 'numeric'],
+            'otc_sales_tax'   => ['required', 'numeric'],
+            'otc_adv_inc_tax' => ['required', 'numeric'],
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -64,6 +68,10 @@ class SettingController extends Controller
         $setting->country       = $req->country;
         $setting->zipcode       = $req->zipcode;
         $setting->copyright     = $req->copyright;
+        $setting->mrc_sales_tax   = $req->mrc_sales_tax;
+        $setting->mrc_adv_inc_tax = $req->mrc_adv_inc_tax;
+        $setting->otc_sales_tax   = $req->otc_sales_tax;
+        $setting->otc_adv_inc_tax = $req->otc_adv_inc_tax;
 
         if($req->hasFile('logo')){//store logo
             $logo = \CommonHelpers::uploadSingleFile($req->file('logo'),'admin_uploads/logo/');
