@@ -113,8 +113,8 @@ class PackageController extends Controller
             $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
             $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
             //calculat user new balance
-            $user_new_balance       = $user->user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax);
-            
+            $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax+$package->otc);
+          
             //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
@@ -238,7 +238,7 @@ class PackageController extends Controller
                 'transaction_id'    => $transaction_id,
                 'admin_id'          => auth()->id(),
                 'user_id'           => $user->id,
-                'amount'            => $package->price,
+                'amount'            => ($package->price+$mrc_total),
                 'old_balance'       => $user_current_balance,
                 'new_balance'       => $user_current_balance-($package->price+$mrc_total),
                 'type'              => 0,
@@ -251,6 +251,7 @@ class PackageController extends Controller
             // if(auth()->user()->user_type != 'admin'){
             //     // Ledger::insert($arr['transaction_arr']);
             // }
+       
             Ledger::insert($transaction_arr);
             //insert data in invoices
             $invoice                    = new Invoice;
@@ -259,11 +260,14 @@ class PackageController extends Controller
             $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
-            $invoice->pkg_price         = $package->price+$mrc_total;
+            $invoice->pkg_price         = $package->price;
             $invoice->type              = $package_status;
             $invoice->current_exp_date  = $current_exp_date;
             $invoice->new_exp_date      = $new_exp_date;
             $invoice->created_at        = date('Y-m-d H:i:s');
+            $invoice->sales_tax         = $mrc_sales_tax;
+            $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
+            $invoice->total             = $package->price+$mrc_total;
             $invoice->save();
 
             if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is true then creat another transaction and invoice
@@ -273,7 +277,7 @@ class PackageController extends Controller
                     'transaction_id'    => $transaction_id,
                     'admin_id'          => auth()->id(),
                     'user_id'           => $user->id,
-                    'amount'            => $package->otc,
+                    'amount'            => ($package->otc+$otc_total),
                     'old_balance'       => $user_current_balance-($package->price+$mrc_total),
                     'new_balance'       => ($user_current_balance-($package->price+$mrc_total))-($package->otc+$otc_total),
                     'type'              => 0,
@@ -287,11 +291,14 @@ class PackageController extends Controller
                 $invoice->admin_id          = auth()->id();
                 $invoice->user_id           = $user->id;
                 $invoice->pkg_id            = $package->id;
-                $invoice->pkg_price         = ($package->otc+$otc_total);
+                $invoice->pkg_price         = $package->otc;
                 $invoice->type              = (int) 2;
                 $invoice->current_exp_date  = null;
                 $invoice->new_exp_date      = null;
                 $invoice->created_at        = date('Y-m-d H:i:s');
+                $invoice->sales_tax         = $otc_sales_tax;
+                $invoice->adv_inc_tax       = $otc_adv_inc_tax;
+                $invoice->total             = $package->otc+$otc_total;
                 $invoice->save();
             }
          
