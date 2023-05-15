@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+
 @section('content')
 
 
@@ -168,7 +169,7 @@
                             </thead>
                             <tbody>
                                 @php $counter = 0; @endphp
-                                @foreach($user_details->areas()->where('type','area')->get() AS $area)
+                                {{-- @foreach($user_details->areas()->where('type','area')->get() AS $area)
                                    <tr>
                                         <td>{{ ++$counter }}</td>
                                         <td>{{ $area->city->city_name }}</td>
@@ -183,7 +184,7 @@
                                             <td>{{ $sub_area->area_name }}</td>
                                         </tr>
                                     @endforeach
-                                @endforeach
+                                @endforeach --}}
                             </tbody>
                         </table>
                 </div>

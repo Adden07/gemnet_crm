@@ -261,6 +261,7 @@ class UserController extends Controller
             'title'     => 'Add User',
             'cities'    => City::get(),
             'areas'     => Area::where('area_id',0)->latest()->get(),
+            'user_types' => Admin::whereIn('user_type', ['field_engineer','sales_person'])->get(),
         );
         
         return view('admin.user.add_user')->with($data);
@@ -268,7 +269,7 @@ class UserController extends Controller
 
     //store and update the user
     public function store(Request $req){
-
+       
         $rules = [
             'city_id'           => ['required'],
             'name'              => ['required', 'string', 'max:50'],
@@ -283,7 +284,9 @@ class UserController extends Controller
             'user_form_back'    => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'area_id'           => ['nullable'],
             'subarea_id'        => ['nullable'],
-            'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin'), 'nullable']
+            'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin'), 'nullable'],
+            'sales_id'          => ['required', 'string', 'max:100'],
+            'fe_id'             => ['required', 'string', 'max:100'],
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -331,8 +334,8 @@ class UserController extends Controller
             $user_form_back       = CommonHelpers::uploadSingleFile($req->user_form_back, 'admin_uploads/user_form_back/');
             $user->user_form_back = $user_form_back;
         }
-
-        $user->city_id     = @hashids_decode($req->city_id);
+        $user->activation_by = auth()->id();
+        $user->city_id     = @hashids_decode($req->city_id);    
         $user->area_id     = @hashids_decode($req->area_id);
         $user->subarea_id  = @hashids_decode($req->subarea_id);
         $user->name        = $req->name;
@@ -342,6 +345,8 @@ class UserController extends Controller
         $user->mobile      = '92'.$req->mobile;
         $user->address     = $req->address;
         $user->is_tax      = (!empty($req->is_tax)) ? (int) $req->is_tax : 1;
+        $user->sales_id    = hashids_decode($req->sales_id);
+        $user->fe_id       = hashids_decode($req->fe_id);
         $user->save();
 
         CommonHelpers::activity_logs($activity.' '.$user->username);

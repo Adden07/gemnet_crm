@@ -19,32 +19,31 @@ use App\Models\UserRolePermission;
 class ProfileController extends Controller
 {
     public function index(Request $req){
-        
+
         $data = array(
             'title'                 => 'Profile',
-            'user_details'          => Admin::with(['areas'])->where('id',auth()->user()->id)->first(),
+            'user_details'          => Admin::where('id',auth()->user()->id)->first(),
             'activity_logs'         => ActivityLog::where('user_id',auth()->user()->id)->latest()->paginate(100),
             'packages'              => NULL,
             'login_fails'           => LoginFailLog::where('username',auth()->user()->username)->get(),
         );
         
-        $packages      = FranchisePackage::with(['admin'])->where('added_to_id',auth()->user()->id)->orderBY('cost','ASC')->get();
-        $childIds      = CommonHelpers::getChildIds(); //get child ids
-        $data['users'] = User::select(['admin_id', 'package'])->whereIn('admin_id',$childIds)->get();
-
-        if(auth()->user()->user_type == 'franchise'){//if user if franchise 
+        // $packages      = FranchisePackage::with(['admin'])->where('added_to_id',auth()->user()->id)->orderBY('cost','ASC')->get();
+        // $childIds      = CommonHelpers::getChildIds(); //get child ids
+        // $data['users'] = User::select(['admin_id', 'package'])->whereIn('admin_id',$childIds)->get();
+        // if(auth()->user()->user_type == 'franchise'){//if user if franchise 
     
-            $data['packages'] = $packages->where('status','active');
+        //     $data['packages'] = $packages->where('status','active');
             
-        }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are active in franchise
+        // }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are active in franchise
             
-            $ids = DealerController::getParentActivePacakges($packages);
-            $data['packages'] = $packages->whereIn('package_id',$ids)->where('status','active');
+        //     $ids = DealerController::getParentActivePacakges($packages);
+        //     $data['packages'] = $packages->whereIn('package_id',$ids)->where('status','active');
         
-        }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are active in franchise and dealer
-            $ids = SubDealerController::getParentActivePacakges($packages);
-            $data['packages'] = $packages->whereNotIn('package_id',$ids)->where('status','active');
-        }
+        // }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are active in franchise and dealer
+        //     $ids = SubDealerController::getParentActivePacakges($packages);
+        //     $data['packages'] = $packages->whereNotIn('package_id',$ids)->where('status','active');
+        // }
         if($req->ajax()){
             $data =  Payment::with(['admin'])->where('receiver_id',auth()->user()->id);
                                     
@@ -131,6 +130,7 @@ class ProfileController extends Controller
                                 ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
                                 ->make(true);
         }
+        // dd('dones');
         return view('admin.profile.index')->with($data);
     }
 

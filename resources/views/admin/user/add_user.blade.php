@@ -217,6 +217,29 @@
                         </select>
                         <div class="subarea_err"></div>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="subarea_id">Sales Person</label>
+                        <select class="form-control" name="sales_id" id="sales_id">
+                            <option value="">Select sales person</option>
+                            @foreach($user_types->where('user_type', 'sales_person') AS $sales)
+                                <option value="{{ $sales->hashid }}">{{ $sales->name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="subarea_err"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="subarea_id">Field Engineer</label>
+                        <select class="form-control" name="fe_id" id="fe_id">
+                            <option value="">Select field engineer</option>
+                            @foreach($user_types->where('user_type', 'field_engineer') AS $engineer)
+                                <option value="{{ $engineer->hashid }}">{{ $engineer->name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="subarea_err"></div>
+                    </div>
                 </div>
 
 
