@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Customize;
 use App\Models\Setting;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -74,7 +75,6 @@ class AppServiceProvider extends ServiceProvider
             //     print_r(Cache::get('edit_setting'));
             // }
             // exit();
-            
             // view()->composer()
         //}   
     }

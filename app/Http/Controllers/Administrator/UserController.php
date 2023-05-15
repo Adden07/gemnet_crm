@@ -43,7 +43,7 @@ class UserController extends Controller
 
 
     public function index(Request $req){
-        
+
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }

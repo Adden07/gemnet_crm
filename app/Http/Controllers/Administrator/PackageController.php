@@ -18,6 +18,7 @@ use App\Models\Ledger;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CommonHelpers;
+use Illuminate\Support\Facades\Cache;
 
 class PackageController extends Controller
 {
@@ -103,8 +104,18 @@ class PackageController extends Controller
             $last_expiration_date   = $user->current_expiration_date;
             $last_package           = $user->c_package;
             $user_current_balance   = $user->user_current_balance;
-            $user_new_balance       = $user->user_current_balance-$package->price;
-            //when renew the package add the one month in last expiration date
+            $site_setting           = Cache::get('edit_setting');
+            //calculate the tax value
+            $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+            $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+            $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0) ? ($package->otc * $site_setting->mrc_adv_inc_tax)/100: 0;
+            $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
+            $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+            $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
+            //calculat user new balance
+            $user_new_balance       = $user->user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax);
+            
+            //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
                 // global $msg          = 'Package Renewed Successfully';
@@ -229,7 +240,7 @@ class PackageController extends Controller
                 'user_id'           => $user->id,
                 'amount'            => $package->price,
                 'old_balance'       => $user_current_balance,
-                'new_balance'       => $user_new_balance,
+                'new_balance'       => $user_current_balance-($package->price+$mrc_total),
                 'type'              => 0,
                 'created_at'        => date('Y-m-d H:i:s')
             );
@@ -248,7 +259,7 @@ class PackageController extends Controller
             $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
-            $invoice->pkg_price         = $package->price;
+            $invoice->pkg_price         = $package->price+$mrc_total;
             $invoice->type              = $package_status;
             $invoice->current_exp_date  = $current_exp_date;
             $invoice->new_exp_date      = $new_exp_date;
@@ -263,8 +274,8 @@ class PackageController extends Controller
                     'admin_id'          => auth()->id(),
                     'user_id'           => $user->id,
                     'amount'            => $package->otc,
-                    'old_balance'       => $user_new_balance,
-                    'new_balance'       => ($user_new_balance-$package->otc),
+                    'old_balance'       => $user_current_balance-($package->price+$mrc_total),
+                    'new_balance'       => ($user_current_balance-($package->price+$mrc_total))-($package->otc+$otc_total),
                     'type'              => 0,
                     'created_at'        => date('Y-m-d H:i:s')
                 );
@@ -276,7 +287,7 @@ class PackageController extends Controller
                 $invoice->admin_id          = auth()->id();
                 $invoice->user_id           = $user->id;
                 $invoice->pkg_id            = $package->id;
-                $invoice->pkg_price         = $package->otc;
+                $invoice->pkg_price         = ($package->otc+$otc_total);
                 $invoice->type              = (int) 2;
                 $invoice->current_exp_date  = null;
                 $invoice->new_exp_date      = null;
