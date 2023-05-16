@@ -41,17 +41,18 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-    
+
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
             'package_id' => ['required'],
             'user_id'    => ['required'],
-            'month_type' => ['required','in:monthly,half_month,full_month'],
-            'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
-            'otc'        => ['required', 'in:1,0'] 
+            'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_month'],
+            // 'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
+            'otc'        => [Rule::requiredIf(empty($req->renew_type)), 'in:1,0'], 
+            'renew_type' => [Rule::requiredIf(empty(!$req->renew_type)), 'in:immediate,queue'] 
         ];
-
+        
         $validator = Validator::make($req->all(),$rules);
         
         if($validator->fails()){
@@ -62,6 +63,14 @@ class PackageController extends Controller
         $msg        = '';
         $user       = User::findOrFail(hashids_decode($validated['user_id']));
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
+        $site_setting           = Cache::get('edit_setting');
+        //calculate the tax value
+        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
+        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
+        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+        $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
 
         if(isset($validated['calendar']) && !empty($validated['calendar'])){
             $date    = $validated['calendar'];
@@ -73,47 +82,46 @@ class PackageController extends Controller
 
 
         //when renew the package then check package exists or not
-        if(auth()->user()->user_type != 'admin'){//if user is not admin
-            if($validated['status'] == 'active'){//if its renew
-                if(FranchisePackage::where('added_to_id',auth()->user()->id)->where('package_id',hashids_decode($validated['package_id']))->where('status','active')->doesntExist()){//check if pacakge does not exists and active
-                    return response()->json([
-                        'error' => 'Could not renew the package please change the package',
-                    ]);
-                }
-            }
-        }
-
-        if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
-            if($user->user_current_balance < ($package->price+$package->otc)){
-                return [
-                    'error' => 'User balance is less than the package price and OTC price'
-                ];
-            }
-        }
-        //if user curen balance is less than the package price than throw error
-        if($user->user_current_balance < $package->price){
+        // if(auth()->user()->user_type != 'admin'){//if user is not admin
+        //     if($validated['status'] == 'active'){//if its renew
+        //         if(FranchisePackage::where('added_to_id',auth()->user()->id)->where('package_id',hashids_decode($validated['package_id']))->where('status','active')->doesntExist()){//check if pacakge does not exists and active
+        //             return response()->json([
+        //                 'error' => 'Could not renew the package please change the package',
+        //             ]);
+        //         }
+        //     }
+        // }
+        if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
             return [
-                'error' => 'User balance is less than the package price'
+                'error' => 'User balance is less than the package price and OTC price'
             ];
         }
+        // dd('done');
+        // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
+        //     if($user->user_current_balance < ($package->price+$package->otc)){
+        //         return [
+        //             'error' => 'User balance is less than the package price and OTC price'
+        //         ];
+        //     }
+        // }
+        // //if user curen balance is less than the package price than throw error
+        // if($user->user_current_balance < $package->price){
+        //     return [
+        //         'error' => 'User balance is less than the package price'
+        //     ];
+        // }
         
-        DB::transaction(function() use ($validated,$date, &$user, &$package){
+        DB::transaction(function() use ($validated,$date, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax, &$otc_adv_inc_tax, &$mrc_total, &$otc_total, &$site_setting){
 
             $user_status            = $user->status;
             $last_expiration_date   = $user->current_expiration_date;
             $last_package           = $user->c_package;
             $user_current_balance   = $user->user_current_balance;
-            $site_setting           = Cache::get('edit_setting');
-            //calculate the tax value
-            $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
-            $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-            $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
-            $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
-            $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-            $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
+        
             //calculat user new balance
-            $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax+$package->otc);
-          
+            $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax);
+            $user_new_balance       += (@$validated['otc'] == 1) ? $package->otc : 0;
+
             //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
@@ -130,29 +138,44 @@ class PackageController extends Controller
                     }
                 }else{//if status is not expired then calculate the date from the db date
                     //if month type is month and status is expired then get the current date otherwise get the calendat date for expiry
-                    if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
-                        $date = $user->current_expiration_date;
-                    }else{
-                        $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
-                    }
+                    // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
+                    //     $date = $user->current_expiration_date;
+                    // }else{
+                    //     $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
+                    // }
+                    $date = $user->current_expiration_date;
                 }
                 //create expiry date 
-                if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){//expir
-                    $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                    $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
-                    $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
-                }else{//expiry date from calendar date
-                    $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                    $date             = Carbon::parse($date)->format('d-M-Y 12.00');
-                    $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
-                }
+                // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){//expir
+                //     $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
+                //     $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
+                //     $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
+                // }else{//expiry date from calendar date
+                //     $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
+                //     $date             = Carbon::parse($date)->format('d-M-Y 12.00');
+                //     $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
+                // }
+                $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
+                $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
+                $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
 
                 $user->renew_by             = auth()->user()->id;
                 $user->renew_date           = date('Y-m-d H:i:s');
                 $user->last_expiration_date = $last_expiration_date;
                 $user->last_package         = $last_package;
-                
                 $package_status             =1;
+                
+                if($validated['renew_type'] != 'queue'){
+                    $user->status                   = 'active';
+                    $user->qt_total                 = $package->volume;
+                    $user->qt_used                  = 0;
+                    $user->qt_enabled               = $package->qt_enabled;
+                    $user->package                  = $package->id;
+                    $user->c_package                = $package->id;
+                    $user->current_expiration_date  = $new_exp_date;
+                    $user->qt_expired               = 0;
+                    $user->user_current_balance     = $user_new_balance;
+                }
 
             }else{//means user is registered
                 $package_status             =0;
@@ -160,21 +183,21 @@ class PackageController extends Controller
                 $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));
                 $user->activation_by = auth()->user()->id;
                 $user->activation_date = date('Y-m-d H:i:s');
-
+                $user->user_current_balance     = $user_new_balance;
+                $user->status                   = 'active';
+                $user->qt_total                 = $package->volume;
+                $user->qt_used                  = 0;
+                $user->qt_enabled               = $package->qt_enabled;
+                $user->package                  = $package->id;
+                $user->c_package                = $package->id;
+                $user->current_expiration_date  = $new_exp_date;
+                $user->qt_expired               = 0;
                 $activity_log   = "activated user-($user->username)";
                 $GLOBALS['msg'] = 'Package Activated Successfully';
             }
             //update user and set status active even status is registered or expired
-            $user->status                   = 'active';
-            $user->qt_total                 = $package->volume;
-            $user->qt_used                  = 0;
-            $user->qt_enabled               = $package->qt_enabled;
-            $user->package                  = $package->id;
-            $user->c_package                = $package->id;
-            $user->current_expiration_date  = $new_exp_date;
-            $user->qt_expired               = 0;
+
             $user->macs                     = auth()->user()->user_mac;
-            $user->user_current_balance     = $user_new_balance;
             // $user->last_expiration_date     = $current_exp_date;
             $user->save();
             //if its renew then find if its registered then create new record

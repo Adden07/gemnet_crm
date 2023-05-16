@@ -348,5 +348,13 @@
         });
     });
 
+    $(document).on('change', '#renew_type', function(){
+        if($(this).val() == 'queue'){
+            $('#queue_package').removeClass('d-none');
+        }else{
+            $('#queue_package').addClass('d-none')
+        }
+        
+    });
 </script>
 @endsection

@@ -13,6 +13,38 @@
         {{ $user->status }}
     </span>
 </div>
+
+@if(!empty($user->current_expiration_date))
+    <div class="">
+        <label class="col-form-label">Status:</label>
+        <select class="form-control" name="renew_type" id="renew_type">
+            <option value="immediate">Immediate</option>
+        <option value="queue">Queue</option>
+        </select>
+    </div>
+@endif
+
+@if(!empty($user->current_expiration_date))
+    <div id="queue_package" class="d-none">
+        <div class="form-group mt-2">
+            <label for="">Package type</label>
+            <select class="form-control" name="month_type" id="month_type">
+                <option value="monthly">Monthly</option>
+                <option value="half_year">Half year</option>
+                <option value="full_year">Full Year</option>
+                <option value="promo">Promo</option>
+            </select>
+        </div>
+        <label for="package">Packages:</label>
+        <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
+            <option value="">Select Package</option>
+            @foreach($packages AS $package)
+                <option value="{{ $package->hashid }}" @if(@$user_package_id->package_id == $package->id) selected @endif>{{ $package->name }}</option>
+            @endforeach
+        </select>
+    </div>
+@endif
+
 @if($user->status != 'registered')
     <div class="">
         <label for="package" class="mt-2">Current Package:</label>
@@ -106,7 +138,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         <span class="badge badge-info ml-3">
             {{ @$user->packages->name }}
         </span>
-        <input type="hidden" name="package_id" value="{{ hashids_encode($user->package) }}">
+        {{-- <input type="hidden" name="package_id" value="{{ hashids_encode($user->package) }}"> --}}
     @endif
 </div>
 
