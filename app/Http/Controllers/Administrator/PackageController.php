@@ -298,11 +298,11 @@ class PackageController extends Controller
 
             if(isset($validated['renew_type']) && $validated['renew_type'] == 'queue'){
                 $pkg_queue_arr = array(
-                    'queue_by'  => auth()->id(),
+                    'queue_by'  => 1,
                     'invoice_id'=> $inv_id,
                     'user_id'   => $user->id,
                     'package_id' => $package->id,
-                    'applied_on' => now(),
+                    'applied_on' => Null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 );

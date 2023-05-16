@@ -25,7 +25,29 @@
 
             <form action="{{ route('admin.users.store') }}" class="ajaxForm" method="post" enctype="multipart/form-data" novalidate id="form">
                 @csrf
-
+                {{-- <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="name">Userr type<span class="text-danger">*</span></label>
+                        <select class="form-control" id="user_type">
+                            <option value="individual">Individual</option>
+                            <option value="company">Company</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Business Name<span class="text-danger">*</span></label>
+                        <input type="text" name="business_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="name">NTN<span class="text-danger">*</span></label>
+                        <input type="text" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">POC Mobile No <span class="text-danger">*</span></label>
+                        <input type="text" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                    </div>
+                </div> --}}
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="name">Name<span class="text-danger">*</span></label>
