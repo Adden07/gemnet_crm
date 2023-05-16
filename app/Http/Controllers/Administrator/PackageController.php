@@ -18,6 +18,7 @@ use App\Models\Ledger;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CommonHelpers;
+use App\Models\PkgQueue;
 use Illuminate\Support\Facades\Cache;
 
 class PackageController extends Controller
@@ -41,7 +42,8 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-
+        // $a = 'GP-2305-01';
+        // dd(preg_match_all('/(\$[a-z]+)/i', $a, ''));
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -175,6 +177,8 @@ class PackageController extends Controller
                     $user->current_expiration_date  = $new_exp_date;
                     $user->qt_expired               = 0;
                     $user->user_current_balance     = $user_new_balance;
+                }else{
+
                 }
 
             }else{//means user is registered
@@ -273,11 +277,11 @@ class PackageController extends Controller
             // if(auth()->user()->user_type != 'admin'){
             //     // Ledger::insert($arr['transaction_arr']);
             // }
-       
+            $inv_id     = rand(1111111111,9999999999);
             Ledger::insert($transaction_arr);
             //insert data in invoices
             $invoice                    = new Invoice;
-            $invoice->invoice_id        = rand(1111111111,9999999999);
+            $invoice->invoice_id        = $inv_id;
             $invoice->transaction_id    = $transaction_id;
             $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
@@ -292,7 +296,20 @@ class PackageController extends Controller
             $invoice->total             = round($package->price+$mrc_total);
             $invoice->save();
 
-            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is true then creat another transaction and invoice
+            if(isset($validated['renew_type']) && $validated['renew_type'] == 'queue'){
+                $pkg_queue_arr = array(
+                    'queue_by'  => auth()->id(),
+                    'invoice_id'=> $inv_id,
+                    'user_id'   => $user->id,
+                    'package_id' => $package->id,
+                    'applied_on' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                );
+                PkgQueue::insert($pkg_queue_arr);
+            }
+
+            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is     true then creat another transaction and invoice
               
                 $transaction_id = rand(1111111111,9999999999);
                 $transaction_arr = array(// array for transaction table
@@ -885,4 +902,34 @@ class PackageController extends Controller
             'new_expiration_date'   => $new_expiration_date,
         ]);
     }
+
+    // public function generateInovciceNo($string){
+
+    //     $year  = date('y');
+    //     $month = date('m');
+    //     $day   = date('d');
+    //     $invoice = $string.'-'.$year.$month.'-'.$day;
+        
+    //     if($day == 01){
+    //         if(Invoice::where('invoice_id', $invoice)->doesntExists()){
+    //             return $invoice;
+    //         }else{
+
+    //         }
+    //     }
+    // }
+
+    // public function checkInvoiceNo($invoice){
+    //     $inv = Invoice::where('invoice_id', $invoice)->first();
+    //     $firstDashPos = strpos($inv->invoice_id, '-'); // Find the position of the first dash
+
+    //     if ($firstDashPos !== false) {
+    //         $secondDashPos = strpos(substr($inv->invoice_id, $firstDashPos + 1), '-'); // Find the position of the second dash
+    //         if ($secondDashPos !== false) {
+    //             $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
+    //             $day            = substr($inv, $secondDashPos);
+                
+    //         }
+    //     }
+    // }
 }
