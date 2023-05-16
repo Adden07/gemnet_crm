@@ -24,7 +24,6 @@ class PackageController extends Controller
 {
     //add user package
     public function addUserPackage($id){
-        
         if(isset($id) && !empty($id)){
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
@@ -33,7 +32,6 @@ class PackageController extends Controller
             );
          
             $html = view('admin.user.package_modal')->with($data)->render();
-            // dd($html);
             return response()->json([
                 'html'  => $html
             ]);
@@ -267,7 +265,7 @@ class PackageController extends Controller
             $invoice->created_at        = date('Y-m-d H:i:s');
             $invoice->sales_tax         = $mrc_sales_tax;
             $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
-            $invoice->total             = $package->price+$mrc_total;
+            $invoice->total             = round($package->price+$mrc_total);
             $invoice->save();
 
             if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is true then creat another transaction and invoice
@@ -298,7 +296,7 @@ class PackageController extends Controller
                 $invoice->created_at        = date('Y-m-d H:i:s');
                 $invoice->sales_tax         = $otc_sales_tax;
                 $invoice->adv_inc_tax       = $otc_adv_inc_tax;
-                $invoice->total             = $package->otc+$otc_total;
+                $invoice->total             = round($package->otc+$otc_total);
                 $invoice->save();
             }
          

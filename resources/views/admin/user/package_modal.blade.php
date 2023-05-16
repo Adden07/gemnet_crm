@@ -135,6 +135,12 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         {{ Carbon\Carbon::now()->addMonth()->format('d-M-y 12.00') }}
     </span>
 </div>
+<div class="">
+    <label>Current Balance</label>
+    <span class="badge badge-success ml-1" id="new_expiration">
+        {{ number_format($user->user_current_balance, 2) }}
+    </span>
+</div>
 @endif
 <input type="hidden" class="form-control " id="" name="status" value="{{ $user->status }}">
 <input type="hidden" class="form-control" id="username" name="username"  value="{{ $user->username }}">

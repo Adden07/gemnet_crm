@@ -549,7 +549,7 @@
                                     @endif
                                     <tr>
                                         <th>Sales Person</th>
-                                        <td>{{ $user_details->admin->username }}</td>
+                                        <td>{{ @$user_details->admin->username }}</td>
                                     </tr>
                                 </table>
                             </div>
