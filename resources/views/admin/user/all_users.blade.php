@@ -231,6 +231,11 @@
         }
         getAjaxRequests(route, '', 'GET', function(resp){
             $('.modal-body').html(resp.html);
+            // var parsedHtml  = $(resp);
+            // var idValue = parsedHtml.find('#renew_button_status').val();
+            // console.log($(resp.html).find('#renew_button_status').attr('id'));
+            // console.log($(resp.html).find('#renew_button_status').attr('id'));
+
             $('#package').modal('show');
             $('#package_modal_title').html(status);
             $('#package_modal_submit').val(status);//change modal submit value

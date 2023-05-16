@@ -24,6 +24,7 @@ class PackageController extends Controller
 {
     //add user package
     public function addUserPackage($id){
+        
         if(isset($id) && !empty($id)){
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
@@ -320,7 +321,6 @@ class PackageController extends Controller
     private function getPackageCost($user_id,$user_type,$pkg_id){
         $arr = array();
         if($user_type == 'franchise'){
-
         }elseif($user_type == 'dealer'){
 
         }elseif($user_type == 'sub_dealer'){
