@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administrator;
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\LogProcess;
+use App\Models\Package;
 use App\Models\PkgQueue;
 use App\Models\QtOver;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use App\Models\RadUserGroup;
 use App\Models\User;
 use App\Models\UserPackageRecord;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CronController extends Controller
@@ -159,6 +161,58 @@ class CronController extends Controller
         }
         dd('done');
     }
+
+    // public function autoRenew(){
+    //     $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->get();
+        
+    //     foreach($auto_renew_users AS $user){
+    //         try{
+    //             DB::transaction(function() use (&$user){
+    //                 $package                = Package::findOrFail($user->c_package);
+    //                 $site_setting           = Cache::get('edit_setting');
+                    
+    //                 //calculate the tax value
+    //                 $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+    //                 $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+    //                 $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+
+    //                 $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('Y-m-d 12:00');//create the expiraiton date
+               
+    //                 $this->user_id       = $user->id;//set the value to private variable to later access in catch
+                    
+    //                 if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
+                        
+    //                     $user->renew_by                 = auth()->user()->id;
+    //                     $user->renew_date               = date('Y-m-d H:i:s');
+    //                     $user->last_expiration_date     = $user->current_expiration_date;
+    //                     $user->last_package             = $user->c_package;
+    //                     $user->status                   = 'active';
+    //                     $user->qt_total                 = $package->volume;
+    //                     $user->qt_used                  = 0;
+    //                     $user->qt_enabled               = $package->qt_enabled;
+    //                     $user->package                  = $package->id;
+    //                     $user->c_package                = $package->id;
+    //                     $user->current_expiration_date  = $new_expiration_date;
+    //                     $user->qt_expired               = 0;
+    //                     $user->save();//update the users columns
+                        
+    //                     //update rad_user_group table
+    //                     $this->updateRadUserGroup($user->username, $package->groupname);
+    //                     //update radcheck table
+    //                     $this->updateRadCheck($user->username, $new_expiration_date);
+    //                     //update user package record
+    //                     $this->updateUserPackageRecord($user, $queue, $new_expiration_date);
+                      
+    //                     //update log process table
+    //                     $this->logProcess($user->id, 1, null, 1);
+    //                     //update queue table applied on column
+    //                 }
+    //             });
+    //         }catch(Exception $e){
+    //             $this->logProcess($this->user_id, 1, null, 0);
+    //         }
+    //     }
+    // }
 
     public function updateRadUserGroup($username, $groupname){//update rad user group
         $rad_user_group = RadUserGroup::where('username',$username)->firstOrFail();
