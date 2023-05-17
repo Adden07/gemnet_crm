@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Administrator;
 
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
+use App\Models\Ledger;
 use App\Models\LogProcess;
 use App\Models\Package;
 use App\Models\PkgQueue;
@@ -123,16 +125,24 @@ class CronController extends Controller
         $queue_users              = PkgQueue::with(['package'])->whereNUll('applied_on')
                                         ->whereIn('user_id', $current_expiraiton_users->pluck('id')->toArray())
                                         ->get();
-        
+        $rec = array(
+            'success'   => 0,
+            'failed'    => 0,
+            'total'     => $current_expiraiton_users->count(),
+        );
         foreach($queue_users AS $queue){
             try{
-                DB::transaction(function() use (&$queue){
+                DB::transaction(function() use (&$queue, &$rec){
                     $user                = User::findOrFail($queue->user_id);//get the user
                     $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($queue->package->duration)->format('Y-m-d 12:00');//create the expiraiton date
                
                     $this->user_id       = $user->id;//set the value to private variable to later access in catch
                     
                     $user->status                   = 'active';
+                    $user->renew_by                 = 1;
+                    $user->renew_date               = date('Y-m-d H:i:s');
+                    $user->last_expiration_date     = $user->current_expiration_date;
+                    $user->last_package             = $user->c_package;
                     $user->qt_total                 = $queue->package->volume;
                     $user->qt_used                  = 0;
                     $user->qt_enabled               = $queue->package->qt_enabled;
@@ -152,67 +162,84 @@ class CronController extends Controller
                     //update log process table
                     $this->logProcess($user->id, 1, $queue->id, 1);
                     //update queue table applied on column
-                    
                     $this->updatePkgQueue($queue->id);
+                    $rec['success']   += 1;
                 });
             }catch(Exception $e){
                 $this->logProcess($this->user_id, 1, $queue->id, 0);
+                $rec['failed']   += 1;
             }
         }
-        dd('done');
+        dd($rec);
     }
 
-    // public function autoRenew(){
-    //     $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->get();
-        
-    //     foreach($auto_renew_users AS $user){
-    //         try{
-    //             DB::transaction(function() use (&$user){
-    //                 $package                = Package::findOrFail($user->c_package);
-    //                 $site_setting           = Cache::get('edit_setting');
-                    
-    //                 //calculate the tax value
-    //                 $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
-    //                 $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-    //                 $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+    public function autoRenew(){//auto renew users
+        $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->get();
+        $rec = array(
+            'success'   => 0,
+            'failed'    => 0,
+            'total'     => $auto_renew_users->count(),
+        );
 
-    //                 $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('Y-m-d 12:00');//create the expiraiton date
-               
-    //                 $this->user_id       = $user->id;//set the value to private variable to later access in catch
+        foreach($auto_renew_users AS $user){
+            try{
+                DB::transaction(function() use (&$user, &$rec){
+                    $package                = Package::findOrFail($user->c_package);
+                    $site_setting           = Cache::get('edit_setting');
                     
-    //                 if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
+                    //calculate the tax value
+                    $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+                    $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+                    $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+                    //create the expiraiton date
+                    $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('Y-m-d 12:00');//
+                    //user balance calculation
+                    $user_current_balance   = $user->user_current_balance;
+                    $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax);
+                    $current_exp_date       = $user->current_expiration_date;
+                    $this->user_id       = $user->id;//set the value to private variable to later access in catch
+                    
+                    if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
+                        $user->renew_by                 = 1;
+                        $user->renew_date               = date('Y-m-d H:i:s');
+                        $user->last_expiration_date     = $user->current_expiration_date;
+                        $user->last_package             = $user->c_package;
+                        $user->status                   = 'active';
+                        $user->qt_total                 = $package->volume;
+                        $user->qt_used                  = 0;
+                        $user->qt_enabled               = $package->qt_enabled;
+                        $user->package                  = $package->id;
+                        $user->c_package                = $package->id;
+                        $user->current_expiration_date  = $new_expiration_date;
+                        $user->qt_expired               = 0;
+                        $user->user_current_balance     = $user_new_balance;
+                        $user->save();//update the users columns
                         
-    //                     $user->renew_by                 = auth()->user()->id;
-    //                     $user->renew_date               = date('Y-m-d H:i:s');
-    //                     $user->last_expiration_date     = $user->current_expiration_date;
-    //                     $user->last_package             = $user->c_package;
-    //                     $user->status                   = 'active';
-    //                     $user->qt_total                 = $package->volume;
-    //                     $user->qt_used                  = 0;
-    //                     $user->qt_enabled               = $package->qt_enabled;
-    //                     $user->package                  = $package->id;
-    //                     $user->c_package                = $package->id;
-    //                     $user->current_expiration_date  = $new_expiration_date;
-    //                     $user->qt_expired               = 0;
-    //                     $user->save();//update the users columns
+                        $transaction_id = rand(1111111111,9999999999);
+                        //generate transction
+                        $this->generateTransaction($transaction_id, $user->id, $package->price, $mrc_total, $user_current_balance);
+                        //generate invoice for this package
+                        $this->generateInvoice($transaction_id, $user->id, $package->id, $package->price,$current_exp_date, $new_expiration_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total);
+                        //update rad_user_group table
+                        $this->updateRadUserGroup($user->username, $package->groupname);
+                        //update radcheck table
+                        $this->updateRadCheck($user->username, $new_expiration_date);
+                        //update user package record
+                        $this->updateUserPackageRecord($user, null, $new_expiration_date);
                         
-    //                     //update rad_user_group table
-    //                     $this->updateRadUserGroup($user->username, $package->groupname);
-    //                     //update radcheck table
-    //                     $this->updateRadCheck($user->username, $new_expiration_date);
-    //                     //update user package record
-    //                     $this->updateUserPackageRecord($user, $queue, $new_expiration_date);
-                      
-    //                     //update log process table
-    //                     $this->logProcess($user->id, 1, null, 1);
-    //                     //update queue table applied on column
-    //                 }
-    //             });
-    //         }catch(Exception $e){
-    //             $this->logProcess($this->user_id, 1, null, 0);
-    //         }
-    //     }
-    // }
+                        //update log process table
+                        $this->logProcess($user->id, 1, null, 1);
+                        //update queue table applied on column
+                        $rec['success'] += 1;
+                    }
+                });
+            }catch(Exception $e){
+                $this->logProcess($this->user_id, 1, null, 0);
+                $rec['failed'] += 1;
+            }
+        }
+        dd($rec);
+    }
 
     public function updateRadUserGroup($username, $groupname){//update rad user group
         $rad_user_group = RadUserGroup::where('username',$username)->firstOrFail();
@@ -230,7 +257,7 @@ class CronController extends Controller
         $user_package_record                 = new UserPackageRecord();
         $user_package_record->admin_id       = 1;
         $user_package_record->user_id        = $user->id;  
-        $user_package_record->package_id     = $queue->package->id;
+        $user_package_record->package_id     = $queue->package->id ?? $user->c_package;
         $user_package_record->last_package_id= $user->c_package;
         $user_package_record->status         = 'renew';
         $user_package_record->last_expiration = $user->current_expiration_date;
@@ -255,5 +282,37 @@ class CronController extends Controller
         $queue = PkgQueue::findOrFail($queue_id);
         $queue->applied_on = now();
         $queue->save();
+    }
+
+    public function generateTransaction($transaction_id, $user_id, $package_price, $mrc_total, $user_current_balance){
+        $transaction_arr = array(// array for transaction table
+            'transaction_id'    => $transaction_id,
+            'admin_id'          => 1,
+            'user_id'           => $user_id,
+            'amount'            => ($package_price+$mrc_total),
+            'old_balance'       => $user_current_balance,
+            'new_balance'       => $user_current_balance-($package_price+$mrc_total),
+            'type'              => 0,
+            'created_at'        => date('Y-m-d H:i:s')
+        );
+        Ledger::insert($transaction_arr);
+    }
+
+    public function generateInvoice($transaction_id, $user_id, $package_id, $package_price, $current_exp_date, $new_exp_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total){
+        $invoice                    = new Invoice();
+        $invoice->invoice_id        = rand(1111111111,9999999999);
+        $invoice->transaction_id    = $transaction_id;
+        $invoice->admin_id          = auth()->id();
+        $invoice->user_id           = $user_id;
+        $invoice->pkg_id            = $package_id;
+        $invoice->pkg_price         = $package_price;
+        $invoice->type              = 1;
+        $invoice->current_exp_date  = $current_exp_date;
+        $invoice->new_exp_date      = $new_exp_date;
+        $invoice->created_at        = date('Y-m-d H:i:s');
+        $invoice->sales_tax         = $mrc_sales_tax;
+        $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
+        $invoice->total             = round($package_price+$mrc_total);
+        $invoice->save();
     }
 }
