@@ -29,41 +29,41 @@
                     <div class="form-group col-md-6">
                         <label for="name">User type<span class="text-danger">*</span></label>
                         <select class="form-control" name="user_type" id="user_type">
-                            <option value="individual">Individual</option>
-                            <option value="company">Company</option>
+                            <option value="individual" @if(@$edit_user->user_type == 'individual') selected @endif>Individual</option>
+                            <option value="company" @if(@$edit_user->user_type == 'company') selected @endif>Company</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-6 compy d-none">
+                    <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
                         <label for="name">Business Name<span class="text-danger">*</span></label>
-                        <input type="text" name="business_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                        <input type="text" name="business_name"   placeholder="Enter business name" value="{{ @$edit_user->business_name }}" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-6 compy d-none">
+                    <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
                         <label for="name">NTN<span class="text-danger">*</span></label>
-                        <input type="string" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="ntn">
+                        <input type="string" name="ntn"   placeholder="Enter NTN" value="{{ @$edit_user->ntn }}" class="form-control" id="ntn">
                     </div>
-                    <div class="form-group col-md-6 compy d-none">
+                    <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
                         <label for="name">POC Name<span class="text-danger">*</span></label>
                         <input type="text" name="comp_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
-                    <div class="form-group  col-md-6 compy d-none">
+                    <div class="form-group  col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
                         <label for="city_id">POC Mobile No<span class="text-danger">*</span></label>
                         <div class="input-group ">
                             <div class="input-group-prepend">
                               <span class="input-group-text" id="basic-addon1">92</span>
                             </div>
-                            <input type="text" name="comp_mobile"  placeholder="Enter mobile no" value="{{ @substr($edit_user->mobile,2) }}" class="form-control" id="poc_mobile">
+                            <input type="text" name="comp_mobile"  placeholder="Enter POC mobile no" value="{{ @substr($edit_user->mobile,2) }}" class="form-control" id="poc_mobile">
                             <div class="mobile_err w-100"></div>
                         </div>
                     </div>
-                    <div class="form-group col-md-6 compy d-none">
+                    <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
                         <label for="name">Landline No<span class="text-danger">*</span></label>
-                        <input type="text" name="landline_no"   placeholder="Enter landline no" value="{{ @$edit_user->name }}" class="form-control" id="landline_no">
+                        <input type="text" name="landline_no"   placeholder="Enter landline no" value="{{ @$edit_user->landline_no }}" class="form-control" id="landline_no">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-6  ind">
+                    <div class="form-group col-md-6  ind @if(@$edit_user->user_type == 'company') d-none @endif">
                         <label for="name">Name<span class="text-danger">*</span></label>
                         <input type="text" name="name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
@@ -101,12 +101,12 @@
                     </div>    
                 @endif
                 <div class="row">
-                    <div class="form-group  col-md-6 ind">
+                    <div class="form-group  col-md-6 ind @if(@$edit_user->user_type == 'company') d-none @endif">
                         <label for="nic ">NIC<span class="text-danger">*</span></label>
                         <input type="text" name="nic"   placeholder="Enter NIC" value="{{ @$edit_user->nic }}" class="form-control" id="nic">
                     </div>
 
-                    <div class="form-group  col-md-6 ind">
+                    <div class="form-group  col-md-6 ind @if(@$edit_user->user_type == 'company') d-none @endif">
                         <label for="city_id">Mobile No<span class="text-danger">*</span></label>
                         <div class="input-group ">
                             <div class="input-group-prepend">
@@ -258,7 +258,7 @@
                         <select class="form-control" name="sales_id" id="sales_id">
                             <option value="">Select sales person</option>
                             @foreach($user_types->where('user_type', 'sales_person') AS $sales)
-                                <option value="{{ $sales->hashid }}">{{ $sales->name }}</option>
+                                <option value="{{ $sales->hashid }}" @if(@$edit_user->sales_id == $sales->id) selected @endif>{{ $sales->name }}</option>
                             @endforeach
                         </select>
                         <div class="subarea_err"></div>
@@ -271,7 +271,7 @@
                         <select class="form-control" name="fe_id" id="fe_id">
                             <option value="">Select field engineer</option>
                             @foreach($user_types->where('user_type', 'field_engineer') AS $engineer)
-                                <option value="{{ $engineer->hashid }}">{{ $engineer->name }}</option>
+                                <option value="{{ $engineer->hashid }}" @if(@$edit_user->fe_id == $engineer->id) selected @endif> {{ $engineer->name }}</option>
                             @endforeach
                         </select>
                         <div class="subarea_err"></div>

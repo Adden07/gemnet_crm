@@ -277,8 +277,8 @@ class UserController extends Controller
             'username'          => ['required', 'string', 'min:1', 'max:14'],
             'password'          => [Rule::requiredIf(!isset($req->user_id)), 'nullable', 'min:6', 'max:12', 'confirmed'],
             'nic'               => [Rule::requiredIf($req->user_type == 'individual'), 'string', 'min:15', 'max:15', 'nullable'],
-            'mobile'            => [Rule::requiredIf($req->user_type != 'company'), 'numeric', 'digits:10', 'nullable'],
-            'comp_mobile'       => [Rule::requiredIf($req->user_type == 'company'), 'numeric', 'digits:10', 'nullable'],
+            'mobile'            => [Rule::requiredIf($req->user_type != 'company'), 'numeric', 'nullable'],
+            'comp_mobile'       => [Rule::requiredIf($req->user_type == 'company'), 'numeric', 'nullable'],
             'address'           => ['required', 'string' ],
             'nic_front'         => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'nic_back'          => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
@@ -348,7 +348,7 @@ class UserController extends Controller
         $user->username    = (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin') ? $req->username : auth()->user()->username.'-'.$req->username;
         $user->password    = (!empty($req->password)) ? $req->password : $user->password;
         $user->nic         = $req->nic;
-        $user->mobile      = '92'.$req->mobile ?? $req->comp_mobile;
+        $user->mobile      = ($req->user_type != 'company') ? '92'.$req->mobile : '92'.$req->comp_mobile;
         $user->address     = $req->address;
         $user->is_tax      = (!empty($req->is_tax)) ? (int) $req->is_tax : 1;
         $user->sales_id    = hashids_decode($req->sales_id);
@@ -380,6 +380,8 @@ class UserController extends Controller
                 'cities'    => City::get(),
                 'edit_user' => User::findOrFail(hashids_decode($id)),
                 'is_update' => TRUE,
+                'user_types' => Admin::whereIn('user_type', ['field_engineer','sales_person'])->get(),
+
             );
 
             if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
