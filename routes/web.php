@@ -19,6 +19,7 @@ Route::prefix('web_admin')->namespace('Auth')->group(function () {
         Route::get('/user-expiry','CronController@userExpiry')->name('user_expiry');
         Route::get('/reset-qouta','CronController@resetQouta')->name('reset_qouta');
         Route::get('/qt_over','CronController@qtOver')->name('qt_over');
+        Route::get('/queu','CronController@queue');
         
     });
 

@@ -206,8 +206,8 @@ class PackageController extends Controller
             $user->save();
             //if its renew then find if its registered then create new record
             $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
-            
-            if($validated['status'] == 'active' || $validated['status'] == 'expired'){
+
+            if(($validated['status'] == 'active' || $validated['status'] == 'expired') && $validated['renew_type'] != 'queue'){
                 $rad_user_group->groupname = $package->groupname;
             }else{
                 $rad_user_group->username   = $user->username;
@@ -232,7 +232,7 @@ class PackageController extends Controller
                 $rad_check->op           = ':=';
                 $rad_check->value        = date('d M Y 12:00',strtotime($date));
                 $rad_check->save();
-            }else{
+            }elseif($validated['renew_type'] != 'queue'){
                 $rad_check = RadCheck::where('username',$user->username)->where('attribute','Expiration')->first();
                 $rad_check->value = date('d M Y 12:00',strtotime($date));;
                 $rad_check->save();           
@@ -247,18 +247,20 @@ class PackageController extends Controller
                 $in_status       = 'new';
             }
 
-            $user_package_record                 = new UserPackageRecord;
-            $user_package_record->admin_id       = auth()->user()->id;
-            $user_package_record->user_id        = $user->id;  
-            $user_package_record->package_id     = $package->id;
-            $user_package_record->last_package_id= $last_package;
-            $user_package_record->status         = $status;
-            $user_package_record->last_expiration = $last_expiration_date;
-            // $user_package_record->package_status = $package_status;
-            $user_package_record->expiration     = date('y-m-d H:i:s',strtotime($date));
-            $user_package_record->created_at     = date('y-m-d H:i:s');
-            $user_package_record->save();
-
+            if($validated['renew_type'] != 'queue'){
+                $user_package_record                 = new UserPackageRecord;
+                $user_package_record->admin_id       = auth()->user()->id;
+                $user_package_record->user_id        = $user->id;  
+                $user_package_record->package_id     = $package->id;
+                $user_package_record->last_package_id= $last_package;
+                $user_package_record->status         = $status;
+                $user_package_record->last_expiration = $last_expiration_date;
+                // $user_package_record->package_status = $package_status;
+                $user_package_record->expiration     = date('y-m-d H:i:s',strtotime($date));
+                $user_package_record->created_at     = date('y-m-d H:i:s');
+                $user_package_record->save();
+            }
+            
             $transaction_id  = rand(1111111111,9999999999);
             $transaction_arr = array(// array for transaction table
                 'transaction_id'    => $transaction_id,
@@ -927,17 +929,14 @@ class PackageController extends Controller
     //     }
     // }
 
-    // public function checkInvoiceNo($invoice){
-    //     $inv = Invoice::where('invoice_id', $invoice)->first();
-    //     $firstDashPos = strpos($inv->invoice_id, '-'); // Find the position of the first dash
-
-    //     if ($firstDashPos !== false) {
-    //         $secondDashPos = strpos(substr($inv->invoice_id, $firstDashPos + 1), '-'); // Find the position of the second dash
-    //         if ($secondDashPos !== false) {
-    //             $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
-    //             $day            = substr($inv, $secondDashPos);
-                
-    //         }
-    //     }
-    // }
+    public function generateUniqueInvoiceNo($invoice){
+        $firstDashPos = strpos($invoice, '-'); // Find the position of the first dash
+        if ($firstDashPos !== false) {
+            $secondDashPos = strpos(substr($invoice_id, $firstDashPos + 1), '-'); // Find the position of the second dash
+            if ($secondDashPos !== false) {
+                $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
+                $day            = substr($inv, $secondDashPos);
+            }
+        }
+    }
 }

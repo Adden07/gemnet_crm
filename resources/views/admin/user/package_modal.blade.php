@@ -16,7 +16,7 @@
 
 @if(!empty($user->current_expiration_date))
     <div class="">
-        <label class="col-form-label">Status:</label>
+        <label class="col-form-label">Apply As</label>
         <select class="form-control" name="renew_type" id="renew_type">
             <option value="immediate">Immediate</option>
         <option value="queue">Queue</option>

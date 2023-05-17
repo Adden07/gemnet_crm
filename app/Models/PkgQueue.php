@@ -11,4 +11,12 @@ class PkgQueue extends Model
     use HasFactory, DianujHashidsTrait;
 
     public $table = 'pkq_queue';
+
+    public function package(){
+        return $this->belongsTo(Package::class, 'package_id', 'id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }
