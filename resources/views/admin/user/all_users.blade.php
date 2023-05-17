@@ -337,6 +337,7 @@
     });
 
     $(document).on('change', '.package_id', function(){//get the new expiration date
+
         var package_id  = $(this).val();
         var user_id     = $('#user_id').val();
         var route       = "{{ route('admin.packages.create_expiration_date', [':package_id', ':user_id']) }}";
@@ -345,6 +346,7 @@
         
         getAjaxRequests(route, '', 'GET', function(resp){
             $('#new_expiration').html(resp.new_expiration_date);
+            $('#package_price').html(resp.package_price);
         });
     });
 

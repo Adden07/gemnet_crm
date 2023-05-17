@@ -181,8 +181,8 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 
 @if(isset($package_price))
     <div class="">
-        <label>package Price</label>
-        <span class="badge badge-success ml-1" id="new_expiration">
+        <label>package Prices</label>
+        <span class="badge badge-success ml-1" id="package_price">
             {{ number_format($package_price, 2) }}
         </span>
     </div>

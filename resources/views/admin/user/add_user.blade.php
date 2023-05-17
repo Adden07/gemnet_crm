@@ -41,10 +41,14 @@
                 <div class="row">
                     <div class="form-group col-md-6 compy d-none">
                         <label for="name">NTN<span class="text-danger">*</span></label>
-                        <input type="number" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                        <input type="string" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="ntn">
+                    </div>
+                    <div class="form-group col-md-6 compy d-none">
+                        <label for="name">POC Name<span class="text-danger">*</span></label>
+                        <input type="text" name="comp_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
                     <div class="form-group  col-md-6 compy d-none">
-                        <label for="city_id">Mobile No<span class="text-danger">*</span></label>
+                        <label for="city_id">POC Mobile No<span class="text-danger">*</span></label>
                         <div class="input-group ">
                             <div class="input-group-prepend">
                               <span class="input-group-text" id="basic-addon1">92</span>
@@ -52,10 +56,6 @@
                             <input type="text" name="comp_mobile"  placeholder="Enter mobile no" value="{{ @substr($edit_user->mobile,2) }}" class="form-control" id="poc_mobile">
                             <div class="mobile_err w-100"></div>
                         </div>
-                    </div>
-                    <div class="form-group col-md-6 compy d-none">
-                        <label for="name">POC Name<span class="text-danger">*</span></label>
-                        <input type="text" name="comp_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="row ind">
@@ -299,6 +299,7 @@
         $('#nic').mask('00000-0000000-0');
         $('#mobile').mask('3000000000')
         $('#poc_mobile').mask('3000000000')
+        $('#ntn').mask('0000000-0');
 
         //display password
         $('.pass-show').click(function(e){
