@@ -25,30 +25,40 @@
 
             <form action="{{ route('admin.users.store') }}" class="ajaxForm" method="post" enctype="multipart/form-data" novalidate id="form">
                 @csrf
-                {{-- <div class="row">
+                <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="name">Userr type<span class="text-danger">*</span></label>
-                        <select class="form-control" id="user_type">
+                        <label for="name">User type<span class="text-danger">*</span></label>
+                        <select class="form-control" name="user_type" id="user_type">
                             <option value="individual">Individual</option>
                             <option value="company">Company</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6 compy d-none">
                         <label for="name">Business Name<span class="text-danger">*</span></label>
                         <input type="text" name="business_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6 compy d-none">
                         <label for="name">NTN<span class="text-danger">*</span></label>
-                        <input type="text" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                        <input type="number" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="name">POC Mobile No <span class="text-danger">*</span></label>
-                        <input type="text" name="ntn"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                    <div class="form-group  col-md-6 compy d-none">
+                        <label for="city_id">Mobile No<span class="text-danger">*</span></label>
+                        <div class="input-group ">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="basic-addon1">92</span>
+                            </div>
+                            <input type="text" name="comp_mobile"  placeholder="Enter mobile no" value="{{ @substr($edit_user->mobile,2) }}" class="form-control" id="poc_mobile">
+                            <div class="mobile_err w-100"></div>
+                        </div>
                     </div>
-                </div> --}}
-                <div class="row">
+                    <div class="form-group col-md-6 compy d-none">
+                        <label for="name">POC Name<span class="text-danger">*</span></label>
+                        <input type="text" name="comp_name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="row ind">
                     <div class="form-group col-md-6">
                         <label for="name">Name<span class="text-danger">*</span></label>
                         <input type="text" name="name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
@@ -87,12 +97,12 @@
                     </div>    
                 @endif
                 <div class="row">
-                    <div class="form-group  col-md-6">
+                    <div class="form-group  col-md-6 ind">
                         <label for="nic ">NIC<span class="text-danger">*</span></label>
                         <input type="text" name="nic"   placeholder="Enter NIC" value="{{ @$edit_user->nic }}" class="form-control" id="nic">
                     </div>
 
-                    <div class="form-group  col-md-6">
+                    <div class="form-group  col-md-6 ind">
                         <label for="city_id">Mobile No<span class="text-danger">*</span></label>
                         <div class="input-group ">
                             <div class="input-group-prepend">
@@ -288,6 +298,7 @@
         //masking
         $('#nic').mask('00000-0000000-0');
         $('#mobile').mask('3000000000')
+        $('#poc_mobile').mask('3000000000')
 
         //display password
         $('.pass-show').click(function(e){
@@ -350,7 +361,6 @@
                 name:{
                     required:true,
                     maxlength:50,
-                    // alphanumeric:true,
                     lettersonly:true,                 
                 },
                 username:{
@@ -531,6 +541,23 @@
 
     });
     
-    
+    //when there is change is user type
+    $('#user_type').change(function(){
+        if($(this).val() == 'company'){
+            hideAndShow('hide', 'ind');
+            hideAndShow('show', 'compy');
+        }else{
+            hideAndShow('show', 'ind');
+            hideAndShow('hide', 'compy');
+        }
+    });
+
+    function hideAndShow(type, class_name){
+        if(type == 'hide'){
+            $('.'+class_name).addClass('d-none');
+        }else{
+            $('.'+class_name).removeClass('d-none');
+        }
+    }
 </script>
 @endsection

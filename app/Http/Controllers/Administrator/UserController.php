@@ -269,14 +269,16 @@ class UserController extends Controller
 
     //store and update the user
     public function store(Request $req){
-       
+        // dd($req->all());
         $rules = [
             'city_id'           => ['required'],
-            'name'              => ['required', 'string', 'max:50'],
+            'name'              => [Rule::requiredIf($req->user_type != 'company'), 'string', 'max:50', 'nullable'],
+            'comp_name'         => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:50', 'nullable'],
             'username'          => ['required', 'string', 'min:1', 'max:14'],
             'password'          => [Rule::requiredIf(!isset($req->user_id)), 'nullable', 'min:6', 'max:12', 'confirmed'],
-            'nic'               => ['required', 'string', 'min:15', 'max:15'],
-            'mobile'            => ['required', 'numeric', 'digits:10'],
+            'nic'               => [Rule::requiredIf($req->user_type == 'individual'), 'string', 'min:15', 'max:15', 'nullable'],
+            'mobile'            => [Rule::requiredIf($req->user_type != 'company'), 'numeric', 'digits:10', 'nullable'],
+            'comp_mobile'       => [Rule::requiredIf($req->user_type == 'company'), 'numeric', 'digits:10', 'nullable'],
             'address'           => ['required', 'string' ],
             'nic_front'         => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'nic_back'          => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
@@ -287,6 +289,9 @@ class UserController extends Controller
             'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin'), 'nullable'],
             'sales_id'          => ['required', 'string', 'max:100'],
             'fe_id'             => ['required', 'string', 'max:100'],
+            'user_type'         => ['required', 'string', 'in:company,individual'],
+            'business_name'     => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
+            'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'integer', 'max:100', 'nullable'],
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -338,15 +343,18 @@ class UserController extends Controller
         $user->city_id     = @hashids_decode($req->city_id);    
         $user->area_id     = @hashids_decode($req->area_id);
         $user->subarea_id  = @hashids_decode($req->subarea_id);
-        $user->name        = $req->name;
+        $user->name        = $req->name ?? $req->comp_name;
         $user->username    = (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin') ? $req->username : auth()->user()->username.'-'.$req->username;
         $user->password    = (!empty($req->password)) ? $req->password : $user->password;
         $user->nic         = $req->nic;
-        $user->mobile      = '92'.$req->mobile;
+        $user->mobile      = '92'.$req->mobile ?? $req->comp_mobile;
         $user->address     = $req->address;
         $user->is_tax      = (!empty($req->is_tax)) ? (int) $req->is_tax : 1;
         $user->sales_id    = hashids_decode($req->sales_id);
         $user->fe_id       = hashids_decode($req->fe_id);
+        $user->user_type   = $req->user_type;
+        $user->ntn         = @$req->ntn;
+        $user->business_name = @$req->business_name;
         $user->save();
 
         CommonHelpers::activity_logs($activity.' '.$user->username);
