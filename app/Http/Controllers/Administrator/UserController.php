@@ -292,6 +292,7 @@ class UserController extends Controller
             'user_type'         => ['required', 'string', 'in:company,individual'],
             'business_name'     => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
             'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
+            'landline_no'       => [Rule::requiredIf($req->user_type == 'company'), 'string', 'nullable']
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -355,6 +356,7 @@ class UserController extends Controller
         $user->user_type   = $req->user_type;
         $user->ntn         = @$req->ntn;
         $user->business_name = @$req->business_name;
+        $user->landline_no   = @$req->landline_no;
         $user->save();
 
         CommonHelpers::activity_logs($activity.' '.$user->username);

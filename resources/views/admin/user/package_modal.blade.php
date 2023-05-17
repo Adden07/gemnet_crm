@@ -135,7 +135,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         </select>
     @else
         <label for="package">Renew Package:</label>
-        <span class="badge badge-info ml-3">
+        <span class="badge badge-info ml-3" id="renew_package_name">
             {{ @$user->packages->name }}
         </span>
         {{-- <input type="hidden" name="package_id" value="{{ hashids_encode($user->package) }}"> --}}

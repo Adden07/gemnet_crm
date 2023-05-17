@@ -906,7 +906,8 @@ class PackageController extends Controller
           
         return response()->json([
             'new_expiration_date'   => $new_expiration_date,
-            'package_price'         => number_format(round($package->price+$mrc_total), 2)
+            'package_price'         => number_format(round($package->price+$mrc_total), 2),
+            'renew_package_name'    => $package->name
         ]);
     }
 

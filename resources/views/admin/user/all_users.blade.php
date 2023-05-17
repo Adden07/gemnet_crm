@@ -347,6 +347,7 @@
         getAjaxRequests(route, '', 'GET', function(resp){
             $('#new_expiration').html(resp.new_expiration_date);
             $('#package_price').html(resp.package_price);
+            $('#renew_package_name').html(resp.renew_package_name);
         });
     });
 

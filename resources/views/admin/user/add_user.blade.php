@@ -57,9 +57,13 @@
                             <div class="mobile_err w-100"></div>
                         </div>
                     </div>
+                    <div class="form-group col-md-6 compy d-none">
+                        <label for="name">Landline No<span class="text-danger">*</span></label>
+                        <input type="text" name="landline_no"   placeholder="Enter landline no" value="{{ @$edit_user->name }}" class="form-control" id="landline_no">
+                    </div>
                 </div>
-                <div class="row ind">
-                    <div class="form-group col-md-6">
+                <div class="row">
+                    <div class="form-group col-md-6  ind">
                         <label for="name">Name<span class="text-danger">*</span></label>
                         <input type="text" name="name"   placeholder="Enter name" value="{{ @$edit_user->name }}" class="form-control" id="name">
                     </div>
@@ -300,6 +304,7 @@
         $('#mobile').mask('3000000000')
         $('#poc_mobile').mask('3000000000')
         $('#ntn').mask('0000000-0');
+        $('#landline_no').mask('000-0000000');
 
         //display password
         $('.pass-show').click(function(e){
