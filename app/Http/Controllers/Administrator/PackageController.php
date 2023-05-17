@@ -42,12 +42,13 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
+        
         // $a = 'GP-2305-01';
         // dd(preg_match_all('/(\$[a-z]+)/i', $a, ''));
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
-            'package_id' => ['required'],
+            'package_id' => [Rule::requiredIf($req->renew_type == 'queue')],
             'user_id'    => ['required'],
             'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_month'],
             // 'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
@@ -64,6 +65,11 @@ class PackageController extends Controller
         $validated  = $validator->validated();
         $msg        = '';
         $user       = User::findOrFail(hashids_decode($validated['user_id']));
+        
+        if(isset($validated['renew_type']) && $validated['renew_type'] == 'immediate'){
+            $validated['package_id'] =hashids_encode( $user->c_package);
+        }
+
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
         $site_setting           = Cache::get('edit_setting');
         //calculate the tax value
@@ -114,7 +120,7 @@ class PackageController extends Controller
         // }
         
         DB::transaction(function() use ($validated,$date, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax, &$otc_adv_inc_tax, &$mrc_total, &$otc_total, &$site_setting){
-
+            
             $user_status            = $user->status;
             $last_expiration_date   = $user->current_expiration_date;
             $last_package           = $user->c_package;
@@ -123,7 +129,7 @@ class PackageController extends Controller
             //calculat user new balance
             $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax);
             $user_new_balance       += (@$validated['otc'] == 1) ? $package->otc : 0;
-
+            
             //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
@@ -207,14 +213,14 @@ class PackageController extends Controller
             //if its renew then find if its registered then create new record
             $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
 
-            if(($validated['status'] == 'active' || $validated['status'] == 'expired') && $validated['renew_type'] != 'queue'){
+            if(($validated['status'] == 'active' || $validated['status'] == 'expired') && isset($validated['renew_type']) && $validated['renew_type'] != 'queue'){
                 $rad_user_group->groupname = $package->groupname;
             }else{
                 $rad_user_group->username   = $user->username;
                 $rad_user_group->groupname = $package->groupname;
                 $rad_user_group->priority   = 1;
             }
-
+            
             $rad_user_group->save();
             //if user status is registered then insert 2 rows in rad_checks otherwise update expiration value
             if($validated['status'] == 'registered'){
@@ -232,7 +238,7 @@ class PackageController extends Controller
                 $rad_check->op           = ':=';
                 $rad_check->value        = date('d M Y 12:00',strtotime($date));
                 $rad_check->save();
-            }elseif($validated['renew_type'] != 'queue'){
+            }elseif(isset($validated['renew_type']) && $validated['renew_type'] != 'queue'){
                 $rad_check = RadCheck::where('username',$user->username)->where('attribute','Expiration')->first();
                 $rad_check->value = date('d M Y 12:00',strtotime($date));;
                 $rad_check->save();           
@@ -247,7 +253,7 @@ class PackageController extends Controller
                 $in_status       = 'new';
             }
 
-            if($validated['renew_type'] != 'queue'){
+            if(isset($validated['renew_type']) && $validated['renew_type'] != 'queue'){
                 $user_package_record                 = new UserPackageRecord;
                 $user_package_record->admin_id       = auth()->user()->id;
                 $user_package_record->user_id        = $user->id;  
