@@ -48,8 +48,13 @@ class CronController extends Controller
                        ->whereRaw("STR_TO_DATE(`value`, '%d %M %Y %H:%i') <= '$now'")
                        ->get();//get the expired user's usernames
         // dd($users);
-        $usernames = $users->pluck('username')->toArray();//convert to array
-        $count     = User::whereIn('username',$usernames)->where('status','!=','expired')->update(['status'=>'expired']);//expire user status
+        $usernames     = $users->pluck('username')->toArray();//convert to array
+        $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->update(['status'=>'expired']);//expire user status
+        $updated_users = User::whereIn('username', $usernames)->get(['id']);
+        
+        foreach($updated_users AS $user){
+            $this->logProcess($user->id, 3, null, 1);
+        }
 
         return "$count Users Expired Successfully";
     }
