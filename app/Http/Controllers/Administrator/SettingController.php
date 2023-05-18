@@ -50,6 +50,10 @@ class SettingController extends Controller
             'mrc_adv_inc_tax' => ['required', 'numeric'],
             'otc_sales_tax'   => ['required', 'numeric'],
             'otc_adv_inc_tax' => ['required', 'numeric'],
+            'sms_api_url'     => ['nullable', 'string', 'max:1000', 'url'],
+            'sms_api_id'      => ['nullable', 'string', 'max:50'],
+            'sms_api_pass'    => ['nullable', 'string', 'max:50'],
+            'is_sms'          => ['required', 'in:1,0']  
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -72,6 +76,10 @@ class SettingController extends Controller
         $setting->mrc_adv_inc_tax = $req->mrc_adv_inc_tax;
         $setting->otc_sales_tax   = $req->otc_sales_tax;
         $setting->otc_adv_inc_tax = $req->otc_adv_inc_tax;
+        $setting->sms_api_url = $req->sms_api_url;
+        $setting->sms_api_id = $req->sms_api_id;
+        $setting->sms_api_pass = $req->sms_api_pass;
+        $setting->is_sms = $req->is_sms;
 
         if($req->hasFile('logo')){//store logo
             $logo = \CommonHelpers::uploadSingleFile($req->file('logo'),'admin_uploads/logo/');

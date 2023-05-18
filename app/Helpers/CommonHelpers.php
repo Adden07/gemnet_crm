@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 class CommonHelpers
 {
@@ -260,6 +261,22 @@ class CommonHelpers
                 return $newInvoiceId;
             }
         }
+    }
+
+    public static function sendSms(){
+        $params = [
+            'id'    => 'rchgemnet',
+            'pass'  => 'gemnet172',
+            'msg'   => 'test',
+            'to'    => '923361240403',
+            'lang'  => 'English',
+            'mask'  => 'Gemnet',
+            'type'  => 'json'
+        ];
+        $url  = 'http://www.outreach.pk/api/sendsms.php/sendsms/url';
+        $url  = $url.'?'.http_build_query($params);
+        $response = Http::post($url);
+        dd(json_decode($response)->corpsms[0]);
     }
 
     //limit permission

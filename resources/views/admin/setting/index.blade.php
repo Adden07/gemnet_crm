@@ -148,6 +148,31 @@
                         
                         <div class="row">
                             <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">SMS API URL</label>
+                                <input type="text" class="form-control"  placeholder="Enter sms api URL" value="{{ @$edit_setting->sms_api_url }}" name="sms_api_url" id="sms_api_url" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">SMS API Id</label>
+                                <input type="text" class="form-control"  placeholder="Enter sms api id" value="{{ @$edit_setting->sms_api_id }}" name="sms_api_id" id="sms_api_id" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">SMS API pass</label>
+                                <input type="text" class="form-control"  placeholder="Enter sms api pass" value="{{ @$edit_setting->sms_api_pass }}" name="sms_api_pass" id="sms_api_pass" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="mrc_sales_tax ">Enable SMS</label>
+                                <select class="form-control" name="is_sms" id="is_sms">
+                                    <option value="1" @if(@$edit_setting->is_sms) selected @endif>Yes</option>
+                                    <option value="0" @if(@!$edit_setting->is_sms) selected @endif>No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
                                 <label for="logo">Logo</label>
                                 <div class="input-group">
                                     <div class="custom-file">

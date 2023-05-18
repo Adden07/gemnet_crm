@@ -280,6 +280,14 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
     Route::get('/permission-types', 'PermissionTypeController@index')->name('permission_types');
     Route::post('/permission-types/save', 'PermissionTypeController@save')->name('permission_types.save');
     Route::get('/permission-types/delete/{type_id}', 'PermissionTypeController@delete')->name('permission_types.delete');
+
+    //sms routes
+    Route::prefix('sms')->controller(SmsController::class)->name('sms.')->group(function(){
+        Route::get('/index', 'index')->name('index');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::get('/delete/{id}', 'delete')->name('delete');
+    });
 });
 
 Route::get('/errors/{method}', 'ErrorController@index');

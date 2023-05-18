@@ -252,6 +252,7 @@ class UserController extends Controller
     }
     //add user
     public function add(){
+        // CommonHelpers::sendSms();        
         if(CommonHelpers::rights('enabled-user','add-user')){
             return redirect()->route('admin.home');
         }
