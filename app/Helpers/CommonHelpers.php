@@ -230,6 +230,38 @@ class CommonHelpers
         abort(404);
     }
 
+    public static function generateInovciceNo($string){
+        $year  = date('y');
+        $month = date('m');
+        $day   = date('d');
+        $invoice = $string.'-'.$year.$month.'-'.$day;
+        
+        if(Invoice::where('invoice_id', $invoice)->doesntExist()){
+            return $invoice;
+        }else{
+            return self::generateUniqueInvoiceNo($invoice);
+        }
+        
+    }
+
+    public static function generateUniqueInvoiceNo($invoice){
+        $inv = Invoice::where('invoice_id', $invoice)->first();
+        
+        $firstDashPos = strpos($invoice, '-'); // Find the position of the first dash
+        if ($firstDashPos !== false) {
+            $secondDashPos = strpos(substr($invoice, $firstDashPos + 1), '-'); // Find the position of the second dash
+            if ($secondDashPos !== false) {
+                $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
+                $day            = substr($invoice, $secondDashPos+1);
+                $newInvoiceId = str_replace($day, ++$day, $invoice);
+                if(Invoice::where('invoice_id', $newInvoiceId)->exists()){
+                    return self::generateUniqueInvoiceNo($newInvoiceId);
+                }
+                return $newInvoiceId;
+            }
+        }
+    }
+
     //limit permission
     // public static function setPermissionLimit($id, $limit){
     //     $user = Admin::findOrFail(hashids_decode($id));

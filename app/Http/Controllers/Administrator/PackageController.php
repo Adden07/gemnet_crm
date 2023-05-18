@@ -25,7 +25,6 @@ class PackageController extends Controller
 {
     //add user package
     public function addUserPackage($id){
-        
         if(isset($id) && !empty($id)){
             $data = array(
                 'user'             => User::with(['rad_check','packages'])->findOrFail(hashids_decode($id)),
@@ -289,7 +288,7 @@ class PackageController extends Controller
             Ledger::insert($transaction_arr);
             //insert data in invoices
             $invoice                    = new Invoice;
-            $invoice->invoice_id        = $inv_id;
+            $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
             $invoice->transaction_id    = $transaction_id;
             $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
@@ -333,7 +332,7 @@ class PackageController extends Controller
                 Ledger::insert($transaction_arr);
                 //insert data in invoices
                 $invoice                    = new Invoice;
-                $invoice->invoice_id        = rand(1111111111,9999999999);
+                $invoice->invoice_id        = CommonHelpers::generateInovciceNo('OTC');
                 $invoice->transaction_id    = $transaction_id;
                 $invoice->admin_id          = auth()->id();
                 $invoice->user_id           = $user->id;
@@ -919,30 +918,5 @@ class PackageController extends Controller
         ]);
     }
 
-    // public function generateInovciceNo($string){
 
-    //     $year  = date('y');
-    //     $month = date('m');
-    //     $day   = date('d');
-    //     $invoice = $string.'-'.$year.$month.'-'.$day;
-        
-    //     if($day == 01){
-    //         if(Invoice::where('invoice_id', $invoice)->doesntExists()){
-    //             return $invoice;
-    //         }else{
-
-    //         }
-    //     }
-    // }
-
-    public function generateUniqueInvoiceNo($invoice){
-        $firstDashPos = strpos($invoice, '-'); // Find the position of the first dash
-        if ($firstDashPos !== false) {
-            $secondDashPos = strpos(substr($invoice_id, $firstDashPos + 1), '-'); // Find the position of the second dash
-            if ($secondDashPos !== false) {
-                $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
-                $day            = substr($inv, $secondDashPos);
-            }
-        }
-    }
 }

@@ -305,9 +305,9 @@ class CronController extends Controller
 
     public function generateInvoice($transaction_id, $user_id, $package_id, $package_price, $current_exp_date, $new_exp_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total){
         $invoice                    = new Invoice();
-        $invoice->invoice_id        = rand(1111111111,9999999999);
+        $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
         $invoice->transaction_id    = $transaction_id;
-        $invoice->admin_id          = auth()->id();
+        $invoice->admin_id          = 1;
         $invoice->user_id           = $user_id;
         $invoice->pkg_id            = $package_id;
         $invoice->pkg_price         = $package_price;
