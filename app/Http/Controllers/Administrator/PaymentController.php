@@ -156,12 +156,17 @@ class PaymentController extends Controller
     public function store(Request $req){
         
         $rules = [
-            'type'              => ['required', 'in:cash,online'],
-            'receiver_id'       => ['required','string', 'max:100'],
-            'amount'            => ['required', 'integer', 'min:1'],
-            'transaction_id'    => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
-            'transaction_image' => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
-            'payment_id'        => ['nullable', 'string', 'max:100']
+            'type'                  => ['required', 'in:cash,online,cheque'],
+            'receiver_id'           => ['required','string', 'max:100'],
+            'amount'                => ['required', 'integer', 'min:1'],
+            'transaction_id'        => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
+            'online_transaction'    => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
+            'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
+            'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
+            'cheque_no'             => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'integer'],
+            'cheque_date'           => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'date'],
+            'transaction_image'     => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
+            'payment_id'            => ['nullable', 'string', 'max:100']
         ];
         
         $validator = Validator::make($req->all(),$rules);
@@ -266,6 +271,10 @@ class PaymentController extends Controller
             'old_balance'       => (int) $user_arr->user_current_balance,
             'type'              => $arr->type,
             'transaction_image' => $arr->transaction_image,
+            'online_transaction'=>$arr->online_transaction,
+            'cheque_no'         =>$arr->cheque_no,
+            'online_date'       =>$arr->online_date,
+            'cheque_date'       =>$arr->cheque_date,
             'created_at'        => date('y-m-d H:i:s')
         ];
     }

@@ -28,6 +28,7 @@
                                 <option value="">Select Type</option>
                                 <option value="cash">Cash</option>
                                 <option value="online">Online</option>
+                                <option value="cheque">Cheque</option>
                             </select>
                         </div>
                     </div>
@@ -57,13 +58,37 @@
                             <input type="number" class="form-control" placeholder="0" value="" name="amount" id="available_balance" disabled>
                         </div>
                     </div>
-                    <div class="col-md-6 d-none" id="transaction_id_col">
+                    <div class="col-md-6 d-none online" id="transaction_id_col">
                         <div class="form-group">
                             <label for="">Transaction ID</label>
                             <input type="number" class="form-control" placeholder="0" value="" name="transaction_id" id="transaction_id">
                         </div>
                     </div>
-                    <div class="form-group col-md-6 d-none" id="transaction_image_col">
+                    <div class="col-md-6 d-none online" id="online_transaction_col">
+                        <div class="form-group">
+                            <label for="">Online Transaciton</label>
+                            <input type="number" class="form-control" placeholder="0" value="" name="online_transaction" id="online_transaction">
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-none online" id="online_transaction_col">
+                        <div class="form-group">
+                            <label for="">Online Date</label>
+                            <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date">
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-none cheque" id="">
+                        <div class="form-group">
+                            <label for="">Cheque No</label>
+                            <input type="number" class="form-control" placeholder="0" value="" name="cheque_no" id="cheque_no">
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-none cheque" id="">
+                        <div class="form-group">
+                            <label for="">Cheque Date</label>
+                            <input type="date" class="form-control" placeholder="0" value="" name="cheque_date" id="cheque_date">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6 image d-none" id="transaction_image_col">
                         <label for="logo">Transaction/Recipt photo</label>
                         <div class="input-group">
                             <div class="custom-file">
@@ -108,14 +133,20 @@
     $('#type').change(function(){
         var type = $(this).val();
         var user_type = $('#user_type').val();
-        // alert(user_type);
         if(type.length != 0){
             if(type == 'online'){
-                toggleCol('transaction_id_col', 'show');
-                toggleCol('transaction_image_col', 'show');
-            }else{
-                toggleCol('transaction_image_col', 'd-none');
-                toggleCol('transaction_id_col', 'd-none');
+                $('.online').removeClass('d-none');
+                $('.image').removeClass('d-none');
+                $('.cheque').addClass('d-none');
+            }else if(type == 'cash'){
+                $('.online').addClass('d-none');
+                $('.cheque').addClass('d-none');
+                $('.image').addClass('d-none');
+            }else if(type == 'cheque'){
+                $('.image').removeClass('d-none');
+                $('.online').addClass('d-none');
+                $('.cheque').removeClass('d-none');
+
             }
         }
     });
