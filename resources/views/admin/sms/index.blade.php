@@ -82,40 +82,8 @@
                             </td>
                         </tr>
                     @endforeach
-                    {{-- @foreach($admins AS $admin)
-                        <tr>
-                            <td>{{  $loop->iteration }}</td>
-                            <td>{{ $admin->name }}</td>
-                            <td>{{ $admin->username }}</td>
-                            <td>{{ $admin->email }}</td>
-                            <td>{{ $admin->nic }}</td>
-                            <td>
-                                @if($admin->is_active == 'active')
-                                <span class="badge badge-success">Active</span>
-                                @else
-                                <span class="badge badge-danger">Deactive</span>
-                                @endif
-                            </td>
-                            @can('view-admin')
-                                <td>
-                                    <a href="{{ route('admin.admins.detail',['id'=>$admin->hashid]) }}" class="text-primary details"><i class="icon-eye"></i></a>
-                                </td>
-                            @endcan
-                            @can('edit-admin')
-                            <td>
-                                <a href="{{ route('admin.admins.edit',['id'=>$admin->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="icon-pencil"></i></span>Edit
-                                </a>
-                                <button type="button" onclick="ajaxRequest(this)" data-url="" class="btn btn-danger btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="icon-trash"></i></span>Delete
-                                </button>
-                            </td>
-                            @endcan
-                        </tr>
-                    @endforeach --}}
                 </tbody>
             </table>
-           {{-- <span class="float-right">{{ $admins->links() }}</span> --}}
         </div>
     </div>
 </div>

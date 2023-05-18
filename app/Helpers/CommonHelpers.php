@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class CommonHelpers
@@ -264,16 +265,17 @@ class CommonHelpers
     }
 
     public static function sendSms(){
+        $site_settings = Cache::get('edit_setting');
         $params = [
-            'id'    => 'rchgemnet',
-            'pass'  => 'gemnet172',
+            'id'    => config('sms.sms_api_id'),
+            'pass'  => config('sms.sms_api_pass'),
             'msg'   => 'test',
             'to'    => '923361240403',
             'lang'  => 'English',
             'mask'  => 'Gemnet',
             'type'  => 'json'
         ];
-        $url  = 'http://www.outreach.pk/api/sendsms.php/sendsms/url';
+        $url  = config('sms.sms_api_url');
         $url  = $url.'?'.http_build_query($params);
         $response = Http::post($url);
         dd(json_decode($response)->corpsms[0]);

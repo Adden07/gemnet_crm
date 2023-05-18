@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Customize;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
@@ -76,6 +77,8 @@ class AppServiceProvider extends ServiceProvider
             // }
             // exit();
             // view()->composer()
+            // $this->app['config']->put('sms.sms_api_url', 'test');
+            $this->setSmsApiKeys();
         //}   
     }
 
@@ -124,5 +127,13 @@ class AppServiceProvider extends ServiceProvider
                 ->subject('Verify your email address')
                 ->markdown('emails.verify', $data);
         });
+    }
+
+    protected function setSmsApiKeys(){
+        $settings = Cache::get('edit_setting');
+
+        Config::set('sms.sms_api_url', $settings->sms_api_url ?? null);
+        Config::set('sms.sms_api_id', $settings->sms_api_id ?? null);
+        Config::set('sms.sms_api_pass', $settings->sms_api_pass ?? null);
     }
 }
