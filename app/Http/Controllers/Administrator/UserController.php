@@ -293,12 +293,13 @@ class UserController extends Controller
             'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
             'landline_no'       => [Rule::requiredIf($req->user_type == 'company'), 'string', 'nullable']
         ];
-
+        
         $validator = Validator::make($req->all(),$rules);
 
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
+
         //check useranme existss
         if(User::where('username',auth()->user()->username.'-'.$req->username)->where('id','!=',@hashids_decode($req->user_id))->exists()){
             return response()->json([
@@ -349,7 +350,7 @@ class UserController extends Controller
         $user->nic         = $req->nic;
         $user->mobile      = ($req->user_type != 'company') ? '92'.$req->mobile : '92'.$req->comp_mobile;
         $user->address     = $req->address;
-        $user->is_tax      = (!empty($req->is_tax)) ? (int) $req->is_tax : 1;
+        $user->is_tax      = (isset($req->is_tax)) ? (int) $req->is_tax : 1;
         $user->sales_id    = hashids_decode($req->sales_id);
         $user->fe_id       = hashids_decode($req->fe_id);
         $user->user_type   = $req->user_type;

@@ -72,10 +72,10 @@ class PackageController extends Controller
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
         $site_setting           = Cache::get('edit_setting');
         //calculate the tax value
-        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
-        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
-        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
+        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 && $user->is_tax == 1)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 && $user->is_tax == 1) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
+        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
         $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
 
@@ -301,6 +301,7 @@ class PackageController extends Controller
             $invoice->sales_tax         = $mrc_sales_tax;
             $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
             $invoice->total             = round($package->price+$mrc_total);
+            $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
             $invoice->save();
 
             if(isset($validated['renew_type']) && $validated['renew_type'] == 'queue'){
@@ -316,7 +317,7 @@ class PackageController extends Controller
                 PkgQueue::insert($pkg_queue_arr);
             }
 
-            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered'){//if user is register and otc is     true then creat another transaction and invoice
+            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered' && $user->is_tax == 1){//if user is register and otc is     true then creat another transaction and invoice
               
                 $transaction_id = rand(1111111111,9999999999);
                 $transaction_arr = array(// array for transaction table
@@ -345,6 +346,7 @@ class PackageController extends Controller
                 $invoice->sales_tax         = $otc_sales_tax;
                 $invoice->adv_inc_tax       = $otc_adv_inc_tax;
                 $invoice->total             = round($package->otc+$otc_total);
+                $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
                 $invoice->save();
             }
          
