@@ -228,7 +228,7 @@ class CronController extends Controller
                         $this->updateUserPackageRecord($user, null, $new_expiration_date);
                         
                         //update log process table
-                        $this->logProcess($user->id, 1, null, 1);
+                        $this->logProcess($user->id, 2, null, 1);
                         //update queue table applied on column
                         $rec['success'] += 1;
                     }
