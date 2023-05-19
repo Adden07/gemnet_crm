@@ -334,6 +334,9 @@
                                 <li>
                                     <a href="{{ route('admin.sms.index') }}">All SMS</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.sms.manual_sms') }}">Manual SMS</a>
+                                </li>
                             </ul>
                         </li>
 

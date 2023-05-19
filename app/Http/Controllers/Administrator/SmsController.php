@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Sms;
+use App\Models\SmsLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,6 +43,9 @@ class SmsController extends Controller
             Sms::create($validated);//inser data in table
             $msg = 'SMS added successfully';
         }
+
+        Cache::forget('sms_cache');//for resetting cache
+
         return response()->json([
             'success'  => $msg,
             'redirect' => route('admin.sms.index'),
@@ -63,5 +68,41 @@ class SmsController extends Controller
             'success'   => 'SMS deleted successfully',
             'reload'    => true
         ]);
+    }
+
+    public function manualSms(){
+        $data = array(
+            'title' => 'Manual SMS',
+            'messages'=> SmsLog::where('is_manual',1)->get(),
+        );
+        return view('admin.sms.manual_sms')->with($data);
+    }
+
+    public function sendManualSMs(Request $req){
+        $rules = [
+            'mobile_no' => ['required', 'numeric', 'digits:12,12'],
+            'message'   => ['required', 'string', 'max:1000']
+        ];
+        $validator = Validator::make($req->all(), $rules);
+        $msg       = [];
+
+        if($validator->fails()){
+            return ['errors'=>$validator->errors()];
+        }
+        $validated = $validator->validated();
+        
+        if(CommonHelpers::sendSms($validated['mobile_no'], $validated['message']) == 'Success'){//send sms and check status
+            CommonHelpers::smsLog(null,null,$validated['mobile_no'],$validated['message'],1,1);//success log
+            $msg =  [
+                'success' => 'Sms sent successfully',
+                'reload'  => true                
+            ];
+        }else{
+            CommonHelpers::smsLog(null,null,$validated['mobile_no'],$validated['message'],1,1);//failed log
+            $msg =  [
+                'error' => 'Failed to send sms',
+            ];
+        }
+        return response()->json($msg);
     }
 }

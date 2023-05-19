@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
+use App\Models\SmsLog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -264,13 +265,13 @@ class CommonHelpers
         }
     }
 
-    public static function sendSms(){
-        $site_settings = Cache::get('edit_setting');
+    public static function sendSms($mobile_no, $message){
+        // $sms_cache     = Cache::get('sms_cache');
         $params = [
             'id'    => config('sms.sms_api_id'),
             'pass'  => config('sms.sms_api_pass'),
-            'msg'   => 'test',
-            'to'    => '923361240403',
+            'msg'   => $message,
+            'to'    => $mobile_no,
             'lang'  => 'English',
             'mask'  => 'Gemnet',
             'type'  => 'json'
@@ -278,7 +279,21 @@ class CommonHelpers
         $url  = config('sms.sms_api_url');
         $url  = $url.'?'.http_build_query($params);
         $response = Http::post($url);
-        dd(json_decode($response)->corpsms[0]);
+        
+        return json_decode($response)->corpsms[0]->type;
+    }
+
+    public static function smsLog($user_id=null, $sms_type=null, $mobile_no=null, $sms, $status, $is_manual){
+        SmsLog::insert([
+            'user_id'   => $user_id,
+            'sms_type'  => $sms_type,
+            'mobile_no' => $mobile_no,
+            'sms'       => $sms,
+            'status'    => $status,
+            'is_manual' => $is_manual,
+            'created_at'=>now(),
+            'updated_at'=>now(),
+        ]);
     }
 
     //limit permission

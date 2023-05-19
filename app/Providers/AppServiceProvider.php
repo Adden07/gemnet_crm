@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Customize;
 use App\Models\Setting;
+use App\Models\Sms;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 
@@ -78,7 +79,8 @@ class AppServiceProvider extends ServiceProvider
             // exit();
             // view()->composer()
             // $this->app['config']->put('sms.sms_api_url', 'test');
-            $this->setSmsApiKeys();
+            $this->setSmsApiKeys();//set the config.sms credentials
+            $this->setSmsCache();//set the sms cache
         //}   
     }
 
@@ -135,5 +137,11 @@ class AppServiceProvider extends ServiceProvider
         Config::set('sms.sms_api_url', $settings->sms_api_url ?? null);
         Config::set('sms.sms_api_id', $settings->sms_api_id ?? null);
         Config::set('sms.sms_api_pass', $settings->sms_api_pass ?? null);
+    }
+
+    public function setSmsCache(){
+        Cache::rememberForever('sms_cache',function(){
+            return Sms::get();
+        });
     }
 }

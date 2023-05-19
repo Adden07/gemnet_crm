@@ -287,6 +287,9 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::post('/store', 'store')->name('store');
         Route::get('/edit/{id}', 'edit')->name('edit');
         Route::get('/delete/{id}', 'delete')->name('delete');
+        //manual sms routes
+        Route::get('/manual-sms', 'manualSms')->name('manual_sms');
+        Route::post('/send-manual-sms', 'sendManualSMs')->name('send_manual_sms');
     });
 });
 

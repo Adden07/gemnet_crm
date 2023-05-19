@@ -451,4 +451,11 @@ function formatMoney(number, decPlaces, decSep, thouSep) {
         i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
         (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
 }
-    
+
+function mobileNoMasking($_self){
+    var inputVal = $($_self).val();
+    if (!inputVal.startsWith("92")) {
+      inputVal = "92" + inputVal;
+      $($_self).val(inputVal);
+    }
+}
