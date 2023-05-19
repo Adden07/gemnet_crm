@@ -23,7 +23,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="">Users</label>
-                        <select name="user_id" id="user_id" class="form-control">
+                        <select name="user_id" id="user_id" class="form-control select2">
                             <option value="">Select user</option>
                             @foreach($users AS $user)
                                 <option value="{{ $user->hashid }}" data-mobile="{{ $user->mobile }}">{{ $user->name }}-({{ $user->username }})</option>
