@@ -7,11 +7,11 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active"><a href="{{ route('admin.admins.index') }}"></a>SMS</li>
-                    <li class="breadcrumb-item active"> All Sms</li>
+                    <li class="breadcrumb-item active"> Send Sms</li>
 
                 </ol>
             </div>
-            <h4 class="page-title">Admins</h4>
+            <h4 class="page-title">Send sms</h4>
         </div>
     </div>
 </div>
@@ -32,7 +32,7 @@
                         <textarea class="form-control" name="message" id="message" cols="30" rows="10"></textarea>
                     </div>
                 </div>
-                <input type="submit" class="btn btn-primary" value="{{ (isset($is_update) ? 'Update' : 'Add') }}" style="float:right">
+                <input type="submit" class="btn btn-primary" value="Send" style="float:right">
             </form>
         </div>
     </div>
@@ -41,7 +41,7 @@
     <div class="col-lg-12">
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title">All SMS List</h4>
+                <h4 class="header-title">All Sms log</h4>
                 {{-- <a href="{{ route('admin.staffs.add') }}" class="btn btn-sm btn-primary">Add Staff</a> --}}
             </div>
             <p class="sub-header">Following is the list of all the SMS.</p>
@@ -52,6 +52,7 @@
                         <th>Mobile No</th>
                         <th>Message</th>
                         <th>Status</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,6 +68,7 @@
                                     <span class='badge badge-danger'>failed</span>
                                 @endif
                             </td>
+                            <td>{{ date('d-M-Y H:i:s', strtotime($sms->created_at)) }}</td>
                         </tr>
                     @endforeach
                     {{-- @foreach($messages AS $sms)
