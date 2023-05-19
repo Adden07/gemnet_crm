@@ -201,7 +201,9 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::get('/subdealers/{id}','InvoiceController@getSubdealers')->name('get_subdealers');
             Route::get('/pay-invoice/{id}','InvoiceController@payInvoice')->name('pay_invoice');
             Route::get('/unpaid-invoices','InvoiceController@unpaidInvoice')->name('unpaid_invoice');
-
+            //invoice tax routes
+            Route::get('/invoice-tax', 'InvoiceController@invoiceTax')->name('invoice_tax');
+            Route::post('/export-invoice-tax', 'InvoiceController@exportInvoiceTax')->name('export_invoice_tax');
         });
         //payments routes
         Route::prefix('payments')->name('payments.')->group(function(){

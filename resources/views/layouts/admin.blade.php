@@ -321,6 +321,9 @@
                                 <li>
                                     <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Invoice Tax</a>
+                                </li>
                             </ul>
                         </li>
                         @endcan

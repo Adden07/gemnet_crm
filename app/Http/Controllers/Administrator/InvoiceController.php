@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Exports\InvoiceTaxExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Package;
 use App\Models\Admin;
 use DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InvoiceController extends Controller
 {
@@ -202,5 +204,17 @@ class InvoiceController extends Controller
             'title' => 'Payments',
         );
         return view('admin.invoice.unpaid_invoices')->with($data);
+    }
+
+    public function invoiceTax(){
+        $data = array(
+            'title' => 'Invoice tax',
+            'months' => Invoice::where('taxed', 0)->whereMonth('created_at', '!=', date('m'))->groupBy('created_at')->get(),
+        );
+        return view('admin.invoice.invoice_tax')->with($data);
+    }
+
+    public function exportInvoiceTax(Request $req){
+        return Excel::download(new InvoiceTaxExport($req->month), 'taxedInvoices.xlsx');
     }
 }
