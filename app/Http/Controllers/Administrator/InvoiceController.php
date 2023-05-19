@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administrator;
 
 use App\Exports\InvoiceTaxExport;
+use App\Exports\InvoiceTaxFbrExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
@@ -215,6 +216,10 @@ class InvoiceController extends Controller
     }
 
     public function exportInvoiceTax(Request $req){
-        return Excel::download(new InvoiceTaxExport($req->month), 'taxedInvoices.xlsx');
+        if($req->type == 'srb'){
+            return Excel::download(new InvoiceTaxExport($req->month), 'srb.xlsx');
+        }else{
+            return Excel::download(new InvoiceTaxFbrExport($req->month), 'fbr.xlsx');
+        }
     }
 }

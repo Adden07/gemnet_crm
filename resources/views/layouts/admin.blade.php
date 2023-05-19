@@ -322,7 +322,7 @@
                                     <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Invoice Tax</a>
+                                    <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Taxation</a>
                                 </li>
                             </ul>
                         </li>
