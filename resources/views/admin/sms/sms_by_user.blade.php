@@ -7,27 +7,36 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active"><a href="{{ route('admin.admins.index') }}"></a>SMS</li>
-                    <li class="breadcrumb-item active"> Send SMS</li>
+                    <li class="breadcrumb-item active"> SMS By User</li>
 
                 </ol>
             </div>
-            <h4 class="page-title">Send SMS</h4>
+            <h4 class="page-title">Send SMS By User</h4>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
-            <form action="{{ route('admin.sms.send_manual_sms') }}" method="POST" class="ajaxForm">
+            <form action="{{ route('admin.sms.send_sms_by_user') }}" method="POST" class="ajaxForm">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
+                        <label for="">Users</label>
+                        <select name="user_id" id="user_id" class="form-control">
+                            <option value="">Select user</option>
+                            @foreach($users AS $user)
+                                <option value="{{ $user->hashid }}" data-mobile="{{ $user->mobile }}">{{ $user->name }}-({{ $user->username }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
                         <label for="">Mobile No</label>
-                        <input type="text" class="form-control" placeholder="920000000000" oninput="mobileNoMasking(this)" maxlength="12" id="mobile_no" name="mobile_no" required>
+                        <input type="text" class="form-control" placeholder="920000000000" readonly maxlength="12" id="mobile_no" name="mobile_no" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-12">
                         <label for="">SMS</label>
                         <textarea class="form-control" name="message" id="message" cols="30" rows="10"></textarea>
                     </div>
@@ -49,6 +58,7 @@
                 <thead>
                     <tr>
                         <th width="20">S.No</th>
+                        <th>User</th>
                         <th>Mobile No</th>
                         <th>Message</th>
                         <th>Status</th>
@@ -59,6 +69,7 @@
                     @foreach($messages AS $sms)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+                            <td>{{ @$sms->user->username }}</td>
                             <td>{{ $sms->mobile_no }}</td>
                             <td>{{ $sms->sms }}</td>
                             <td>
@@ -71,21 +82,6 @@
                             <td>{{ date('d-M-Y H:i:s', strtotime($sms->created_at)) }}</td>
                         </tr>
                     @endforeach
-                    {{-- @foreach($messages AS $sms)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $sms->type }}</td>
-                            <td>{{ $sms->message }}</td>
-                            <td>
-                                <a href="{{ route('admin.sms.edit', ['id'=>$sms->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="icon-pencil"></i></span>Edit
-                                </a>
-                                <button type="button" onclick="ajaxRequest(this)" data-url="{{ route('admin.sms.delete', ['id'=>$sms->hashid]) }}" class="btn btn-danger btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="icon-trash"></i></span>Delete
-                                </button>
-                            </td>
-                        </tr>
-                    @endforeach --}}
                 </tbody>
             </table>
         </div>
@@ -97,5 +93,10 @@
 
 @section('page-scripts')
 @include('admin.partials.datatable', ['load_swtichery' => true])
-
+<script>
+    $('#user_id').change(function(){
+        var mobile = $('#user_id :selected').data('mobile')
+        $('#mobile_no').val(mobile)
+    });
+</script>
 @endsection

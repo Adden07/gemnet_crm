@@ -290,6 +290,9 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         //manual sms routes
         Route::get('/manual-sms', 'manualSms')->name('manual_sms');
         Route::post('/send-manual-sms', 'sendManualSMs')->name('send_manual_sms');
+        //sms by user routes
+        Route::get('/sms-by-users', 'smsByUser')->name('sms_by_user');
+        Route::post('/send-sms-by-user', 'sendSmsByUser')->name('send_sms_by_user');
     });
 });
 

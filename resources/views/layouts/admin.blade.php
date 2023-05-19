@@ -337,6 +337,9 @@
                                 <li>
                                     <a href="{{ route('admin.sms.manual_sms') }}">Manul SMS</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.sms.sms_by_user') }}">SMS By User</a>
+                                </li>
                             </ul>
                         </li>
 

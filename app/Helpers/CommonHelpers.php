@@ -285,7 +285,7 @@ class CommonHelpers
 
     public static function smsLog($user_id=null, $sms_type=null, $mobile_no=null, $sms, $status, $is_manual){
         SmsLog::insert([
-            'user_id'   => $user_id,
+            'user_id'   => hashids_decode($user_id),
             'sms_type'  => $sms_type,
             'mobile_no' => $mobile_no,
             'sms'       => $sms,
