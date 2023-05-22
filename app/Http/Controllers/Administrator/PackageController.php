@@ -607,13 +607,24 @@ class PackageController extends Controller
             
             //return transactions arrays and other data
             // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days,$user_invoice);
-            $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days, $user_current_pkg);
+            // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days, $user_current_pkg);
             
-            if(!auth()->user()->user_type != 'admin'){
-                Ledger::insert($arr['transaction_arr']);
-            }
-            // dd($arr);
+            // if(!auth()->user()->user_type != 'admin'){
+            //     Ledger::insert($arr['transaction_arr']);
+            // }
+            // // dd($arr);
             //insert data in invoices
+            $transaction_arr = array(// array for transaction table
+                'transaction_id'    => $transaction_id,
+                'admin_id'          => auth()->id(),
+                'user_id'           => $user->id,
+                'amount'            => ($package->price+$mrc_total),
+                'old_balance'       => $user_current_balance,
+                'new_balance'       => $user_current_balance-($package->price+$mrc_total),
+                'type'              => 0,
+                'created_at'        => date('Y-m-d H:i:s')
+            );
+            Ledger::insert($transaction_arr);
 
             $invoice                    = new Invoice;
             $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
