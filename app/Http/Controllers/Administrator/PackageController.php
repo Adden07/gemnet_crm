@@ -67,6 +67,9 @@ class PackageController extends Controller
         }
 
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
+        
+        $package->id = (!is_null($package->m_pkg)) ? $package->m_pkg : $package->id;
+
         $site_setting           = Cache::get('edit_setting');
         //calculate the tax value
         $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 && $user->is_tax == 1)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
@@ -480,7 +483,6 @@ class PackageController extends Controller
 
     //upgrade user package modal
     public function upgradeUserPackageModal($id){
-
         if(CommonHelpers::rights('enabled-user','upgrade-user-package')){
             return redirect()->route('admin.home');
         }
@@ -514,6 +516,12 @@ class PackageController extends Controller
             //     $data['packages'] = $packages;
             // }
             $data['packages'] = Package::get();
+            $data['user_current_package'] = $data['packages']->where('id', $data['user']->c_package)->first();
+            
+            if($data['user_current_package']->duration ==1){
+                $data['packages'] = $data['packages']->where('price', '>', $data['user_current_package']->price)->where('duration',1);
+            }
+            
             $html = view('admin.user.upgrade_package_modal')->with($data)->render();
 
             return response()->json([
@@ -544,17 +552,35 @@ class PackageController extends Controller
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
-        
+
         $validated = $validator->validated();
-     
-        DB::transaction(function() use ($validated){
-    
-            $user                = User::findOrFail(hashids_decode($validated['user_id']));//get user
-            $package             = Package::findOrFail(hashids_decode($validated['package_id']));//get package
+
+        $user                = User::findOrFail(hashids_decode($validated['user_id']));//get user
+        $package             = Package::findOrFail(hashids_decode($validated['package_id']));//get package
+        $site_setting           = Cache::get('edit_setting');
+
+        //calculate the tax value
+        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 && $user->is_tax == 1)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 && $user->is_tax == 1) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
+        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
+        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+        $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
+        
+        if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
+            return [
+                'error' => 'User balance is less than the package price and OTC price'
+            ];
+        }
+
+        DB::transaction(function() use ($validated, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax,&$otc_adv_inc_tax,&$mrc_total, &$otc_total ){
+            $user_current_balance   = $user->user_current_balance;
+            $user_new_balance       = $user_current_balance-($package->price+$otc_total+$mrc_total);
+
             $user_package_record = new UserPackageRecord;//new entry
             $user_current_pkg    = $user->c_package;
             $user_qt_expired     = $user->qt_expired;
-            $user_invoice        = Invoice::where('admin_id',$user->admin_id)->where('pkg_id',$user->package)->latest()->first();
+            // $user_invoice        = Invoice::where('admin_id',$user->admin_id)->where('pkg_id',$user->package)->latest()->first();
             $activity_log        = "upgraded package-($user->username)";
            
             //update user table
@@ -572,7 +598,6 @@ class PackageController extends Controller
             $user_package_record->last_package_id= $user_current_pkg;
             $user_package_record->last_expiration= $user->current_expiration_date;
             $user_package_record->save();
-            $user->save();
             
             $transaction_id  = rand(1111111111,9999999999);
             $current_date    = date_create(date('Y-m-d 12:00:00'));
@@ -589,20 +614,22 @@ class PackageController extends Controller
             }
             // dd($arr);
             //insert data in invoices
+
             $invoice                    = new Invoice;
-            $invoice->invoice_id        = rand(1111111111,9999999999);
+            $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
             $invoice->transaction_id    = $transaction_id;
-            $invoice->admin_id          = auth()->user()->id;
+            $invoice->admin_id          = auth()->id();
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
-            $invoice->total_cost        = $arr['total_amount'];
-            $invoice->franchise_cost    = $arr['franchise_pkg_cost'] ?? 0.00;
-            $invoice->dealer_cost       = $arr['dealer_pkg_cost'] ?? 0.00;
-            $invoice->subdealer_cost    = $arr['subdealer_pkg_cost'] ?? 0.00;
-            $invoice->type              = 2;
-            $invoice->current_exp_date  = $user->current_expiration_date;
-            $invoice->new_exp_date      = $user->current_expiration_date;
+            $invoice->pkg_price         = $package->price;
+            $invoice->type              = $package_status;
+            $invoice->current_exp_date  = $current_exp_date;
+            $invoice->new_exp_date      = $new_exp_date;
             $invoice->created_at        = date('Y-m-d H:i:s');
+            $invoice->sales_tax         = $mrc_sales_tax;
+            $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
+            $invoice->total             = round($package->price+$mrc_total);
+            $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
             $invoice->save();
             //update rad user group table
             $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
