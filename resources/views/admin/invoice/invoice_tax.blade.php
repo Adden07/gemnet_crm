@@ -33,7 +33,7 @@
                         <select class="form-control" name="date" id="date" required>
                             <option value="">Select month</option>
                             @foreach($months AS $month)
-                                <option value="{{ $month->created_at }}">{{ date('M-y', strtotime($month->created_at)) }}</option>
+                                <option value="{{ $month->created_at }}">{{ date('F-y', strtotime($month->created_at)) }}</option>
                             @endforeach
                         </select>
                     </div>
