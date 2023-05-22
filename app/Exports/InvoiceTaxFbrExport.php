@@ -9,14 +9,14 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 class InvoiceTaxFbrExport implements FromCollection,WithHeadings, WithMapping
 {
-    private $month = null;
+    private $date = null;
 
-    public function __construct($month){
-        $this->month = $month;
+    public function __construct($date){
+        $this->date = $date;
     }
     public function collection()
     {
-        return Invoice::with(['user'])->where('taxed', 0)->whereMonth('created_at', $this->month)->get();
+        return Invoice::with(['user'])->where('taxed', 0)->whereDate('created_at', $this->date)->get();
     }
 
     public function headings(): array

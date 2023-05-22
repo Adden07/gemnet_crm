@@ -343,11 +343,26 @@
         var route       = "{{ route('admin.packages.create_expiration_date', [':package_id', ':user_id']) }}";
         route           = route.replace(':package_id', package_id);
         route           = route.replace(':user_id', user_id);
-        
+        var total_amount=0;
         getAjaxRequests(route, '', 'GET', function(resp){
             $('#new_expiration').html(resp.new_expiration_date);
-            $('#package_price').html(resp.package_price);
+            $('#package_price').html(resp.package_price.toLocaleString('en-US'));
             $('#renew_package_name').html(resp.renew_package_name);
+            
+            total_amount += parseInt(resp.package_price);
+            // alert(resp.package_price);
+            console.log(resp);
+            if(resp.user_status == 'registered'){
+                $('#package_price_tab').removeClass('d-none');
+                $('#otc_price').html(resp.otc.toLocaleString('en-US'));
+                $('#otc_tab').removeClass('d-none');
+                
+                if(resp.otc != false){
+                    total_amount += parseInt(resp.otc);
+                }
+            }
+            $('#total_amount').html(total_amount.toLocaleString('en-US'));
+            $('#total_amount_tab').removeClass('d-none');
         });
     });
 
@@ -358,6 +373,23 @@
             $('#queue_package').addClass('d-none')
         }
         
+    });
+
+    $(document).on('change', '#otc', function(){
+        var otc           = parseInt($('#otc_price').text().replace(',', ''));
+        var package_price = parseInt($('#package_price').text().replace(',', ''));
+        
+        if(typeof otc != 'number' && typeof package_price != 'number'){
+            otc = 0;
+            package_price=0;
+        }
+        if($(this).val() == 1){
+           $('#otc_tab').removeClass('d-none'); 
+           $('#total_amount').html((otc+package_price).toLocaleString('en-US'));
+        }else{
+            $('#total_amount').html((package_price).toLocaleString('en-US'));
+            $('#otc_tab').addClass('d-none');
+        }
     });
 </script>
 @endsection

@@ -210,16 +210,17 @@ class InvoiceController extends Controller
     public function invoiceTax(){
         $data = array(
             'title' => 'Invoice tax',
-            'months' => Invoice::where('taxed', 0)->whereMonth('created_at', '!=', date('m'))->groupBy('created_at')->get(),
+            'months' => Invoice::where('tax_paid', 0)->whereMonth('created_at', '!=', date('m'))->groupBy('created_at')->get(),
         );
         return view('admin.invoice.invoice_tax')->with($data);
     }
 
     public function exportInvoiceTax(Request $req){
+        $file_name = ($req->type == 'srb') ? "SRB-Sales-Tax-".date('F-Y', strtotime($req->date)).".xlsx" : "FBR-Adv-Income-Tax-".date('F-y', strtotime($req->date)).".xlsx";
         if($req->type == 'srb'){
-            return Excel::download(new InvoiceTaxExport($req->month), 'srb.xlsx');
+            return Excel::download(new InvoiceTaxExport($req->date), $file_name);
         }else{
-            return Excel::download(new InvoiceTaxFbrExport($req->month), 'fbr.xlsx');
+            return Excel::download(new InvoiceTaxFbrExport($req->date), $file_name);
         }
     }
 }

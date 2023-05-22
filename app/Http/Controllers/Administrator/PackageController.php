@@ -900,6 +900,7 @@ class PackageController extends Controller
         $package             = Package::findOrFail(hashids_decode($package_id));
         $user                = User::findOrFail(hashids_decode($user_id));
         $new_expiration_date = null;
+        $otc                 = false;
 
         $site_setting           = Cache::get('edit_setting');
         //calculate the tax value
@@ -912,11 +913,15 @@ class PackageController extends Controller
         }else{
             $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
         }
-          
+        if($user->status == 'registered'){
+            $otc = $package->otc;
+        }
         return response()->json([
             'new_expiration_date'   => $new_expiration_date,
-            'package_price'         => number_format(round($package->price+$mrc_total), 2),
-            'renew_package_name'    => $package->name
+            'package_price'         => round($package->price+$mrc_total),
+            'renew_package_name'    => $package->name,
+            'otc'                   => $otc,
+            'user_status'          => $user->status,
         ]);
     }
 

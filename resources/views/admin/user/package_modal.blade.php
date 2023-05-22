@@ -179,14 +179,24 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     </div>
 @endif
 
-@if(isset($package_price))
-    <div class="">
-        <label>package Prices</label>
+{{-- @if(isset($package_price)) --}}
+    <div class="@unless(@$package_price) d-none @endunless" id="package_price_tab">
+        <label>package Price</label>
         <span class="badge badge-success ml-1" id="package_price">
-            {{ number_format($package_price, 2) }}
+            {{ @number_format($package_price, 2) }}
         </span>
     </div>
-@endif
+    <div class="@unless(@$otc) d-none @endunless" id="otc_tab">
+        <label>OTC Price</label>
+        <span class="badge badge-success ml-1" id="otc_price">
+        </span>
+    </div>
+    <div class="d-none" id="total_amount_tab">
+        <label>Total Amount</label>
+        <span class="badge badge-success ml-1" id="total_amount">
+        </span>
+    </div>
+{{-- @endif --}}
 
 <div class="">
     <label>Current Balance</label>

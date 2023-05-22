@@ -24,16 +24,16 @@
                     <div class="col-md-6">
                         <label for="">Select Type</label>
                         <select class="form-control" name="type" id="type">
-                            <option value="srb">SRB sales tax</option>
-                            <option value="fbr">FBR ADV advnace income tax</option>
+                            <option value="srb">SRB-Sales Tax </option>
+                            <option value="fbr">FBR-Adv Income Tax</option>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label for="">Month</label>
-                        <select class="form-control" name="month" id="month" required>
+                        <select class="form-control" name="date" id="date" required>
                             <option value="">Select month</option>
                             @foreach($months AS $month)
-                                <option value="{{ date('m', strtotime($month->created_at)) }}">{{ date('M', strtotime($month->created_at)) }}</option>
+                                <option value="{{ $month->created_at }}">{{ date('M-y', strtotime($month->created_at)) }}</option>
                             @endforeach
                         </select>
                     </div>

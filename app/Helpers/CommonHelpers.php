@@ -236,7 +236,7 @@ class CommonHelpers
     public static function generateInovciceNo($string){
         $year  = date('y');
         $month = date('m');
-        $day   = date('d');
+        $day   = '01';
         $invoice = $string.'-'.$year.$month.'-'.$day;
         
         if(Invoice::where('invoice_id', $invoice)->doesntExist()){
