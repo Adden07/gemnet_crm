@@ -90,4 +90,12 @@ class User extends Model
         return $this->belongsTo(Admin::class, 'renew_by', 'id');
     }
 
+    public function salePerson(){
+        return $this->belongsTo(Admin::class,'fe_id','id');
+    }
+
+    public function fieldEngineer(){
+        return $this->belongsTo(Admin::class,'sales_id','id');
+    }
+
 }

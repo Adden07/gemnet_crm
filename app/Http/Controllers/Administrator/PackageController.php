@@ -567,11 +567,11 @@ class PackageController extends Controller
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
         $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
         
-        if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
-            return [
-                'error' => 'User balance is less than the package price and OTC price'
-            ];
-        }
+        // if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
+        //     return [
+        //         'error' => 'User balance is less than the package price and OTC price'
+        //     ];
+        // }
 
         DB::transaction(function() use ($validated, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax,&$otc_adv_inc_tax,&$mrc_total, &$otc_total ){
             $user_current_balance   = $user->user_current_balance;
@@ -585,6 +585,7 @@ class PackageController extends Controller
            
             //update user table
             $user->last_package      = $user->package;
+            $user->user_current_balance = $user_new_balance;
             $user->package           = $package->id;
             $user->c_package         = $package->id;
             $user->save();
@@ -604,9 +605,10 @@ class PackageController extends Controller
             $exp_date        = date_create($user->current_expiration_date);
             $remaining_days  = date_diff($current_date,$exp_date)->format("%a");
             ($remaining_days == 31) ? $remaining_days = 30 : ''; //if remaining days are equal to 31 then make it 30 days
-            
+
             //return transactions arrays and other data
-            // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days,$user_invoice);
+            $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days,true);
+            dd($arr);
             // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days, $user_current_pkg);
             
             // if(!auth()->user()->user_type != 'admin'){
@@ -633,9 +635,9 @@ class PackageController extends Controller
             $invoice->user_id           = $user->id;
             $invoice->pkg_id            = $package->id;
             $invoice->pkg_price         = $package->price;
-            $invoice->type              = $package_status;
-            $invoice->current_exp_date  = $current_exp_date;
-            $invoice->new_exp_date      = $new_exp_date;
+            $invoice->type              = 1;
+            $invoice->current_exp_date  = $user->current_expiration_date;
+            $invoice->new_exp_date      = $user->current_expiration_date;
             $invoice->created_at        = date('Y-m-d H:i:s');
             $invoice->sales_tax         = $mrc_sales_tax;
             $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
@@ -727,16 +729,16 @@ class PackageController extends Controller
     public function franchiseNetworkPriceDeduction($package_id,$transaction_id,$user_id,$remaining_days=null,$invoice=null){
         // $user = User::where('id', hashids_decode($user_id))->first();
         // dd($user);
-        if(auth()->user()->user_type == 'franchise'){//if user is franchise
-            
-            $franchise      = Admin::where('id',auth()->user()->id)->firstOrFail();//find franchise
-            $franchise_pkg  = $this->getParentPackageDetails($franchise->id, $package_id);//find franchise pkg details
+        if(true){//if user is franchise
 
+            $franchise      = Admin::where('id',auth()->user()->id)->firstOrFail();//find franchise
+            $franchise_pkg  = Package::findOrFail(hashids_decode($package_id));//find franchise pkg details
             if(isset($validated['calendar'])){//if calendar expiry date is set then divide the pkg price
                 $franchise_pkg_cost = number_format($this->dividePkgPrice($new_exp_date,$franchise_pkg->cost));
             }else{
-                $franchise_pkg_cost = $franchise_pkg->cost;
+                $franchise_pkg_cost = $franchise_pkg->price;
             }
+
             // dd($franchise_pkg_cost);
             //when upgrade user package then do this
             if(!is_null($remaining_days) && !is_null($invoice)){//if both are not null then

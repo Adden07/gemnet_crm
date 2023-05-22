@@ -549,7 +549,12 @@
                                     @endif
                                     <tr>
                                         <th>Sales Person</th>
-                                        <td>{{ @$user_details->admin->username }}</td>
+                                        <td>{{ @$user_details->salePerson->username }}</td>
+                                    </tr>
+                                    {{-- {{ dd($user_details) }} --}}
+                                    <tr>
+                                        <th>Field Enginner</th>
+                                        <td>{{ @$user_details->fieldEngineer->username }}</td>
                                     </tr>
                                 </table>
                             </div>
