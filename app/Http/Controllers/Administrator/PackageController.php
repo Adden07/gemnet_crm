@@ -489,30 +489,31 @@ class PackageController extends Controller
         if(isset($id) && !empty($id)){
             $data = array(
                 'user'             => User::with(['current_package'])->findOrFail(hashids_decode($id)),
-                'user_package_id'  => UserPackageRecord::where('user_id',hashids_decode($id))->latest()->first(),
+                // 'user_package_id'  => UserPackageRecord::where('user_id',hashids_decode($id))->latest()->first(),
             );
             
-            $user_packages  = FranchisePackage::where('added_to_id',auth()->user()->id)->get();
+            // $user_packages  = FranchisePackage::where('added_to_id',auth()->user()->id)->get();
 
-            $cost = $user_packages->where('package_id',$data['user']->package)->pluck('cost')->first();
+            // $cost = $user_packages->where('package_id',$data['user']->package)->pluck('cost')->first();
             
-            $packages               = Package::get();
-            $user_packages          = $user_packages->where('cost','>',$cost);//get user packages where cost less then or equal to cost
+            // $packages               = Package::get();
+            // $user_packages          = $user_packages->where('cost','>',$cost);//get user packages where cost less then or equal to cost
   
-            if(auth()->user()->user_type == 'franchise'){//if user is franchise 
-                $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
-                $data['packages'] = $packages->whereIn('id',$ids);
-            }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and active in franchise
-                $ids = DealerController::getParentActivePacakges($user_packages);
-                $data['packages'] = $packages->whereIn('id',$ids);
-            }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigned  active in franchise and dealer
-                $ids = SubDealerController::getParentActivePacakges($user_packages);
-                $data['packages'] = $packages->whereIn('id',$ids);
-                $data['user_packages'] = $user_packages;
-                $data['ids']           = $ids;
-            }else{
-                $data['packages'] = $packages;
-            }
+            // if(auth()->user()->user_type == 'franchise'){//if user is franchise 
+            //     $ids = $user_packages->where('status','active')->pluck('package_id')->toArray();
+            //     $data['packages'] = $packages->whereIn('id',$ids);
+            // }elseif(auth()->user()->user_type == 'dealer'){//if user is dealer then get only those pacakges which are assigned and active in franchise
+            //     $ids = DealerController::getParentActivePacakges($user_packages);
+            //     $data['packages'] = $packages->whereIn('id',$ids);
+            // }elseif(auth()->user()->user_type == 'sub_dealer'){//if user is subealer then get those packagese which are assigned  active in franchise and dealer
+            //     $ids = SubDealerController::getParentActivePacakges($user_packages);
+            //     $data['packages'] = $packages->whereIn('id',$ids);
+            //     $data['user_packages'] = $user_packages;
+            //     $data['ids']           = $ids;
+            // }else{
+            //     $data['packages'] = $packages;
+            // }
+            $data['packages'] = Package::get();
             $html = view('admin.user.upgrade_package_modal')->with($data)->render();
 
             return response()->json([

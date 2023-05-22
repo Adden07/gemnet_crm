@@ -1420,7 +1420,6 @@
 
     //package upgrade modal 
     $('#upgrade_package').click(function(e){
-
         e.preventDefault();
         // var route = $(this).attr('href');
         // var title = $(this).attr('title');

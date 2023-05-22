@@ -504,7 +504,6 @@ class UserController extends Controller
     }
     //dispaly user profile
     public function profile($id){
-        
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
