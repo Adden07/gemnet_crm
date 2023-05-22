@@ -350,11 +350,11 @@
             $('#renew_package_name').html(resp.renew_package_name);
             
             total_amount += parseInt(resp.package_price);
-            // alert(resp.package_price);
-            console.log(resp);
+
             if(resp.user_status == 'registered'){
                 $('#package_price_tab').removeClass('d-none');
                 $('#otc_price').html(resp.otc.toLocaleString('en-US'));
+                
                 $('#otc_tab').removeClass('d-none');
                 
                 if(resp.otc != false){

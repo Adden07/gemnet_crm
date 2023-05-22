@@ -41,9 +41,6 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-        
-        // $a = 'GP-2305-01';
-        // dd(preg_match_all('/(\$[a-z]+)/i', $a, ''));
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -126,9 +123,9 @@ class PackageController extends Controller
             $user_current_balance   = $user->user_current_balance;
         
             //calculat user new balance
-            $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax+$otc_sales_tax+$otc_adv_inc_tax);
-            $user_new_balance       += (@$validated['otc'] == 1) ? $package->otc : 0;
-            
+            $user_new_balance       = $user_current_balance-($package->price+$otc_total+$mrc_total);
+            $user_new_balance       -= (@$validated['otc'] == 1) ? $package->otc : 0;
+       
             //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
@@ -906,8 +903,11 @@ class PackageController extends Controller
         //calculate the tax value
         $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
         $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
+        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-        
+        $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
+
         if(is_null($user->current_expiration_date)){
             $new_expiration_date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
         }else{
@@ -922,6 +922,7 @@ class PackageController extends Controller
             'renew_package_name'    => $package->name,
             'otc'                   => $otc,
             'user_status'          => $user->status,
+            // 'otc_total'             => $otc_total
         ]);
     }
 

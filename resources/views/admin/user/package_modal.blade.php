@@ -188,7 +188,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     </div>
     <div class="@unless(@$otc) d-none @endunless" id="otc_tab">
         <label>OTC Price</label>
-        <span class="badge badge-success ml-1" id="otc_price">
+        <span class="badge badge-success ml-1" id="otc_price" otc_total="">
         </span>
     </div>
     <div class="d-none" id="total_amount_tab">
