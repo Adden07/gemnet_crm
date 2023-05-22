@@ -292,7 +292,7 @@ class UserController extends Controller
             'user_type'         => ['required', 'string', 'in:company,individual'],
             'business_name'     => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
             'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
-            'landline_no'       => [Rule::requiredIf($req->user_type == 'company'), 'string', 'nullable']
+            'landline_no'       => ['string', 'nullable']
         ];
         
         $validator = Validator::make($req->all(),$rules);
