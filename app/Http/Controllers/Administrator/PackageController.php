@@ -486,7 +486,7 @@ class PackageController extends Controller
         if(CommonHelpers::rights('enabled-user','upgrade-user-package')){
             return redirect()->route('admin.home');
         }
-
+        
         
         if(isset($id) && !empty($id)){
             $data = array(
@@ -546,26 +546,24 @@ class PackageController extends Controller
             'package_id.required' => 'Please select the package',
             'user_id.required'    => 'User not found'
         ];
-
+        
         $validator = Validator::make($req->all(), $rules, $messages);
-
+        
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
 
         $validated = $validator->validated();
 
-        $user                = User::findOrFail(hashids_decode($validated['user_id']));//get user
-        $package             = Package::findOrFail(hashids_decode($validated['package_id']));//get package
-        $site_setting           = Cache::get('edit_setting');
+
 
         //calculate the tax value
-        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 && $user->is_tax == 1)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
-        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 && $user->is_tax == 1) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-        $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
-        $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
-        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-        $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
+        // $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 && $user->is_tax == 1)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+        // $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 && $user->is_tax == 1) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        // $otc_sales_tax          = ($site_setting->mrc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? ($package->otc * $site_setting->otc_sales_tax)/100: 0;
+        // $otc_adv_inc_tax        = ($site_setting->otc_adv_inc_tax != 0 && $req->otc == 1 && $user->is_tax == 1) ? (($package->otc+$otc_sales_tax) * $site_setting->otc_adv_inc_tax)/100: 0;
+        // $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+        // $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
         
         // if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
         //     return [
@@ -573,22 +571,81 @@ class PackageController extends Controller
         //     ];
         // }
 
-        DB::transaction(function() use ($validated, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax,&$otc_adv_inc_tax,&$mrc_total, &$otc_total ){
-            $user_current_balance   = $user->user_current_balance;
-            $user_new_balance       = $user_current_balance-($package->price+$otc_total+$mrc_total);
+        DB::transaction(function() use ($validated){
+            
+            $user                = User::findOrFail(hashids_decode($validated['user_id']));//get user
+            $package             = Package::findOrFail(hashids_decode($validated['package_id']));//get package
+            $site_setting        = Cache::get('edit_setting');
+            $user_invoice        = Invoice::where('user_id', $user->id)->whereIn('type', [0,1])->latest()->first();
 
-            $user_package_record = new UserPackageRecord;//new entry
-            $user_current_pkg    = $user->c_package;
-            $user_qt_expired     = $user->qt_expired;
-            // $user_invoice        = Invoice::where('admin_id',$user->admin_id)->where('pkg_id',$user->package)->latest()->first();
-            $activity_log        = "upgraded package-($user->username)";
+            
+
+            
+            $transaction_id  = rand(1111111111,9999999999);
+            $current_date    = date_create(date('Y-m-d 12:00:00'));
+            $exp_date        = date_create($user->current_expiration_date);
+            $remaining_days  = date_diff($current_date,$exp_date)->format("%a");
+            ($remaining_days == 31) ? $remaining_days = 30 : ''; //if remaining days are equal to 31 then make it 30 days
+            
+            $get_current_pkg_per_day_price = (int) $this->getPacakgePerDayPrice($user_invoice->total, $remaining_days);//get per day price of existig package
+
+            $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package
            
-            //update user table
+            $new_package_price_tax_arr     =  $this->getPackagePriceWithTax($get_new_pkg_per_day_price, $remaining_days);
+            $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price']+$new_package_price_tax_arr['mrc_total'];//get total price of new package with tax
+            $get_current_pkg_price         = (int) $get_current_pkg_per_day_price*$remaining_days;//get curren
+            $pkg_price_to_deduct           = (int) $get_new_pkg_price_with_tax-$get_current_pkg_price;
+            $new_pkg_price_without_tax     = (int) $new_package_price_tax_arr['package_price']-$get_current_pkg_price;
+            
+            if($user->user_current_balance < $pkg_price_to_deduct){
+                return response()->json([
+                    'error' => 'Package could be upgrade because of insufficent balance',
+                ]);
+            }
+   
+            $user_current_balance   = $user->user_current_balance;
+            $user_new_balance       = $user_current_balance-$pkg_price_to_deduct;
+            $user_current_pkg       = $user->c_package;
+            $user_qt_expired        = $user->qt_expired;
+            $activity_log            = "upgraded package-($user->username)";
             $user->last_package      = $user->package;
             $user->user_current_balance = $user_new_balance;
             $user->package           = $package->id;
             $user->c_package         = $package->id;
             $user->save();
+            
+            $transaction_id  = rand(1111111111,9999999999);
+            $transaction_arr = array(// array for transaction table
+                'transaction_id'    => $transaction_id,
+                'admin_id'          => auth()->id(),
+                'user_id'           => $user->id,
+                'amount'            => $pkg_price_to_deduct,
+                'old_balance'       => $user_current_balance,
+                'new_balance'       => ($user_current_balance-$pkg_price_to_deduct),
+                'type'              => 3,
+                'created_at'        => date('Y-m-d H:i:s')
+            );
+            Ledger::insert($transaction_arr);
+            //insert data in invoices
+            $invoice                    = new Invoice;
+            $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
+            $invoice->transaction_id    = $transaction_id;
+            $invoice->admin_id          = auth()->id();
+            $invoice->user_id           = $user->id;
+            $invoice->pkg_id            = $package->id;
+            $invoice->pkg_price         = $new_pkg_price_without_tax;
+            $invoice->type              = 3;
+            $invoice->current_exp_date  = $user_invoice->current_exp_date;
+            $invoice->new_exp_date      = $user_invoice->new_exp_date;
+            $invoice->created_at        = date('Y-m-d H:i:s');
+            $invoice->sales_tax         = $new_package_price_tax_arr['mrc_sales_tax'];
+            $invoice->adv_inc_tax       = $new_package_price_tax_arr['mrc_adv_inc_tax'];
+            $invoice->total             = $pkg_price_to_deduct;
+            $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
+            $invoice->save();
+
+
+            $user_package_record = new UserPackageRecord;//new entry
             //insert record in user_package_record
             $user_package_record->admin_id       = auth()->user()->id;
             $user_package_record->user_id        = $user->id;
@@ -599,16 +656,11 @@ class PackageController extends Controller
             $user_package_record->last_package_id= $user_current_pkg;
             $user_package_record->last_expiration= $user->current_expiration_date;
             $user_package_record->save();
-            
-            $transaction_id  = rand(1111111111,9999999999);
-            $current_date    = date_create(date('Y-m-d 12:00:00'));
-            $exp_date        = date_create($user->current_expiration_date);
-            $remaining_days  = date_diff($current_date,$exp_date)->format("%a");
-            ($remaining_days == 31) ? $remaining_days = 30 : ''; //if remaining days are equal to 31 then make it 30 days
-
+            // dd('done');
+            // dd('done');
             //return transactions arrays and other data
-            $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days,true);
-            dd($arr);
+            // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days,true);
+            // dd($arr);
             // $arr = $this->franchiseNetworkPriceDeduction($validated['package_id'],$transaction_id,$validated['user_id'],$remaining_days, $user_current_pkg);
             
             // if(!auth()->user()->user_type != 'admin'){
@@ -616,55 +668,73 @@ class PackageController extends Controller
             // }
             // // dd($arr);
             //insert data in invoices
-            $transaction_arr = array(// array for transaction table
-                'transaction_id'    => $transaction_id,
-                'admin_id'          => auth()->id(),
-                'user_id'           => $user->id,
-                'amount'            => ($package->price+$mrc_total),
-                'old_balance'       => $user_current_balance,
-                'new_balance'       => $user_current_balance-($package->price+$mrc_total),
-                'type'              => 0,
-                'created_at'        => date('Y-m-d H:i:s')
-            );
-            Ledger::insert($transaction_arr);
+            // $transaction_arr = array(// array for transaction table
+            //     'transaction_id'    => $transaction_id,
+            //     'admin_id'          => auth()->id(),
+            //     'user_id'           => $user->id,
+            //     'amount'            => ($package->price+$mrc_total),
+            //     'old_balance'       => $user_current_balance,
+            //     'new_balance'       => $user_current_balance-($package->price+$mrc_total),
+            //     'type'              => 0,
+            //     'created_at'        => date('Y-m-d H:i:s')
+            // );
+            // Ledger::insert($transaction_arr);
 
-            $invoice                    = new Invoice;
-            $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
-            $invoice->transaction_id    = $transaction_id;
-            $invoice->admin_id          = auth()->id();
-            $invoice->user_id           = $user->id;
-            $invoice->pkg_id            = $package->id;
-            $invoice->pkg_price         = $package->price;
-            $invoice->type              = 1;
-            $invoice->current_exp_date  = $user->current_expiration_date;
-            $invoice->new_exp_date      = $user->current_expiration_date;
-            $invoice->created_at        = date('Y-m-d H:i:s');
-            $invoice->sales_tax         = $mrc_sales_tax;
-            $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
-            $invoice->total             = round($package->price+$mrc_total);
-            $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
-            $invoice->save();
-            //update rad user group table
-            $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
-            $rad_user_group->groupname = $package->groupname;
-            $rad_user_group->username   = $user->username;
-            $rad_user_group->groupname = $package->groupname;
-            $rad_user_group->priority   = 1;
-            $rad_user_group->save();
+            // $invoice                    = new Invoice;
+            // $invoice->invoice_id        = CommonHelpers::generateInovciceNo('GP');
+            // $invoice->transaction_id    = $transaction_id;
+            // $invoice->admin_id          = auth()->id();
+            // $invoice->user_id           = $user->id;
+            // $invoice->pkg_id            = $package->id;
+            // $invoice->pkg_price         = $package->price;
+            // $invoice->type              = 1;
+            // $invoice->current_exp_date  = $user->current_expiration_date;
+            // $invoice->new_exp_date      = $user->current_expiration_date;
+            // $invoice->created_at        = date('Y-m-d H:i:s');
+            // $invoice->sales_tax         = $mrc_sales_tax;
+            // $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
+            // $invoice->total             = round($package->price+$mrc_total);
+            // $invoice->taxed             = ($user->is_tax == 1) ? 1 : 0;
+            // $invoice->save();
+            // //update rad user group table
+            // $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
+            // $rad_user_group->groupname = $package->groupname;
+            // $rad_user_group->username   = $user->username;
+            // $rad_user_group->groupname = $package->groupname;
+            // $rad_user_group->priority   = 1;
+            // $rad_user_group->save();
             
 
             if(is_null($user->last_logout_time || $user_qt_expired == 1)){//when user is online or qt_expired is 1 then kick user
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user
             }
-
             CommonHelpers::activity_logs($activity_log);
-
         });
 
         return response()->json([
             'success'   => 'Package Upgraded Successfully',
             'reload'    => TRUE
         ]);
+    }
+
+    public function getPacakgePerDayPrice($package_price, $days){
+        return (int) round($package_price/$days);
+    }
+
+    public function getPackagePriceWithTax($package_price, $days){
+        $package_price       = $package_price*$days;
+        $site_setting        = Cache::get('edit_setting');
+        //calculate the tax value
+        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 )   ? ($package_price * $site_setting->mrc_sales_tax)/100: 0;
+        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 ) ? (($package_price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+        
+        return [
+            'package_price'  => (int) round($package_price+$mrc_total),
+            'mrc_sales_tax'  => $mrc_sales_tax,
+            'mrc_adv_inc_tax'=> $mrc_adv_inc_tax,
+            'mrc_total'      => $mrc_total
+        ];
     }
     
     public function getParentPackageDetails($added_to_id,$pkg_id){
