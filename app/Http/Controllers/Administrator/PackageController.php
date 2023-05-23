@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CommonHelpers;
 use App\Models\PkgQueue;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 
 class PackageController extends Controller
@@ -559,7 +560,10 @@ class PackageController extends Controller
         }
 
         $validated = $validator->validated();
-
+        $msg       = [
+            'success'   =>'Package upgraded successfully',
+            'reload'    => true
+        ];
 
 
         //calculate the tax value
@@ -576,7 +580,7 @@ class PackageController extends Controller
         //     ];
         // }
 
-        DB::transaction(function() use ($validated){
+        DB::transaction(function() use ($validated, &$msg){
             
             $user                = User::findOrFail(hashids_decode($validated['user_id']));//get user
             $package             = Package::findOrFail(hashids_decode($validated['package_id']));//get package
@@ -595,7 +599,7 @@ class PackageController extends Controller
             $get_current_pkg_per_day_price = (int) $this->getPacakgePerDayPrice($user_invoice->total, $remaining_days);//get per day price of existig package
 
             $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package
-           
+         
             $new_package_price_tax_arr     =  $this->getPackagePriceWithTax($get_new_pkg_per_day_price, $remaining_days);
             $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price']+$new_package_price_tax_arr['mrc_total'];//get total price of new package with tax
             $get_current_pkg_price         = (int) $get_current_pkg_per_day_price*$remaining_days;//get curren
@@ -603,11 +607,8 @@ class PackageController extends Controller
             $new_pkg_price_without_tax     = (int) $new_package_price_tax_arr['package_price']-$get_current_pkg_price;
             
             if($user->user_current_balance < $pkg_price_to_deduct){
-                return response()->json([
-                    'error' => 'Package could be upgrade because of insufficent balance',
-                ]);
+                throw new Exception("Package could be upgrade because of insufficent balance");
             }
-   
             $user_current_balance   = $user->user_current_balance;
             $user_new_balance       = $user_current_balance-$pkg_price_to_deduct;
             $user_current_pkg       = $user->c_package;
@@ -630,6 +631,7 @@ class PackageController extends Controller
                 'type'              => 3,
                 'created_at'        => date('Y-m-d H:i:s')
             );
+            // dd(CommonHelpers::generateInovciceNo('GP'));
             Ledger::insert($transaction_arr);
             //insert data in invoices
             $invoice                    = new Invoice;
@@ -715,11 +717,7 @@ class PackageController extends Controller
             }
             CommonHelpers::activity_logs($activity_log);
         });
-
-        return response()->json([
-            'success'   => 'Package Upgraded Successfully',
-            'reload'    => TRUE
-        ]);
+        return response()->json($msg);
     }
 
     public function getPacakgePerDayPrice($package_price, $days){

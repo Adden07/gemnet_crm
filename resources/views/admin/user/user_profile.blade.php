@@ -776,13 +776,14 @@
                     <table class="table">
                         <thead>
                             <th>S.No</th>
+                            <th>Invoice ID</th>
                             <th>Datetime</th>
                             <th>Package</th>
                             <th>Current Exp</th>
                             <th>New Exp</th>
                             {{-- <th>Package Date</th> --}}
                             <th>Amount</th>
-                            <th>Paid</th>
+                            {{-- <th>Paid</th> --}}
                             {{-- <th>New Expiration</th> --}}
                             {{-- <th>Package Status</th> --}}
                         </thead>
@@ -790,6 +791,7 @@
                             @foreach($user_invoices As $invoice)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $invoice->invoice_id }}</td>
                                     <td>{{ date('d-M-Y H:i:s',strtotime($invoice->created_at)) }}</td>
                                     <td>{{  $invoice->package->name}}</td>
                                     <td>
@@ -798,8 +800,8 @@
                                         @endif
                                     </td>
                                     <td>{{ date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) }}</td>
-                                    <td>{{ round($invoice->pkg_price) }}</td>
-                                    <td>
+                                    <td>{{ round($invoice->total) }}</td>
+                                    {{-- <td>
                                         @if($invoice->paid == 0)
                                             <label class="switch mb-0">
                                                 <input type="checkbox" class="nopopup" onchange="ajaxRequest(this)" data-url="{{ route('admin.accounts.invoices.pay_invoice',['id'=>$invoice->hashid]) }}">
@@ -808,7 +810,7 @@
                                         @elseif($invoice->paid == 1)
                                             <span class="badge badge-success">paid</span>
                                         @endif
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @endforeach
                         </tbody>

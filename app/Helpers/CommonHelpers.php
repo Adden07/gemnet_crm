@@ -236,7 +236,13 @@ class CommonHelpers
     public static function generateInovciceNo($string){
         $year  = date('y');
         $month = date('m');
-        $day   = '01';
+        $day   = Invoice::where('invoice_id', 'LIKE', '%'.$string.'%')->latest()->first();
+        if ($day) {
+            $parts = explode('-', $day->invoice_id);
+            $day = isset($parts[2]) ? $parts[2] : null;
+        } else {
+            $day = null;
+        }
         $invoice = $string.'-'.$year.$month.'-'.$day;
         
         if(Invoice::where('invoice_id', $invoice)->doesntExist()){
@@ -256,13 +262,32 @@ class CommonHelpers
             if ($secondDashPos !== false) {
                 $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
                 $day            = substr($invoice, $secondDashPos+1);
-                $newInvoiceId = str_replace($day, ++$day, $invoice);
+                $newInvoiceId = str_replace($day, self::incrementNumber($day), $invoice);
                 if(Invoice::where('invoice_id', $newInvoiceId)->exists()){
                     return self::generateUniqueInvoiceNo($newInvoiceId);
                 }
+                // dd($newInvoiceId);
                 return $newInvoiceId;
             }
         }
+    }
+
+    public function incrementNumber($value){
+        // Convert the value to an integer
+        $intValue = intval($value);
+
+        // Check if the value is within the special range
+        if ($intValue >= 1 && $intValue <= 9) {
+            // Increment within the special range
+            $intValue++;
+            
+            // Format the result back into a padded string
+            $result = str_pad($intValue, 2, "0", STR_PAD_LEFT);
+        } else {
+            // Increment normally
+            $result = sprintf('%02d', $intValue + 1);
+        }
+        return $result;  // Output: 02
     }
 
     public static function sendSms($mobile_no, $message){

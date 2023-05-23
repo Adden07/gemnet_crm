@@ -193,7 +193,7 @@
                             <td>{{ @$invoice->package->name }}</td>
                             <td>{{ ($invoice->current_exp_date != NULL) ? date('d-M-Y H:i:s',strtotime($invoice->current_exp_date)) : '' }}</td>
                             <td>{{ date('d-M-y H:i:s',strtotime($invoice->new_exp_date)) }}</td>
-                            <td>Rs.{{ round($invoice->pkg_price) }}</td>
+                            <td>Rs.{{ round($invoice->total) }}</td>
                         </tr>
 
                         @if($invoice->id == hashids_decode($last_id))

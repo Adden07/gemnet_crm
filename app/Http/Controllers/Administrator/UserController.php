@@ -514,7 +514,7 @@ class UserController extends Controller
                 'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew'])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
-                'user_invoices' => Invoice::select(['id','created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price'])
+                'user_invoices' => Invoice::select(['id', 'invoice_id', 'created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price', 'total'])
                                             ->with(['package'=>function($query){
                                                 $query->select('id','name');
                                             },'user'=>function($query){
