@@ -98,9 +98,14 @@ class PackageController extends Controller
         //         }
         //     }
         // }
-        if($user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
+        if($user->user_current_balance < ($package->price+$mrc_total)){
+            if(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
+                return [
+                    'error' => 'User balance is less than the package price and OTC price'
+                ];    
+            }
             return [
-                'error' => 'User balance is less than the package price and OTC price'
+                'error' => 'User balance is less than the package price'
             ];
         }
         // dd('done');
@@ -405,7 +410,7 @@ class PackageController extends Controller
             'package_id'    => ['required'],
             'package_type'  => ['nullable','in:primary,current']
         ];
-
+        
         $messages = [
             'required'          => 'Same package selected',
             'user_id.required'  => 'User not found'
