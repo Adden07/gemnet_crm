@@ -37,14 +37,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card-box">
-                    @can('edit-admin')
+                    @can('edit-staff')
                         <a href="{{ route('admin.users.edit',['id'=>$admin_details->hashid]) }}" class="btn btn-primary float-right mb-3" id="edit_personal_info">Edit User</a>
+                        <a href="javascript:void(0)" onClick="window.location.reload()"  class="btn btn-primary float-right mb-3 mr-2 d-none" id="reset_btn">Reset</a>
                     @endcan
                     
                     @if($admin_details->is_active == 'active')
                         <a href="javascript:void(0)" class="btn btn-danger float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.disable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Disable</a>
 
-                    @elseif($admin_details->is_active == 'disabled')
+                    @elseif($admin_details->is_active == 'disabled' || $admin_details->is_active == 'disabled_by_admin')
                         <a href="javascript:void(0)" class="btn btn-info float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.enable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Enable</a>
                     @endif
 
@@ -79,7 +80,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <input type="hidden" name="admin_id" value="{{ $admin_details->hashid }}">
-                                @can('edit-admin')
+                                @can('edit-staff')
                                     <input type="submit" class="btn btn-primary float-right d-none" value="update" id="personal_info_form_submit">
                                 @endcan
                             </div>
@@ -483,7 +484,7 @@
         //set masking here because it will not work outside because the filed is dynamic
         $('#personal_info_form #mobile').mask('3000000000');
 
-
+        $('#reset_btn').removeClass('d-none');
         page_loader('hide');
     });
 
