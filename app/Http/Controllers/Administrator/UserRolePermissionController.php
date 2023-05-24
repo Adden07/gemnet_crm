@@ -33,7 +33,8 @@ class UserRolePermissionController extends Controller
     
     public function add(){
         $data = array(
-            'title' => 'Add user role permissions'
+            'title' => 'Add user role permissions',
+            'roles'    => UserRolePermission::get(),
         );
         return view('admin.user_role_permission.add_permission')->with($data);
     }
@@ -41,7 +42,7 @@ class UserRolePermissionController extends Controller
     public function store(Request $req){
         // dd($req->all());
         $rules = [
-            'role_name'     => ['required', 'string', 'in:admin,franchise,superadmin,dealer,sub_dealer,limited'],
+            'role_name'     => ['required', 'string'],
             'permissions'   => ['array', 'nullable'],
         ];
         // dd($req->permissions);
@@ -88,6 +89,7 @@ class UserRolePermissionController extends Controller
             $data = array(
                 'title' => 'Edit user role permissions',
                 'edit_permission'   => UserRolePermission::where('id',hashids_decode($id))->first(),
+                'roles'    => UserRolePermission::get(),
                 'update'    => TRUE
             );
             

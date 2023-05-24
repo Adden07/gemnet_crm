@@ -33,12 +33,15 @@
                             <option value="">Select Role</option>
                             
                             
-                            <option value="superadmin" @if(@@$edit_permission->role_name == 'superadmin') selected @endif>Super Admin</option>
+                            {{-- <option value="superadmin" @if(@@$edit_permission->role_name == 'superadmin') selected @endif>Super Admin</option>
                             <option value="admin" @if(@@$edit_permission->role_name == 'admin') selected @endif>Admin</option>
                             <option value="franchise" @if(@@$edit_permission->role_name == 'franchise') selected @endif>Franchise</option>
                             <option value="dealer" @if(@@$edit_permission->role_name == 'dealer') selected @endif>Dealer</option>
                             <option value="sub_dealer" @if(@@$edit_permission->role_name == 'sub_dealer') selected @endif>Sub Dealer</option>
-                            <option value="limited" @if(@@$edit_permission->role_name == 'limited') selected @endif>Limited</option>
+                            <option value="limited" @if(@@$edit_permission->role_name == 'limited') selected @endif>Limited</option> --}}
+                            @foreach($roles AS $role)
+                                <option value="{{ $role->role_name }}" @if(@$edit_permission->role_name == $role->role_name) selected @endif>{{ $edit_permission->role_name }}</option>
+                            @endforeach
 
                         </select>
                     </div>
