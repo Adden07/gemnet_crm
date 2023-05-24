@@ -16,7 +16,7 @@ class InvoiceController extends Controller
 {
     public function index(Request $req){
   
-        if(\CommonHelpers::rights('enabled-finance','enabled-invoices')){
+        if(\CommonHelpers::rights('enabled-finance','view-invoice')){
             return redirect()->route('admin.home');
         }
         
@@ -208,6 +208,9 @@ class InvoiceController extends Controller
     }
 
     public function invoiceTax(){
+        if(\CommonHelpers::rights('enabled-finance','taxation')){
+            return redirect()->route('admin.home');
+        }
         $data = array(
             'title' => 'Invoice tax',
             'months' => Invoice::where('tax_paid', 0)->whereMonth('created_at', '!=', date('m'))->groupBy('created_at')->get(),

@@ -75,9 +75,11 @@
                                         <span class="btn-label"><i class="icon-pencil"></i></span>Edit
                                     </a>
                                 @endcan
-                                <button type="button" onclick="ajaxRequest(this)" data-url="{{ route('admin.staffs.delete', ['id'=>$admin->hashid]) }}" class="btn btn-danger btn-xs waves-effect waves-light">
-                                    <span class="btn-label"><i class="icon-trash"></i></span>Delete
-                                </button>
+                                @can('delete-staff')
+                                    <button type="button" onclick="ajaxRequest(this)" data-url="{{ route('admin.staffs.delete', ['id'=>$admin->hashid]) }}" class="btn btn-danger btn-xs waves-effect waves-light">
+                                        <span class="btn-label"><i class="icon-trash"></i></span>Delete
+                                    </button>
+                                @endcan
                             </td>
                             
                         </tr>

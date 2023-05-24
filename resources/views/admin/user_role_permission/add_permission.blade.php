@@ -179,6 +179,60 @@
                       
                         </div>
                     </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group" >
+                            <label for="Rights">Finance</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enabled</th>
+                                        <th>View Invoice</th>
+                                        <th>View Payments</th>
+                                        <th>Add Payments</th>
+                                        <th>Delete Payments</th>
+                                        <th>View Approve Payments</th>
+                                        <th>Approve Payments</th>
+                                        <th>Transactions</th>
+                                        <th>Taxation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-finance" @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-invoice" 
+                                            @if(isset($update)){{ @(in_array('view-invoice',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-payments" 
+                                            @if(isset($update)){{ @(in_array('view-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-payments" @if(isset($update)){{ @(in_array('add-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-payments" @if(isset($update)){{ @(in_array('delete-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                                @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-approve-payments" @if(isset($update)){{ @(in_array('view-approve-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                                    @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="approve-payments" @if(isset($update)){{ @(in_array('approve-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                                        @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="transaction" @if(isset($update)){{ @(in_array('transaction',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="taxation" @if(isset($update)){{ @(in_array('taxation',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                                                @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+                    
+                                        </tr>
+                                </tbody>
+                            </table>
+                      
+                        </div>
+                    </div>
                 </div>
                 <div class="row" id="rights">
                    
@@ -365,7 +419,7 @@
                             </table>
                         </div>
                     </div> --}}
-                    <div class="col-sm-6">
+                    {{-- <div class="col-sm-6">
                         <div class="form-group" id="rights">
                             <label for="Rights">Finance</label>
                             <table class=" table-bordered w-100 nowrap responsive">
@@ -386,13 +440,7 @@
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-invoices" @if(isset($update)){{ @(in_array('enabled-invoices',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                             @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
 
-                                        {{-- <td>
-                                            <input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-invoices" @if(isset($update)){{  @(in_array('enabled-invoices',@$edit_permission->permissions)) ? 'checked' : '' }} @endif />
-                                        </td> --}}
-
-                                        {{-- <td>
-                                            <input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-payments" @if(isset($update)){{  @(in_array('enabled-payments',@$edit_permission->permissions)) ? 'checked' : '' }} @endif />
-                                        </td> --}}
+                                
 
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-payments" @if(isset($update)){{ @(in_array('enabled-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                             @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
@@ -404,7 +452,7 @@
                                 </tbody>
                             </table> 
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-sm-6">
                         <div class="form-group" >
                             <label for="Rights">SMS</label>  

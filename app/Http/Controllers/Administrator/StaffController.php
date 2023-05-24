@@ -18,7 +18,7 @@ class StaffController extends Controller
 {   
     public function index(){
         
-        if(\CommonHelpers::rights('enabled-staff','add-staff')){
+        if(\CommonHelpers::rights('enabled-staff','enabled-staff')){
             return redirect()->route('admin.home');
         }
 
@@ -272,7 +272,7 @@ class StaffController extends Controller
     //update admin password
     public function updatePassword(Request $req){
         
-        if(\CommonHelpers::rights('enabled-staff','view-staff')){
+        if(\CommonHelpers::rights('enabled-staff','edit-staff')){
             return redirect()->route('admin.home');
         }
 
@@ -303,7 +303,7 @@ class StaffController extends Controller
     //update admin personal info
     public function updateInfo(Request $req){
         
-        if(\CommonHelpers::rights('enabled-staff','view-staff')){
+        if(\CommonHelpers::rights('enabled-staff','edit-staff')){
             return redirect()->route('admin.home');
         }
 
@@ -344,6 +344,11 @@ class StaffController extends Controller
     }
 
     public function delete($id){
+        
+        if(\CommonHelpers::rights('enabled-staff','delete-staff')){
+            return redirect()->route('admin.home');
+        }
+
         Admin::destroy(hashids_decode($id));
         return response()->json([
             'success'   => 'Staff deleted succcessfully',

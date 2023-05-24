@@ -39,7 +39,7 @@
                 <div class="card-box">
                     @can('edit-staff')
                         <a href="{{ route('admin.users.edit',['id'=>$admin_details->hashid]) }}" class="btn btn-primary float-right mb-3" id="edit_personal_info">Edit User</a>
-                        <a href="javascript:void(0)" onClick="window.location.reload()"  class="btn btn-primary float-right mb-3 mr-2 d-none" id="reset_btn">Reset</a>
+                        <a href="javascript:void(0)" onClick="window.location.reload()"  class="btn btn-primary float-right mb-3 mr-2 d-none" id="reset_btn">Cancel</a>
                     @endcan
                     
                     @if($admin_details->is_active == 'active')

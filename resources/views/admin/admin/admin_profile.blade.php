@@ -39,12 +39,13 @@
                 <div class="card-box">
                     @can('edit-admin')
                         <a href="{{ route('admin.users.edit',['id'=>$admin_details->hashid]) }}" class="btn btn-primary float-right mb-3" id="edit_personal_info">Edit User</a>
+                        <a href="javascript:void(0)" onClick="window.location.reload()"  class="btn btn-primary float-right mb-3 mr-2 d-none" id="reset_btn">Cancel</a>
                     @endcan
                     
                     @if($admin_details->is_active == 'active')
                         <a href="javascript:void(0)" class="btn btn-danger float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.disable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Disable</a>
 
-                    @elseif($admin_details->is_active == 'disabled')
+                    @elseif($admin_details->is_active == 'disabled'  || $admin_details->is_active == 'disabled_by_admin')
                         <a href="javascript:void(0)" class="btn btn-info float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.enable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Enable</a>
                     @endif
 
@@ -483,6 +484,7 @@
         //set masking here because it will not work outside because the filed is dynamic
         $('#personal_info_form #mobile').mask('3000000000');
 
+        $('#reset_btn').removeClass('d-none');
 
         page_loader('hide');
     });

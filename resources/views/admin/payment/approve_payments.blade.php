@@ -69,7 +69,9 @@
                         <th>Old Balance</th>
                         <th>New Balance</th>
                         <th>Status</th>
-                        <th>Approve</th>
+                        @can('approve-payments')
+                            <th>Approve</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -132,8 +134,9 @@
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
                         {data:'status', name:'payments.status',orderable:false,searchable:false},
-                        {data:'action', name:'payments.action',orderable:false,searchable:false},
-                        
+                        @can('approve-payments')
+                            {data:'action', name:'payments.action',orderable:false,searchable:false},
+                        @endcan
 
                     ],
                 });

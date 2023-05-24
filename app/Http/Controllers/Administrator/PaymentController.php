@@ -19,7 +19,7 @@ class PaymentController extends Controller
 {
     public function index(Request $req){
         
-        if(CommonHelpers::rights('enabled-finance','enabled-payments')){
+        if(CommonHelpers::rights('enabled-finance','view-payments')){
             return redirect()->route('admin.home');
         }
         $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
@@ -301,7 +301,7 @@ class PaymentController extends Controller
 
     public function approvePayments(Request $req){
         
-        if(CommonHelpers::rights('enabled-finance','enabled-payments')){
+        if(CommonHelpers::rights('enabled-finance','view-approve-payments')){
             return redirect()->route('admin.home');
         }
 

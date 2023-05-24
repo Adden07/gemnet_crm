@@ -12,9 +12,9 @@ class TransactionController extends Controller
 {   
     public function index(Request $req){
         
-        // if(CommonHelpers::rights('enabled-finance','enabled-payments')){
-        //     return redirect()->route('admin.home');
-        // }        
+        if(CommonHelpers::rights('enabled-finance','transaction')){
+            return redirect()->route('admin.home');
+        }        
         if($req->ajax()){
             $data =                 Transaction::
                                                 with(['admin', 'user'=>function($query){

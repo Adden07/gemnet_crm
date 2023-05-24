@@ -312,28 +312,31 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul class="nav-second-level" aria-expanded="false">
-                                @can('enabled-invoices')
+                                @can('view-invoice')
                                 <li>
                                     <a href="{{ route('admin.accounts.invoices.index') }}">Invoices</a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('admin.accounts.invoices.unpaid_invoice') }}">Unpaid Invoices</a>
-                                </li>
                                 @endcan
-                                @can('enabled-payments')
+                                @can('view-payments')
                                 <li>
                                     <a href="{{ route('admin.accounts.payments.index') }}">Payments</a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('admin.accounts.payments.approve_payments') }}">Approve Payments</a>
-                                </li>
                                 @endcan
-                                <li>
-                                    <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Taxation</a>
-                                </li>
+                                @can('view-approve-payments')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.payments.approve_payments') }}">Approve Payments</a>
+                                    </li>
+                                @endcan
+                                @can('transaction')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
+                                    </li>
+                                @endcan
+                                @can('taxation')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Taxation</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                         @endcan
@@ -376,12 +379,14 @@
                                 <span> Areas </span>
                             </a>
                         </li> --}}
-                        <li>
-                            <a href="{{ route('admin.settings.index') }}">
-                                <i class="fe-airplay"></i>
-                                <span> Settings </span>
-                            </a>
-                        </li>
+                        @can('enabled-settings')
+                            <li>
+                                <a href="{{ route('admin.settings.index') }}">
+                                    <i class="fe-airplay"></i>
+                                    <span> Settings </span>
+                                </a>
+                            </li>
+                        @endcan
                         {{-- @can('enabled-settings')
                         <li>
                             <a href="{{ route('admin.settings.index') }}">

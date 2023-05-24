@@ -81,7 +81,9 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
-                        <th>Action</th>
+                        @can('delete-payments')
+                            <th>Action</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -141,7 +143,9 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
+                        @can('delete-payments')
                         {data:'action', name:'payments.action',orderable:false,searchable:false},
+                        @endcan
 
                     ],
                 });
