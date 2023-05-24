@@ -24,7 +24,7 @@ class AdminController extends Controller
 
         $data = array(
             'title'     => 'All Staff',
-            'admins'    => Admin::where('id','!=',auth()->user()->id)->where('user_type', '!=', 'superadmin')->latest()->paginate(20),
+            'admins'    => Admin::where('id','!=',auth()->user()->id)->where('user_type', '!=', 'superadmin')->orderBy('id', 'ASC')->get(),
         );        
         return view('admin.admin.all_admins')->with($data);
     }
@@ -126,6 +126,7 @@ class AdminController extends Controller
             $data = array(
                 'title'         => 'Edit Admin',
                 'edit_admin'    => Admin::findOrFail(hashids_decode($id)),
+                'roles' => UserRolePermission::get(['id', 'role_name']),
                 'is_update'     => TRUE
             );
             \CommonHelpers::activity_logs('edit-admin');

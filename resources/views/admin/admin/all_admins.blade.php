@@ -80,7 +80,7 @@
                     @endforeach
                 </tbody>
             </table>
-           <span class="float-right">{{ $admins->links() }}</span>
+           {{-- <span class="float-right">{{ $admins->links() }}</span> --}}
         </div>
     </div>
 </div>

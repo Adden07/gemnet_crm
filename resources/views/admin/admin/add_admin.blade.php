@@ -137,7 +137,7 @@
                         <select class="form-control" name="user_type" id="user_type">
                             <option value="">Select Role</option>
                             @foreach ($roles as $role)
-                                <option value="{{ $role->role_name }}">{{ $role->role_name }}</option>
+                                <option value="{{ $role->role_name }}" @if(@$edit_admin->user_type == $role->role_name) selected @endif>{{ $role->role_name }}</option>
                             @endforeach
                         </select>
                     </div>
