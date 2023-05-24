@@ -45,6 +45,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::post('/update-document','AdminController@updateDocument')->name('update_document');
         Route::post('/update-password','AdminController@updatePassword')->name('update_password');
         Route::post('/update-info','AdminController@updateInfo')->name('update_info');
+        Route::get('/delete/{id}', 'AdminController@delete')->name('delete');
     });
 
     //settings routes

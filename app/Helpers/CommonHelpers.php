@@ -236,12 +236,17 @@ class CommonHelpers
     public static function generateInovciceNo($string){
         $year  = date('y');
         $month = date('m');
-        $day   = Invoice::where('invoice_id', 'LIKE', '%'.$string.'%')->latest()->first();
-        if ($day) {
-            $parts = explode('-', $day->invoice_id);
-            $day = isset($parts[2]) ? $parts[2] : null;
-        } else {
-            $day = null;
+        
+        if(date('d') == '01'){//on the month start date invoice will start from 01
+            $day = '01';//if its a 1st day of month then assign 01 to day
+        }else{//if its not 1st date then get the last record 
+            $day   = Invoice::where('invoice_id', 'LIKE', '%'.$string.'%')->latest()->first();
+            if ($day) {
+                $parts = explode('-', $day->invoice_id);
+                $day = isset($parts[2]) ? $parts[2] : null;
+            } else {//if invoices table is empty and its not a first date then assign 01 to day
+                $day = '01';
+            }
         }
         $invoice = $string.'-'.$year.$month.'-'.$day;
         

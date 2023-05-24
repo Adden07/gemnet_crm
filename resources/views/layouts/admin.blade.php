@@ -237,7 +237,7 @@
                             <li>
                                 <a href="{{ route('admin.admins.index') }}">
                                     <i class="fe-airplay"></i>
-                                    <span> Admin </span>
+                                    <span> Staff </span>
                                 </a>
                             </li>
                         @endcan

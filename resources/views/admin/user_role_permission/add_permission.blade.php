@@ -67,30 +67,60 @@
                             </table> 
                         </div>
                     </div>
-                   
+                                       
                     <div class="col-sm-6">
+                        <div class="form-group" >
+                            <label for="Rights">Staff</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enabled</th>
+                                        <th>Add</th>
+                                        <th>Edit</th>
+                                        <th>View</th>
+                                        {{-- <th>Documents</th> --}}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-admin" @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-admin" 
+                                            @if(isset($update)){{ @(in_array('add-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-admin" 
+                                            @if(isset($update)){{ @(in_array('edit-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-admin" @if(isset($update)){{ @(in_array('view-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        {{-- <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="update-admin-documents" @if(isset($update)){{ @(in_array('update-admin-documents',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td> --}}
+        
+                                    </tr>
+                                </tbody>
+                            </table>
+                      
+                        </div>
+                    </div>
+                    {{-- <div class="col-sm-6">
                         <div class="form-group" >
                             <label for="Rights">Admin</label>  
                             <table class=" table-bordered w-100 nowrap responsive">
                                 <thead>
                                     <tr style="text-align:center;">
                                         <th>Enabled</th>
-                                        {{-- <th>All</th> --}}
                                         <th>Add</th>
                                         <th>Edit</th>
                                         <th>View</th>
                                         <th>Documents</th>
-                                        {{-- <th>Delete</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr style="text-align:center;">
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-admin" @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-{{-- 
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-admin" 
-                                            @if(isset($update)){{ @(in_array('all-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
-                                            @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif /></td> --}}
-                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-admin" @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>                                        
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-admin" 
                                             @if(isset($update)){{ @(in_array('add-admin',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                             @if(isset($update)){{ @(in_array('enabled-admin',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
@@ -110,66 +140,8 @@
                             </table>
                       
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
-                {{-- <div class="row" id="rights">
-                   
-                    <div class="col-sm-6">
-                        <div class="form-group" >
-                            <label for="Rights">City</label>  
-                            <table class=" table-bordered w-100 nowrap responsive">
-                                <thead>
-                                    <tr style="text-align:center;">
-                                        <th>All</th>
-                                        <th>Add</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="text-align:center;">
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-city" @if(isset($update)){{ @(in_array('all-city',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-city" @if(isset($update)){{ @(in_array('add-city',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-city" @if(isset($update)){{ @(in_array('edit-city',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-city" @if(isset($update)){{ @(in_array('delete-city',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group" >
-                            <label for="Rights">Area</label>  
-                            <table class=" table-bordered w-100 nowrap responsive">
-                                <thead>
-                                    <tr style="text-align:center;">
-                                        <th>All</th>
-                                        <th>Add</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="text-align:center;">
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-area" @if(isset($update)){{ @(in_array('all-area',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-area" @if(isset($update)){{ @(in_array('add-area',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-area" @if(isset($update)){{ @(in_array('edit-area',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-area" @if(isset($update)){{ @(in_array('delete-area',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div> --}}
-
                 <div class="row" id="rights">
                    
                     <div class="col-sm-6">
@@ -180,9 +152,6 @@
                                     <tr style="text-align:center;">
                                         <th>Enabled</th>
                                         <th>View</th>
-                                        {{-- <th>Add</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -190,16 +159,7 @@
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-settings" @if(isset($update)){{ @(in_array('enabled-settings',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
 
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-general-settings" @if(isset($update)){{ @(in_array('view-general-settings',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
-                                            @if(isset($update)){{ @(in_array('enabled-settings',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
-
-                                        {{-- <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-settings-general" @if(isset($update)){{ @(in_array('all-settings-general',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-settings-general" @if(isset($update)){{ @(in_array('add-settings-general',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-                                        
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-settings-general" @if(isset($update)){{ @(in_array('edit-settings-general',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-settings-general" @if(isset($update)){{ @(in_array('delete-settings-general',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td> --}}
-                                        
+                                            @if(isset($update)){{ @(in_array('enabled-settings',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>                                        
                                     </tr>
                                 </tbody>
                             </table>
@@ -240,7 +200,7 @@
                     </div>
                 </div>
 
-                <div class="row" id="rights">
+                {{-- <div class="row" id="rights">
                    
                     <div class="col-sm-6">
                         <div class="form-group" >
@@ -258,11 +218,7 @@
                                 </thead>
                                 <tbody>
                                     <tr style="text-align:center;">
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-franchise" @if(isset($update)){{ @(in_array('enabled-franchise',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-
-                                        {{-- <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-franchise" 
-                                            @if(isset($update)){{ @(in_array('all-franchise',@$edit_permission->permissions)) ? 'checked' : '' }}@endif @if(isset($update)){{ @(in_array('enabled-franchise',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> --}}
-                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-franchise" @if(isset($update)){{ @(in_array('enabled-franchise',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>                                        
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-franchise" @if(isset($update)){{ @(in_array('add-franchise',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                             @if(isset($update)){{ @(in_array('enabled-franchise',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
 
@@ -304,10 +260,7 @@
                                 <tbody>
                                     <tr style="text-align:center;">
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-dealer" @if(isset($update)){{ @(in_array('enabled-dealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-{{-- 
-                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-dealer" @if(isset($update)){{ @(in_array('all-dealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
-                                            @if(isset($update)){{ @(in_array('enabled-dealer',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
-                                         --}}
+
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-dealer" @if(isset($update)){{ @(in_array('add-dealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                             @if(isset($update)){{ @(in_array('enabled-dealer',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
 
@@ -330,18 +283,17 @@
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="row" id="rights">
                    
-                    <div class="col-sm-6">
+                    {{-- <div class="col-sm-6">
                         <div class="form-group" >
                             <label for="Rights">Sub Dealers</label>  
                             <table class=" table-bordered w-100 nowrap responsive">
                                 <thead>
                                     <tr style="text-align:center;">
                                         <th>Enabled</th>
-                                        {{-- <th>All</th> --}}
                                         <th>Add</th>
                                         <th>Edit</th>
                                         <th>View</th>
@@ -352,9 +304,6 @@
                                 <tbody>
                                     <tr style="text-align:center;">
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-subdealer" @if(isset($update)){{ @(in_array('enabled-subdealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
-
-                                        {{-- <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-subdealer" @if(isset($update)){{ @(in_array('all-subdealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
-                                            @if(isset($update)){{ @(in_array('enabled-subdealer',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> --}}
                                         
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-subdealer" @if(isset($update)){{ @(in_array('add-subdealer',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                             @if(isset($update)){{ @(in_array('enabled-subdealer',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
@@ -377,7 +326,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-sm-6">
                         <div class="form-group" id="rights">
                             <label for="Rights">Finance</label>
@@ -416,6 +365,37 @@
                                     </tr>
                                 </tbody>
                             </table> 
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group" >
+                            <label for="Rights">SMS</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enabled</th>
+                                        <th>All SMS</th>
+                                        <th>Manual SMS</th>
+                                        <th>SMS By User</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-sms" @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="all-sms" 
+                                            @if(isset($update)){{ @(in_array('all-sms',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="manual-sms" 
+                                            @if(isset($update)){{ @(in_array('manual-sms',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="sms-by-user" @if(isset($update)){{ @(in_array('sms-by-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>        
+                                    </tr>
+                                </tbody>
+                            </table>
+                      
                         </div>
                     </div>
                 </div>

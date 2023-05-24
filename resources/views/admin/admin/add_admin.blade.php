@@ -10,7 +10,7 @@
                     <li class="breadcrumb-item active">{{ isset($is_update) ? 'Edit' : 'Add'}} </li>
                 </ol>
             </div>
-            <h4 class="page-title">{{ isset($is_update) ? 'Edit' : 'Add'}} Admin</h4>
+            <h4 class="page-title">{{ isset($is_update) ? 'Edit' : 'Add'}} Staff</h4>
         </div>
     </div>
 </div>
@@ -18,9 +18,9 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
-            <h4 class="header-title m-t-0">{{ isset($is_update) ? 'Edit' : 'Add'}} Admin</h4>
+            <h4 class="header-title m-t-0">{{ isset($is_update) ? 'Edit' : 'Add'}} Staff</h4>
             <p class="text-muted font-14 m-b-20">
-                Here you can {{ isset($is_update) ? 'Edit' : 'Add'}} Admin.
+                Here you can {{ isset($is_update) ? 'Edit' : 'Add'}} Staff.
             </p>
 
             <form action="{{ route('admin.admins.store') }}" class="ajaxForm" method="post" enctype="multipart/form-data" novalidate id="form">
@@ -132,7 +132,16 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
+                        <label for="">User Type</label>
+                        <select class="form-control" name="user_type" id="user_type">
+                            <option value="">Select Role</option>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->role_name }}">{{ $role->role_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
                         <label for="logo">Admin Photo</label>
                         <div class="input-group">
                             <div class="custom-file">
@@ -140,7 +149,6 @@
                                 <label class="custom-file-label profile_img_label" for="logo">Choose admin photo</label>
                             </div>
                             <div class="image_err w-100"></div>
-                            {{-- <img id="preview_image" src="@if(@file_exists($edit_admin->image)) {{ asset($edit_admin->image) }} @else {{ asset('admin_uploads/no_image.jpg') }} @endif"  class="@if(!isset($is_update)) d-none  @endif" width="100px" height="100px"/> --}}
                             <div class="position-relative mt-3">
                                 <img id="preview_nic_front" src="@if(@file_exists($edit_admin->image)) {{ asset($edit_admin->image) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) d-none  @endif" width="100px" height="100px"/>
                                 @if(@file_exists($edit_admin->image))

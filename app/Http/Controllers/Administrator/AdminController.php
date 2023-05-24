@@ -23,8 +23,8 @@ class AdminController extends Controller
         }
 
         $data = array(
-            'title'     => 'All Admins',
-            'admins'    => Admin::where('id','!=',auth()->user()->id)->where('user_type','admin')->latest()->paginate(20),
+            'title'     => 'All Staff',
+            'admins'    => Admin::where('id','!=',auth()->user()->id)->where('user_type', '!=', 'superadmin')->latest()->paginate(20),
         );        
         return view('admin.admin.all_admins')->with($data);
     }
@@ -36,7 +36,8 @@ class AdminController extends Controller
         }
 
         $data = array(
-            'title' => 'Add Admin',
+            'title' => 'Add Staff',
+            'roles' => UserRolePermission::get(['id', 'role_name']),
         );
 
         return view('admin.admin.add_admin')->with($data);
@@ -55,6 +56,7 @@ class AdminController extends Controller
             'nic_front' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'nic_back'  => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'image'     => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
+            'user_type' => ['required', 'max:50']
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -65,11 +67,11 @@ class AdminController extends Controller
         
         if(isset($req->admin_id)){
             $admin = Admin::findOrFail(hashids_decode($req->admin_id));
-            $msg   = 'Admin Updated Successfully';
+            $msg   = 'Staff Updated Successfully';
             $activity = "edited admin-($req->username)";
         }else{
             $admin = new Admin;
-            $msg   = 'Admin Added Successfully';
+            $msg   = 'Staff Added Successfully';
             $activity = "added admin-($req->username)";
         }
 
@@ -96,14 +98,13 @@ class AdminController extends Controller
         $admin->password    = Hash::make(@$req->password);
         $admin->email       = $req->email;
         $admin->nic         = $req->nic;
-        $admin->user_type   = 'admin';
         $admin->mobile      = '92'.$req->mobile;
         $admin->address     = $req->address;
 
-        $permissions = UserRolePermission::where('role_name','admin')->first();
+        $permissions = UserRolePermission::where('role_name',$req->user_type)->first();
 
         $admin->user_permissions = $permissions->permissions;
-        
+        $admin->user_type   = $permissions->role_name;
         $admin->save();
 
         \CommonHelpers::activity_logs($activity);
@@ -339,5 +340,13 @@ class AdminController extends Controller
             ]);
         }
         abort(404);
+    }
+
+    public function delete($id){
+        Admin::destroy(hashids_decode($id));
+        return response()->json([
+            'success'   => 'Staff deleted succcessfully',
+            'reload'    => true
+        ]);
     }
 }
