@@ -237,6 +237,16 @@
                             <li>
                                 <a href="{{ route('admin.admins.index') }}">
                                     <i class="fe-airplay"></i>
+                                    <span> Admin </span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        
+                        @can('enabled-staff')
+                            <li>
+                                <a href="{{ route('admin.staffs.index') }}">
+                                    <i class="fe-airplay"></i>
                                     <span> Staff </span>
                                 </a>
                             </li>
@@ -327,25 +337,32 @@
                             </ul>
                         </li>
                         @endcan
-                        <li>
-                            <a href="javascript: void(0);">
-                                <i class="fe-pocket"></i>
-                                <span> SMS </span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <ul class="nav-second-level" aria-expanded="false">
-                                <li>
-                                    <a href="{{ route('admin.sms.index') }}">All SMS</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.sms.manual_sms') }}">Manul SMS</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.sms.sms_by_user') }}">SMS By User</a>
-                                </li>
-                            </ul>
-                        </li>
-
+                        @can('enabled-sms')
+                            <li>
+                                <a href="javascript: void(0);">
+                                    <i class="fe-pocket"></i>
+                                    <span> SMS </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul class="nav-second-level" aria-expanded="false">
+                                    @can('all-sms')
+                                    <li>
+                                        <a href="{{ route('admin.sms.index') }}">All SMS</a>
+                                    </li>
+                                    @endcan
+                                    @can('manual-sms')
+                                    <li>
+                                        <a href="{{ route('admin.sms.manual_sms') }}">Manul SMS</a>
+                                    </li>
+                                    @endcan
+                                    @can('sms-by-user')
+                                    <li>
+                                        <a href="{{ route('admin.sms.sms_by_user') }}">SMS By User</a>
+                                    </li>
+                                    @endcan
+                                </ul>
+                            </li>
+                        @endcan
                         {{-- <li>
                             <a href="{{ route('admin.customizes.index') }}">
                                 <i class="fe-airplay"></i>

@@ -16,7 +16,7 @@ class PermissionsServiceProvider extends ServiceProvider
     }
 
     public function boot()
-    {
+    {   
         try {
             Gate::before(function ($user, $ability) {
                 // if ($user->is_admin) {

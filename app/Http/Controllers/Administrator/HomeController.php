@@ -10,6 +10,7 @@ class HomeController extends AdminController
     public function index()
     {   
         $time = now()->addMinutes(20);
+        // dd(auth()->user()->user_permissions);
         $data = array(
             "title" => "Dashboad",
         );

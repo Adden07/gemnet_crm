@@ -47,7 +47,23 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::post('/update-info','AdminController@updateInfo')->name('update_info');
         Route::get('/delete/{id}', 'AdminController@delete')->name('delete');
     });
-
+    //staff routes
+    Route::prefix('staff')->name('staffs.')->group(function(){
+        // Route::get('/','StaffController@index')->name('index');
+        // Route::get('/add','StaffController@add')->name('add');
+        // Route::post('/store','StaffController@store')->name('store');
+        Route::get('/add','StaffController@add')->name('add');
+        Route::post('/store','StaffController@store')->name('store');
+        Route::get('/list','StaffController@index')->name('index');
+        Route::get('/edit/{id}','StaffController@edit')->name('edit');
+        Route::get('/profile/{id}','StaffController@details')->name('detail');
+        Route::get('/check-unique','StaffController@checkUnique')->name('check_unique');
+        Route::get('/remove-attachments','StaffController@removeAttachment')->name('remove_attachment');
+        Route::post('/update-document','StaffController@updateDocument')->name('update_document');
+        Route::post('/update-password','StaffController@updatePassword')->name('update_password');
+        Route::post('/update-info','StaffController@updateInfo')->name('update_info');
+        Route::get('/delete/{id}', 'StaffController@delete')->name('delete');
+    });
     //settings routes
     Route::prefix('settings')->name('settings.')->group(function(){
         Route::get('/','SettingController@index')->name('index');
@@ -246,12 +262,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/','MigrationController@index')->name('index');
     });
 
-    //staff routes
-    Route::prefix('staff')->name('staffs.')->group(function(){
-        Route::get('/','StaffController@index')->name('index');
-        Route::get('/add','StaffController@add')->name('add');
-        Route::post('/store','StaffController@store')->name('store');
-    });
+
 
      //notifications
     Route::get('/notifications', 'NotificationsController@index')->name('notifications');

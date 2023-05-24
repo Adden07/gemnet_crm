@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Validator;
 class SmsController extends Controller
 {
     public function index(){
+        
+        if(\CommonHelpers::rights('enabled-sms','all-sms')){
+            return redirect()->route('admin.home');
+        }
         $data = array(
             'title'     => 'SMS',
             'messages'  => Sms::latest()->get(),
@@ -72,6 +76,9 @@ class SmsController extends Controller
     }
 
     public function manualSms(){
+        if(\CommonHelpers::rights('enabled-sms','manual-sms')){
+            return redirect()->route('admin.home');
+        }
         $data = array(
             'title' => 'Manual SMS',
             'messages'=> SmsLog::where('is_manual',1)->get(),
@@ -108,6 +115,9 @@ class SmsController extends Controller
     }
 
     public function smsByUser(){
+        if(\CommonHelpers::rights('enabled-sms','sms-by-user')){
+            return redirect()->route('admin.home');
+        }
         $data = array(
             'title'     => 'Sms By User',
             'users'     => User::latest()->get(),

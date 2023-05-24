@@ -58,7 +58,7 @@
                         <option value="">Select Package</option>
                         @foreach($packages AS $package)
                             @if($user_type != 'admin')
-                                <option value="{{ $package->hashid }}">{{ $package->name }} ({{ $user_count->where('package',$package->id)->count() }})</option>
+                                <option value="{{ $package->hashid }}">{{ $package->name }}</option>
                             @elseif($user_type == 'admin' && $package->users_count > 0)
                                 <option value="{{ $package->hashid }}">{{ $package->name }} ({{ $package->users_count }})</option>
                             @endif

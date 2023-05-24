@@ -67,7 +67,7 @@ class UserController extends Controller
             
             $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package')
                         ->when(auth()->user()->user_type != 'admin', function($query){
-                            $query->whereIn('admin_id',$this->getChildIds());
+                            // $query->whereIn('admin_id',$this->getChildIds());
                         });
 
             return DataTables::of($data)
@@ -218,33 +218,31 @@ class UserController extends Controller
             'title' => 'All Users',
             
             'users_count'   => User::select('status')->when(auth()->user()->user_type != 'admin',function($query){
-                                        $query->whereIn('admin_id',$this->getChildIds());
+                                        // $query->whereIn('admin_id',$this->getChildIds());
                                     })->when(isset($req->user_status),function($query) use ($req){
-                                        $query->where('status',$req->user_status);
+                                        // $query->where('status',$req->user_status);
                                     })->get(),
 
             'packages'    => Package::withCount(['users'])
-                                    ->orderBy('id','DESC')
-                                    ->when(auth()->user()->user_type != 'admin', function($query) use ($user_package_ids){
-                                        $query->whereIn('id',$user_package_ids);
-                                    })->get(),
+                                    ->orderBy('id','DESC')->get(),
 
             'franchises'  => Admin::where('user_type','franchise')->latest()->get(),
             
             'user_type'   => auth()->user()->user_type,      
         );
 
-        if(auth()->user()->user_type != 'admin'){
-            if(auth()->user()->user_type == 'franchise'){
-                $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','dealer')->get();
-            }elseif(auth()->user()->user_type == 'dealer'){
-                $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','sub_dealer')->get();
-            }
-        }
+        // if(auth()->user()->user_type != 'admin'){
+        //     if(auth()->user()->user_type == 'franchise'){
+        //         $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','dealer')->get();
+        //     }elseif(auth()->user()->user_type == 'dealer'){
+        //         $data['childs'] = Admin::where('added_to_id',auth()->user()->id)->where('user_type','sub_dealer')->get();
+        //     }
+        // }
 
         //for user count when user is not admin
         if(auth()->user()->user_type != 'admin'){
-            $data['user_count'] = User::select(['admin_id','package'])->whereIn('admin_id',CommonHelpers::getChildIds())->get(); 
+            // $data['user_count'] = User::select(['admin_id','package'])->whereIn('admin_id',CommonHelpers::getChildIds())->get(); 
+            $data['user_count'] = 0;
         }
    
 
@@ -1223,7 +1221,7 @@ class UserController extends Controller
 
     //display loign details
     public function loginDetail(Request $req){
-
+        
         if($req->ajax()){
      
             $data = RadacctArchive::whereDate('acctstarttime', '>=', date('Y-m-d',strtotime($req->from_date)))
@@ -1318,7 +1316,7 @@ class UserController extends Controller
         $data = array(
             'title' => 'Login Details',
             'users' => User::when(auth()->user()->user_type != 'admin',function($query){
-                $query->where('admin_id',$this->getChildIds());
+                // $query->where('admin_id',$this->getChildIds());
             })->get(),
         );
         return view('admin.user.login_details')->with($data);

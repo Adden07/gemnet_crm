@@ -37,7 +37,7 @@ trait HasPermissionsTrait
   }
 
   public function can($permission, $arguments = [])
-  {
+  { 
     return (bool) $this->hasPermission($permission, $arguments);
   }
 
