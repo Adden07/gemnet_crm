@@ -137,7 +137,7 @@ class StaffController extends Controller
     }
     //disaply details in modal
     public function details($id){
-        if(\CommonHelpers::rights('enabled-staff','view-staff')){
+        if(\CommonHelpers::rights('enabled-staff', 'enabled-staff')){
             return redirect()->route('admin.home');
         }
 
@@ -148,7 +148,7 @@ class StaffController extends Controller
                 'activity_logs' => ActivityLog::where('user_id',hashids_decode($id))->latest()->paginate(10),
             );
 
-            return view('admin.staffs.admin_profile')->with($data);
+            return view('admin.staff.admin_profile')->with($data);
         }
         abort(404);
     }

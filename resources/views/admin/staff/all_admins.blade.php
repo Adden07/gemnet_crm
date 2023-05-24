@@ -37,13 +37,14 @@
                         <th>NIC</th>
                         <th>User Type</th>
                         <th>Status</th>
+                        <th>View</th>
                         {{-- @can('view-admin')
                             <th>View</th>
                         @endcan --}}
                         {{-- @can('edit-admin')
                             <th>Action</th>
                         @endcan --}}
-                        Action
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,11 +63,11 @@
                                 <span class="badge badge-danger">Deactive</span>
                                 @endif
                             </td>
-                            {{-- @can('view-admin')
+                            {{-- @can('view-admin') --}}
                                 <td>
                                     <a href="{{ route('admin.staffs.detail',['id'=>$admin->hashid]) }}" class="text-primary details"><i class="icon-eye"></i></a>
                                 </td>
-                            @endcan --}}
+                            {{-- @endcan --}}
                             
                             <td>
                                 @can('edit-staff')
