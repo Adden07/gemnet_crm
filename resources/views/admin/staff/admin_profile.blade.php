@@ -45,7 +45,7 @@
                     @if($admin_details->is_active == 'active')
                         <a href="javascript:void(0)" class="btn btn-danger float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.disable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Disable</a>
 
-                    @elseif($admin_details->is_active == 'disabled' || $admin_details->is_active == 'disabled_by_admin')
+                    @else
                         <a href="javascript:void(0)" class="btn btn-info float-right mb-3 mr-2 nopopup" id="edit_personal_info" data-url="{{ route('admin.profiles.enable_user',['id'=>$admin_details->hashid]) }}" onclick="ajaxRequest(this)">Enable</a>
                     @endif
 
