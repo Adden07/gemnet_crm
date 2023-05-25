@@ -845,8 +845,8 @@
                             <table class="table">
                                 <thead>
                                     <th>#</th>
-                                    <th>Date</th>
-                                    <th>Admin</th>
+                                    <th>DateTime</th>
+                                    <th>By</th>
                                     <th>Text</th>
                                     <th>Action</th>
                                 </thead>
