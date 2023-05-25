@@ -42,6 +42,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
+
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -100,16 +101,23 @@ class PackageController extends Controller
         //     }
         // }
         if($user->user_current_balance < ($package->price+$mrc_total)){
-            if(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total)){
+            $err =  [
+                'error' => 'User balance is less than the package price'
+            ];
+
+            if(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total) && $user->credit_limit == 0){
                 return [
                     'error' => 'User balance is less than the package price and OTC price'
                 ];    
             }
-            return [
-                'error' => 'User balance is less than the package price'
-            ];
+            if($user->credit_limit > ($package->price+$mrc_total)){//
+                if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
+                    return [
+                        'error' => 'User credit limit is less than the package price'
+                    ];
+                }
+            }
         }
-        // dd('done');
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
         //     if($user->user_current_balance < ($package->price+$package->otc)){
         //         return [
