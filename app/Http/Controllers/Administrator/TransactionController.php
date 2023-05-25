@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\CommonHelpers;
 use App\Models\Transaction;
 use App\Models\Admin;
+use App\Models\User;
 use DataTables;
 class TransactionController extends Controller
 {   
@@ -19,12 +20,12 @@ class TransactionController extends Controller
             $data =                 Transaction::
                                                 with(['admin', 'user'=>function($query){
                                                     $query->select('users.*');
-                                                }])
+                                                }]);
                                                 // ->has('admin')
                                                 // ->has('user')
-                                                ->when(auth()->user()->user_type != 'admin', function($query){
-                                                    $query->where('admin_id', auth()->id());
-                                                });
+                                                // ->when(auth()->user()->user_type != 'admin', function($query){
+                                                //     $query->where('admin_id', auth()->id());
+                                                // });
                                             
 
             return DataTables::of($data)
@@ -96,46 +97,50 @@ class TransactionController extends Controller
                                             $query->where('type',1);
                                         }
                                     }
+                                    if(isset($req->user_id)){
+                                        $query->where('user_id', hashids_decode($req->user_id));
+                                    }
+
                                     if(isset($req->from_date) && isset($req->to_date)){
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     }
 
-                                    $query->when(isset($req->franchise_id) || $req->dealer_id || $req->subdealer_id, function($query) use ($req){
+                                    // $query->when(isset($req->franchise_id) || $req->dealer_id || $req->subdealer_id, function($query) use ($req){
 
-                                        $id = array();
+                                    //     $id = array();
                                         
-                                        if(isset($req->franchise_id)){
-                                            $id = [hashids_decode($req->franchise_id)];
-                                        }
+                                    //     if(isset($req->franchise_id)){
+                                    //         $id = [hashids_decode($req->franchise_id)];
+                                    //     }
 
-                                        if(isset($req->dealer_id)){
-                                            if($req->dealer_id == 'all_dealers'){
-                                                $dealer_ids =    Admin::select('id')
-                                                                    ->where('added_to_id',hashids_decode($req->franchise_id))
-                                                                    ->get()
-                                                                    ->pluck('id')
-                                                                    ->toArray();
-                                                $id     =   $dealer_ids;
-                                            }else{
-                                                $id = [hashids_decode($req->dealer_id)];
-                                            }
-                                        }
-                                        if(isset($req->subdealer_id)){
-                                            if($req->subdealer_id == 'all_subdealers'){
-                                                $subdealer_ids = Admin::select('id')
-                                                                ->where('added_to_id',hashids_decode($req->dealer_id))
-                                                                ->get()
-                                                                ->pluck('id')
-                                                                ->toArray();
-                                                $id     =   $subdealer_ids;
-                                            }else{
-                                                $id = [hashids_decode($req->subdealer_id)];
-                                            }
-                                        }
+                                    //     if(isset($req->dealer_id)){
+                                    //         if($req->dealer_id == 'all_dealers'){
+                                    //             $dealer_ids =    Admin::select('id')
+                                    //                                 ->where('added_to_id',hashids_decode($req->franchise_id))
+                                    //                                 ->get()
+                                    //                                 ->pluck('id')
+                                    //                                 ->toArray();
+                                    //             $id     =   $dealer_ids;
+                                    //         }else{
+                                    //             $id = [hashids_decode($req->dealer_id)];
+                                    //         }
+                                    //     }
+                                    //     if(isset($req->subdealer_id)){
+                                    //         if($req->subdealer_id == 'all_subdealers'){
+                                    //             $subdealer_ids = Admin::select('id')
+                                    //                             ->where('added_to_id',hashids_decode($req->dealer_id))
+                                    //                             ->get()
+                                    //                             ->pluck('id')
+                                    //                             ->toArray();
+                                    //             $id     =   $subdealer_ids;
+                                    //         }else{
+                                    //             $id = [hashids_decode($req->subdealer_id)];
+                                    //         }
+                                    //     }
 
-                                        $query->whereIn('admin_id',$id);
+                                    //     $query->whereIn('admin_id',$id);
 
-                                    });
+                                    // });
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
                                             $search = $req->search;
@@ -167,7 +172,8 @@ class TransactionController extends Controller
         }
         $data = array(
             'title'            => 'Transactions',
-            'franchises'       => Admin::where('user_type', 'franchise')->where('is_active', 'active')->get(),
+            // 'franchises'       => Admin::where('user_type', 'franchise')->where('is_active', 'active')->get(),
+            'users'            => User::latest()->get(),
         );
         return view('admin.transaction.all_transactions')->with($data);
     }

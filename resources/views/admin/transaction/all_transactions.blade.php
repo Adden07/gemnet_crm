@@ -57,7 +57,16 @@
 
                         </select>
                     </div>
-                    @if(auth()->user()->user_type == 'admin')
+                    <div class="form-group col-md-3">
+                        <label for="">Users</label>
+                        <select class="form-control select2" name="user_id" id="user_id">
+                            <option value="">Select user</option>
+                            @foreach($users AS $user)
+                                <option value="{{ $user->hashid }}">{{ $user->name }}-({{ $user->username }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    {{-- @if(auth()->user()->user_type == 'admin')
                         <div class="form-group col-md-3">
                             <label for="">Franchises</label>
                             <select class="form-control" name="franchise_id" id="franchise_id">
@@ -79,7 +88,7 @@
                                 <option value="">Select Sub Dealer</option>
                             </select>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
             </form>
         </div>
@@ -135,9 +144,10 @@
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
                                     d.search          = $('input[type="search"]').val()
-                                    d.franchise_id    = $('#franchise_id').val();
-                                    d.dealer_id       = $('#dealer_id').val();
-                                    d.subdealer_id    = $('#subdealer_id').val();
+                                    // d.franchise_id    = $('#franchise_id').val();
+                                    // d.dealer_id       = $('#dealer_id').val();
+                                    // d.subdealer_id    = $('#subdealer_id').val();
+                                    d.user_id         = $('#user_id').val();
                                     d.type    = $('#type').val();
                         },
                     },
@@ -158,8 +168,7 @@
                 });
 
 
-       $('#username,#from_date,#to_date,#added_by,#franchise_id,#dealer_id,#subdealer_id,#type').change(function(){
-            
+       $('#username,#from_date,#to_date,#added_by,#type,#user_id').change(function(){
             table.draw();
        });
     });
