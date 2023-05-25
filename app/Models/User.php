@@ -98,4 +98,8 @@ class User extends Model
         return $this->belongsTo(Admin::class,'sales_id','id');
     }
 
+    public function remark(){
+        return $this->hasMany(Remarks::class, 'user_id', 'id');
+    }
+
 }

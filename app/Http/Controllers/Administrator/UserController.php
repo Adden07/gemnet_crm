@@ -34,6 +34,8 @@ use App\Exports\UpdateUserExport;
 use App\Imports\UpdateUserExpirationImport;
 use App\Imports\UpdateUserImport;
 use App\Models\FileLog;
+use App\Models\Remark;
+use App\Models\Remarks;
 
 class UserController extends Controller
 {   
@@ -501,7 +503,7 @@ class UserController extends Controller
         abort(404);
     }
     //dispaly user profile
-    public function profile($id){
+    public function profile($id, $remark_id=null){
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
@@ -509,7 +511,7 @@ class UserController extends Controller
         if(isset($id) && !empty($id)){
             $data = array(
                 'title' => 'User Profile',
-                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew'])->findORFail(hashids_decode($id)),
+                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin'])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
                 'user_invoices' => Invoice::select(['id', 'invoice_id', 'created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price', 'total'])
@@ -526,6 +528,10 @@ class UserController extends Controller
                 'packages'      =>      Package::get(),
                 'areas'         =>      Area::latest()->get(),
             );
+            if($remark_id != null){
+                $data['edit_remark'] = Remarks::findOrFail(hashids_decode($remark_id));
+            }
+            // dd($data['user_details']->remark);
             //update user last profile visit column
             User::where('id',hashids_decode($id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
             
@@ -1205,19 +1211,47 @@ class UserController extends Controller
     public function remarks(Request $req){
         
         $validate = $req->validate([
-            'remark'   => ['required', 'max:80'],
-            'user_id'  => ['required']
+            'remark'   => ['required', 'max:250'],
+            'user_id'  => ['required'],
+            'remark_id'=> ['nullable']
         ]);
 
-        $user = User::findOrFail(hashids_decode($req->user_id));
-        $user->remarks = $req->remark;
-        $user->save();
+        if(auth()->user()->user_type != 'admin' && is_null($req->remark_id)){//admin users can remarks twice a day except admin
+            if(Remarks::where('admin_id',auth()->id())->where('user_id', hashids_decode($req->user_id))->whereDate('created_at',now())->count() >= 2){
+                return response()->json([
+                    'error' => 'Remark limit exceed',
+                ]);
+            }
+        }
+        if(isset($req->remark_id)){
+            $remark = Remarks::findOrFail(hashids_decode($req->remark_id));
+            $msg    = 'Remark updated successfully';
+        }else{
+            $remark = new Remarks();
+            $msg    = 'Remark added successfully';
+        }
+        $remark->admin_id  = auth()->id();
+        $remark->user_id   = hashids_decode($req->user_id);
+        $remark->text      = $req->remark;
+        $remark->save();
+        // $user = User::findOrFail(hashids_decode($req->user_id));
+        // $user->remarks = $req->remark;
+        // $user->save();
 
         return response()->json([
-            'success'   => 'Remarks updated successfully',
-            'reload'    => TRUE,
+            'success'   => $msg,
+            'redirect'  => route('admin.users.profile',['id'=>$req->user_id]),
         ]);
     }
+
+    public function deleteRemark($id){
+        Remarks::destroy(hashids_decode($id));
+        return response()->json([
+            'success'   => 'Remark deleted successfully',
+            'reload'    => true
+        ]);
+    }
+    
 
     //display loign details
     public function loginDetail(Request $req){
@@ -1388,10 +1422,10 @@ class UserController extends Controller
             
             $search = $req->search;
             
-            $data = User::when(auth()->user()->user_type != 'admin', function($query){
-                            $query->whereIn('admin_id',$this->getChildIds());
-                        });
-
+            // $data = User::when(auth()->user()->user_type != 'admin', function($query){
+            //                 $query->whereIn('admin_id',$this->getChildIds());
+            //             });
+            $data = User::query();
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('name',function($data){

@@ -830,14 +830,49 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="exampleFormControlTextarea1">Remarks</label>
-                                    <textarea name="remark" class="form-control" id="exampleFormControlTextarea1" rows="3" 
-                                    @if(auth()->user()->user_type != 'admin' && $user_details->admin_id != auth()->user()->id) readonly @endif>{{ $user_details->remarks }}</textarea>
+                                    <textarea name="remark" class="form-control" id="exampleFormControlTextarea1" rows="3">{{ @$edit_remark->text }}</textarea>
                                   </div>
                                   <input type="hidden" name="user_id" value="{{ $user_details->hashid }}">
-                                  @if(auth()->user()->user_type == 'admin' || $user_details->admin_id == auth()->user()->id)
+                                  {{-- @if(auth()->user()->user_type == 'admin' || $user_details->admin_id == auth()->user()->id) --}}
+                                  <input type="hidden" name="remark_id" id="remark_id" value="{{@$edit_remark->hashid }}">
                                     <input type="submit" class="btn btn-primary float-right" value="update">
-                                  @endif
+                                  {{-- @endif --}}
                             </form>
+                        </div>
+                        <div class="col-md-12 mt-2">
+                            <table class="table">
+                                <thead>
+                                    <th>#</th>
+                                    <th>Admin</th>
+                                    <th>Text</th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody>
+                                    @foreach($user_details->remark AS $remark)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $remark->admin->name }}</td>
+                                            <td>{{ $remark->text }}</td>
+                                            <td>
+                                                @if(auth()->user()->user_type != 'admin' && date('Y-m-d',strtotime($remark->created_at)) == date('Y-m-d'))
+                                                    <a href="{{ route('admin.users.profile',['id'=>$user_details->hashid, 'remark_id'=>$remark->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
+                                                        <span class="btn-label"><i class="icon-pencil"></i></span>Edit
+                                                    </a>
+                                                @elseif(auth()->user()->user_type == 'admin')
+                                                    <a href="{{ route('admin.users.profile',['id'=>$user_details->hashid, 'remark_id'=>$remark->hashid]) }}" class="btn btn-warning btn-xs waves-effect waves-light">
+                                                        <span class="btn-label"><i class="icon-pencil"></i></span>Edit
+                                                    </a>
+                                                @endif
+                                                @if(auth()->user()->user_type == 'admin')
+                                                    <button type="button" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.delete_remark', ['id'=>$remark->hashid]) }}" class="btn btn-danger btn-xs waves-effect waves-light">
+                                                        <span class="btn-label"><i class="icon-trash"></i></span>Delete
+                                                    </button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
