@@ -505,6 +505,7 @@
                                         <th>Mac vendor</th>
                                         <th>Login Detail</th>
                                         <th>Search</th>
+                                        <th>Credit Limit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -546,6 +547,9 @@
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
                                             
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="search-user" @if(isset($update)){{ @(in_array('search-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
+                                            
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="user-credit-limit" @if(isset($update)){{ @(in_array('user-credit-limit',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
     
                                     </tr>

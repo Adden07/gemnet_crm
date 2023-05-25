@@ -180,6 +180,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/update-users-expiraiton-task-history/{task_id}', 'UserController@updateUsersExpirationTaskHistory' )->name('update_users_expiration_task_history');
         //new routes
         Route::get('/get-user-current-balance/{id}', 'UserController@getUserCurrentBalance')->name('get_user_current_balance');
+        Route::get('/update-credit-limit', 'UserController@updateCreditLimit')->name('update_credit_limit');
     });
 
     //package routes

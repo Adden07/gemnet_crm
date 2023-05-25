@@ -83,6 +83,7 @@
                 @else
                     <span class="text-success">{{ number_format($user_details->user_current_balance, 2) }}</span>
                 @endif
+                -- Credit Limit {{ number_format($user_details->credit_limit) }}
             </h4>
         </div>
     </div>
@@ -120,6 +121,11 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="remarks_tab" data-toggle="tab" href="#remarks" role="tab" aria-selected="true" >Remarks</a>
     </li>
+    @can('user-credit-limit')
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="credit_limit_tab" data-toggle="tab" href="#credit_limit" role="tab" aria-selected="true" >Credit Limit</a>
+        </li>
+    @endcan
 </ul>
 
 <div class="tab-content pt-0" id="myTabContent">
@@ -883,6 +889,27 @@
             </div>
         </div>
     </div>
+    <div class="tab-pane fade" id="credit_limit" role="tabpanel">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="{{ route('admin.users.update_credit_limit') }}"  method="GET" class="ajaxForm" id="">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">Credit Limit</label>
+                                    <input type="number" class="form-control" name="credit_limit" value="{{ $user_details->credit_limit }}">
+                                  </div>
+                                  <input type="hidden" name="user_id" value="{{ $user_details->hashid }}">
+                                  <input type="submit" class="btn btn-primary float-right" value="update">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="tab-pane fade" id="edit_expiration" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">
@@ -1014,6 +1041,9 @@
     $('#remarks_tab').click(function(){
         tabs_local_storage = localStorage.setItem('tab','remarks');
     });
+    $('#credit_limit_tab').click(function(){
+        tabs_local_storage = localStorage.setItem('tab','credit_limit');
+    });
     $('#edit_expiration_tab').click(function(){
         tabs_local_storage = localStorage.setItem('tab','edit_expiration');
     });
@@ -1034,6 +1064,8 @@
         $('#remarks_tab').click();
     }else if(tabs_local_storage == 'edit_expiration'){
         $('#edit_expiration_tab').click();
+    }else if(tabs_local_storage == 'credit_limit'){
+        $('#credit_limit_tab').click();
     }
 
 

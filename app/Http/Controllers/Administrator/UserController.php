@@ -508,7 +508,7 @@ class UserController extends Controller
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
-        
+
         if(isset($id) && !empty($id)){
             $data = array(
                 'title' => 'User Profile',
@@ -2035,6 +2035,22 @@ class UserController extends Controller
         $user = User::findOrFail(hashids_decode($id));
         return response()->json([
             'user'  => $user->user_current_balance
+        ]);
+    }
+
+    public function updateCreditLimit(Request $req){
+        $req->validate([
+            'credit_limit'  => ['required', 'integer'],
+            'user_id'       => ['required', 'string', 'max:100']
+        ]);
+        
+        $user = User::findOrFail(hashids_decode($req->user_id));
+        $user->credit_limit = $req->credit_limit;
+        $user->save();
+        
+        return response()->json([
+            'success'   => 'User credit updated successfully',
+            'reload'    => true
         ]);
     }
 
