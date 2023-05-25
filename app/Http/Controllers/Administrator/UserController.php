@@ -1221,7 +1221,10 @@ class UserController extends Controller
 
     //display loign details
     public function loginDetail(Request $req){
-        
+        if(CommonHelpers::rights('enabled-user','user-login-detail')){
+            return redirect()->route('admin.home');
+        }
+
         if($req->ajax()){
      
             $data = RadacctArchive::whereDate('acctstarttime', '>=', date('Y-m-d',strtotime($req->from_date)))
@@ -1377,6 +1380,10 @@ class UserController extends Controller
     
 
     public function userSearch(Request $req){
+        if(CommonHelpers::rights('enabled-user','search-user')){
+            return redirect()->route('admin.home');
+        }
+
         if($req->ajax()){
             
             $search = $req->search;

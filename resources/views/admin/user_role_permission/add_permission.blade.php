@@ -503,6 +503,8 @@
                                         <th>Offline</th>
                                         <th>Login Fails</th>
                                         <th>Mac vendor</th>
+                                        <th>Login Detail</th>
+                                        <th>Search</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -539,7 +541,13 @@
                                             
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="mac-vendor-users" @if(isset($update)){{ @(in_array('mac-vendor-users',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
-                                        
+                                            
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="user-login-detail" @if(isset($update)){{ @(in_array('user-login-detail',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
+                                            
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="search-user" @if(isset($update)){{ @(in_array('search-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
+    
                                     </tr>
                                 </tbody>
                             </table>

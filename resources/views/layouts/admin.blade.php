@@ -280,18 +280,21 @@
                                         <a href="{{ route('admin.users.login_fail_log') }}">Login Fail Logs</a>
                                     </li>
                                 @endcan
-                                <li>
-                                    <a href="{{ route('admin.users.login_detail') }}">Login Details</a>
-                                </li>
+                                @can('user-login-detail')
+                                    <li>
+                                        <a href="{{ route('admin.users.login_detail') }}">Login Details</a>
+                                    </li>
+                                @endcan
                                 @can('mac-vendor-users')
                                     <li>
                                         <a href="{{ route('admin.users.mac_vendor_user') }}">Mac Vendor User</a>
                                     </li>
                                 @endcan
-                                
-                                <li>
-                                    <a href="{{ route('admin.users.search') }}">Search User</a>
-                                </li>
+                                @can('search-user')
+                                    <li>
+                                        <a href="{{ route('admin.users.search') }}">Search User</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                     @endcan
