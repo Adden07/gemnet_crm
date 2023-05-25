@@ -1598,7 +1598,7 @@
         rules:{
             remark:{
                 required:true,
-                maxlength:80,
+                maxlength:250,
             }
         }
     });
