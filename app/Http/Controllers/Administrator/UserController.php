@@ -126,10 +126,13 @@ class UserController extends Controller
                                     return $status;
                                 })
                                 ->addColumn('action',function($data){
+                                $action = '';
                                 
-                                $action = "<a href=".route('admin.users.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
+                                if(auth()->user()->can('edit-user')){
+                                    $action = "<a href=".route('admin.users.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
                                             <i class='icon-pencil'></i>
                                            </a>";
+                                }
                                 // if($data->admin_id == auth()->user()->id){
                                     if($data->status == 'registered'){
                                         if(auth()->user()->can('active-user')){
