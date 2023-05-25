@@ -489,11 +489,12 @@ class UserController extends Controller
     //subareas list
     public function subareas($id){
         if(isset($id) && !empty($id)){
-            if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
-                $subareas = Area::where('area_id',hashids_decode($id))->where('type','sub_area')->get();
-            }else{
-                $subareas = auth()->user()->areas()->where('type','sub_area')->get()->where('area_id',hashids_decode($id));
-            }
+            // if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
+            //     $subareas = Area::where('area_id',hashids_decode($id))->where('type','sub_area')->get();
+            // }else{
+            //     $subareas = auth()->user()->areas()->where('type','sub_area')->get()->where('area_id',hashids_decode($id));
+            // }
+            $subareas = Area::where('area_id', hashids_decode($id))->get();
             $html = view('admin.user.subarea_list',compact('subareas'))->render();
 
             return response()->json([
@@ -648,8 +649,8 @@ class UserController extends Controller
                 'mobile'            => ['required', 'numeric', 'digits:10'],
                 'address'           => ['required', 'string' ],
                 'city_id'           => ['required'],
-                'area_id'           => ['required'],
-                'subarea_id'        => ['required']
+                'area_id'           => ['nullable'],
+                'subarea_id'        => ['nullable']
             ];
 
             $validator = Validator::make($req->all(),$rules);
@@ -666,8 +667,8 @@ class UserController extends Controller
 
 
             $user->city_id     = hashids_decode($req->city_id);
-            $user->area_id     = hashids_decode($req->area_id);
-            $user->subarea_id  = hashids_decode($req->subarea_id);
+            $user->area_id     = @hashids_decode($req->area_id) ?? null;
+            $user->subarea_id  = @hashids_decode($req->subarea_id) ?? null;
             $user->name        = $req->name;
             $user->nic         = $req->nic;
             $user->mobile      = '92'.$req->mobile;
@@ -1219,7 +1220,7 @@ class UserController extends Controller
         if(auth()->user()->user_type != 'admin' && is_null($req->remark_id)){//admin users can remarks twice a day except admin
             if(Remarks::where('admin_id',auth()->id())->where('user_id', hashids_decode($req->user_id))->whereDate('created_at',now())->count() >= 2){
                 return response()->json([
-                    'error' => 'Remark limit exceed',
+                    'error' => 'Remark Limit Exceeded For Today !',
                 ]);
             }
         }

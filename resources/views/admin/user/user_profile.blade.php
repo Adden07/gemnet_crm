@@ -129,6 +129,8 @@
                 <div class="card-box">
                     @can('edit-user')
                         <a href="{{ route('admin.users.edit',['id'=>$user_details->hashid]) }}" class="btn btn-primary float-right mb-3 ml-2" id="edit_personal_info">Edit User</a>
+                        <a href="javascript:void(0)" onClick="window.location.reload()"  class="btn btn-primary float-right mb-3 mr-2 d-none" id="reset_btn">Cancel</a>
+
                     @endcan
                     @if($user_details->status == 'registered' && auth()->user()->id == $user_details->admin_id)
                     {{-- @can('active-user') --}}
@@ -843,15 +845,17 @@
                             <table class="table">
                                 <thead>
                                     <th>#</th>
+                                    <th>Date</th>
                                     <th>Admin</th>
                                     <th>Text</th>
                                     <th>Action</th>
                                 </thead>
                                 <tbody>
-                                    @foreach($user_details->remark AS $remark)
+                                    @foreach($user_details->remark->sortByDesc('id') AS $remark)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $remark->admin->name }}</td>
+                                            <td>{{ date('d-M-Y H:i:s', strtotime($remark->created_at)) }}</td>
+                                            <td>{{ $remark->admin->name }} ({{ $remark->admin->user_type }})</td>
                                             <td>{{ $remark->text }}</td>
                                             <td>
                                                 @if(auth()->user()->user_type != 'admin' && date('Y-m-d',strtotime($remark->created_at)) == date('Y-m-d'))
@@ -1223,7 +1227,7 @@
         //set masking here because it will not work outside because the filed is dynamic
         $('#personal_info_form #mobile').mask('3000000000');
 
-
+        $('#reset_btn').removeClass('d-none');                       
         page_loader('hide');
     });
 
@@ -1306,10 +1310,10 @@
                 required:true
             },
             area_id:{
-                required:true
+                required:false
             },
             subarea_id:{
-                required:true
+                required:false
             }
 
         },
