@@ -277,7 +277,7 @@ class CommonHelpers
         }
     }
 
-    public function incrementNumber($value){
+    public static function incrementNumber($value){
         // Convert the value to an integer
         $intValue = intval($value);
 
