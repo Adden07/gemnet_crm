@@ -83,7 +83,9 @@
                 @else
                     <span class="text-success">{{ number_format($user_details->user_current_balance, 2) }}</span>
                 @endif
+                @if($user_details->credit_limit != 0)
                 -- Credit Limit {{ number_format($user_details->credit_limit) }}
+                @endif
             </h4>
         </div>
     </div>
