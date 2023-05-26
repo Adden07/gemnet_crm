@@ -204,6 +204,14 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         {{ number_format($user->user_current_balance, 2) }}
     </span>
 </div>
+@if($user->credit_limit != 0)
+    <div class="">
+        <label>Credit Limit</label>
+        <span class="badge  ml-1  badge-success" id="">
+            {{ number_format($user->credit_limit, 2) }}
+        </span>
+    </div>
+@endif
 
 <input type="hidden" class="form-control " id="" name="status" value="{{ $user->status }}">
 <input type="hidden" class="form-control" id="username" name="username"  value="{{ $user->username }}">
