@@ -20,41 +20,25 @@
             <h3 class="header-title text-center">Summary</h3>
             <table class="table table-bordered w-100 nowrap">
                 <thead>
-                    {{-- <th>S.No</th> --}}
                     <th>Type</th>
                     <th>Total</th>
                     <th>Total Amount</th>
                 </thead>
                 <tbody>
-                    {{-- @foreach($invoices->groupBy('type') AS $key=>$invoice_type)
-                        <tr>
-                            <td>
-                                @if($key == 0)
-                                    Activations
-                                @elseif($key == 1)
-                                    Renews
-                                @elseif($key == 2)
-                                    Upgrades
-                                @endif
-                            </td>
-                            <td>{{ $invoice_type->count() }}</td>
-                            <td>Rs.{{ round($invoice_type->sum('total_cost')) }}</td>
-                        </tr>
-                    @endforeach --}}
                     <tr>
                         <td>Activations</td>
                         <td>{{ $invoices_total->where('type',0)->count() }}</td>
-                        <td>Rs.{{ round($invoices_total->where('type',0)->sum('total_cost')) }}</td>
+                        <td>Rs.{{ round($invoices_total->where('type',0)->sum('total')) }}</td>
                     </tr>
                     <tr>
                         <td>Renews</td>
                         <td>{{ $invoices_total->where('type',1)->count() }}</td>
-                        <td>Rs.{{ round($invoices_total->where('type',1)->sum('total_cost')) }}</td>
+                        <td>Rs.{{ round($invoices_total->where('type',1)->sum('total')) }}</td>
                     </tr>
                     <tr>
                         <td>Upgrades</td>
                         <td>{{ $invoices_total->where('type',2)->count() }}</td>
-                        <td>Rs.{{ round($invoices_total->where('type',2)->sum('total_cost')) }}</td>
+                        <td>Rs.{{ round($invoices_total->where('type',2)->sum('total')) }}</td>
                     </tr>
 
                     <tr>
@@ -63,6 +47,45 @@
                         <td>Rs.{{ round($invoices_total->sum('total_cost')) }}</td>
                     </tr>
                 </tbody>
+            </table>   
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h3 class="header-title text-center">Packages Summary</h3>
+            <table class="table table-bordered w-100 nowrap">
+                <thead>
+                    <th>#</th>
+                    <th>Package Name</th>
+                    <th>Activation</th>
+                    <th>Renew</th>
+                    <th>Upgrade</th>
+                    <th>Total Amount</th>
+                </thead>
+                <tbody>
+                    @foreach($invoices_total->groupBy('pkg_id') AS $data)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ @$data[0]->package->name }}</td>
+                            <td>{{ $data->where('type', 0)->count() }}</td>
+                            <td>{{ $data->where('type', 1)->count() }}</td>
+                            <td>{{ $data->where('type', 3)->count() }}</td>
+                            <td>{{ number_format($data->sum('total')) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td></td>
+                        <td>{{ $invoices_total->where('type', 0)->count() }}</td>
+                        <td>{{ $invoices_total->where('type', 1)->count() }}</td>
+                        <td>{{ $invoices_total->where('type', 3)->count() }}</td>
+                        <td>{{ number_format($invoices_total->sum('total')) }}</td>
+                    </tr>
+                </tfoot>
             </table>   
         </div>
     </div>
@@ -90,45 +113,6 @@
                         <label for="">To Date</label>
                         <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
                     </div>
-                    @if($user_type == 'admin')
-                        <div class="form-group col-md-3">
-                            <label for="">Franchises</label>
-                            <select class="form-control" name="franchise_id" id="franchise_id">
-                                <option value="">Select Franchise</option>
-                                {{-- @foreach($franchises AS $franchise)
-                                    <option value="{{ $franchise->hashid }}">{{  $franchise->name }}</option>
-                                @endforeach --}}
-                            </select>
-                        </div>
-                    @endif
-                </div>
-                <div class="row">
-                    @if($user_type == 'admin' || $user_type == 'franchise')
-                        <div class="form-group col-md-3">
-                            <label for="">Dealers</label>
-                            <select class="form-control" name="dealer_id" id="dealer_id">
-                                <option value="">Select Dealer</option>
-                                {{-- @if(isset($childs))
-                                    @foreach($childs AS $dealer)
-                                        <option value="{{ $dealer->hashid }}">{{ $dealer->name }}</option>
-                                    @endforeach
-                                @endif --}}
-                            </select>
-                        </div>
-                    @endif
-                    @if($user_type != 'sub_dealer')
-                        <div class="form-group col-md-3">
-                            <label for="">Sub Dealers</label>
-                            <select class="form-control" name="subdealer_id" id="subdealer_id">
-                                <option value="">Select Sub Dealer</option>
-                                @if($user_type == 'dealer' && isset($childs))
-                                    @foreach($childs AS $dealer)
-                                        <option value="{{ $dealer->hashid }}">{{ $dealer->name }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                    @endif
                     <div class="form-group col-md-3">
                         <label for="">Status</label>
                         <select class="form-control" name="type" id="type">
@@ -137,10 +121,13 @@
                             <option value="new" {{ (request()->has('type') && request()->get('type') == 'new') ? 'selected' : '' }}>New</option>
                         </select>
                     </div>
-                    <div class="col-md-3 mt-4">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <input type="submit" class="btn btn-primary float-right" value="search">
 
                     </div>
+                </div>
                 </div>
             </form>
         </div>
