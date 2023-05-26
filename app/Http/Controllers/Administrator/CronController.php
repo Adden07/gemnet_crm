@@ -184,6 +184,7 @@ class CronController extends Controller
             'success'   => 0,
             'failed'    => 0,
             'total'     => $auto_renew_users->count(),
+            'failed_of_balance' => 0
         );
 
         foreach($auto_renew_users AS $user){
@@ -203,6 +204,16 @@ class CronController extends Controller
                     $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax);
                     $current_exp_date       = $user->current_expiration_date;
                     $this->user_id       = $user->id;//set the value to private variable to later access in catch
+                    
+                    if($user->user_current_balance < ($package->price+$mrc_total) && $user->credit_limit == 0){
+                        $rec['failed_of_balance'] += 1;
+                        continue;
+                    }elseif(($user->credit_limit > ($package->price+$mrc_total)) || $user->credit_limit < ($package->price+$mrc_total)){
+                        if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
+                            $rec['failed_of_balance'] += 1;
+                            continue;
+                        }
+                    }
                     
                     if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
                         $user->renew_by                 = 1;
