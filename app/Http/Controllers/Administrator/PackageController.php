@@ -123,6 +123,7 @@ class PackageController extends Controller
                 ];
             }
         }
+
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
         //     if($user->user_current_balance < ($package->price+$package->otc)){
         //         return [
@@ -202,7 +203,7 @@ class PackageController extends Controller
                     $user->qt_expired               = 0;
                     $user->user_current_balance     = $user_new_balance;
                 }else{
-
+                    $user->user_current_balance     = $user_new_balance;
                 }
 
             }else{//means user is registered
