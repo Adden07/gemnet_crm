@@ -97,6 +97,32 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     </span>
 </div>
 @endif
+<div class="">
+    <label>Expiration Date:</label>
+    <span class="badge badge-info ml-1" id="new_expiration">
+        {{ Carbon\Carbon::now()->addMonth()->format('d-M-y 12.00') }}
+    </span>
+</div>
+<div class="">
+    <label>User Current Balance</label>
+    <span class="badge badge-info ml-1" id="">
+        {{ $user->user_current_balance }}
+    </span>
+</div>
+@if($user->credit_limit != 0)
+<div class="">
+    <label>Credit Limit:</label>
+    <span class="badge badge-info ml-1" id="">
+        {{ $user->credit_limit }}
+    </span>
+</div>
+@endif
+<div class="d-none" id="upgrade_package_price_tab">
+    <label>Upgrade price</label>
+    <span class="badge badge-info ml-1" id="upgrade_package_price">
+        
+    </span>
+</div>
 {{-- <input type="hidden" class="form-control " id="" name="status" value="{{ $user->status }}"> --}}
 {{-- <input type="hidden" class="form-control" id="username" name="username"  value="{{ $user->username }}"> --}}
 <input type="hidden" name="user_id" id="user_id" value="{{ $user->hashid }}">

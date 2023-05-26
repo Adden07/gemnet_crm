@@ -903,7 +903,7 @@
                                     <label for="exampleFormControlTextarea1">Credit Limit</label>
                                     <input type="number" class="form-control" name="credit_limit" value="{{ $user_details->credit_limit }}">
                                   </div>
-                                  <input type="hidden" name="user_id" value="{{ $user_details->hashid }}">
+                                  <input type="hidden" name="user_id" value="{{ $user_details->hashid }}" id="user_id_input">
                                   <input type="submit" class="btn btn-primary float-right" value="update">
                             </form>
                         </div>
@@ -1641,6 +1641,15 @@
         }
     });
 
+    $(document).on('change', '#package_id', function(){
+        var package_id = $(this).val();
+        var user_id = $('#user_id_input').val();
+        var route    = "{{ route('admin.packages.get_upgrade_package_price') }}";
+        getAjaxRequests(route, {user_id:user_id,package_id:package_id}, 'GET', function(resp){
+            $('#upgrade_package_price_tab').removeClass('d-none');
+            $('#upgrade_package_price').html(resp.upgrade_package_price);
+        });
+    });
     
 </script>
 @endsection
