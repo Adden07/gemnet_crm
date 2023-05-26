@@ -622,12 +622,12 @@ class PackageController extends Controller
 
             if($user->user_current_balance < $pkg_price_to_deduct && $user->credit_limit == 0){
                 throw new Exception("Package could be upgrade because of insufficent balance");
-            }elseif($user->credit_limit > ($pkg_price_to_deduct)){
+            }elseif(($user->credit_limit > ($pkg_price_to_deduct)) || $user->credit_limit < ($pkg_price_to_deduct)){
                 if(($user->credit_limit-abs($user->user_current_balance)) < ($pkg_price_to_deduct)){
                     throw new Exception("User credit limit is less than the package price");
                 }
             }
-            
+
             $user_current_balance   = $user->user_current_balance;
             $user_new_balance       = $user_current_balance-$pkg_price_to_deduct;
             $user_current_pkg       = $user->c_package;
