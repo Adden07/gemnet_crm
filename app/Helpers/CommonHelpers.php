@@ -267,7 +267,7 @@ class CommonHelpers
             if ($secondDashPos !== false) {
                 $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
                 $day            = substr($invoice, $secondDashPos+1);
-                $newInvoiceId = str_replace($day, self::incrementNumber($day), $invoice);
+                $newInvoiceId = str_replace($day, CommonHelpers::incrementNumber($day), $invoice);
                 if(Invoice::where('invoice_id', $newInvoiceId)->exists()){
                     return self::generateUniqueInvoiceNo($newInvoiceId);
                 }

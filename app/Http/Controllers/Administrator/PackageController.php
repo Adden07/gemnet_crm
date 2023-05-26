@@ -100,6 +100,7 @@ class PackageController extends Controller
         //         }
         //     }
         // }
+
         if($user->user_current_balance < ($package->price+$mrc_total)){
             $err =  [
                 'error' => 'User balance is less than the package price'
@@ -116,6 +117,10 @@ class PackageController extends Controller
                         'error' => 'User credit limit is less than the package price'
                     ];
                 }
+            }else{
+                return [
+                    'error' => 'User credit limit is less than the package price'
+                ];
             }
         }
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
