@@ -179,7 +179,7 @@
                             <td><a href="{{ route('admin.users.profile',['id'=>hashids_encode($invoice->user_id)]) }}" target="_blank">{{ @$invoice->user->username }}</a></td>
                             <td>{{ @$invoice->package->name }}</td>
                             <td>{{ ($invoice->current_exp_date != NULL) ? date('d-M-Y H:i:s',strtotime($invoice->current_exp_date)) : '' }}</td>
-                            <td>{{ date('d-M-y H:i:s',strtotime($invoice->new_exp_date)) }}</td>
+                            <td>{{ (!is_null(@$invoice->new_exp_date)) ? date('d-M-y H:i:s',strtotime($invoice->new_exp_date)) : '' }}</td>
                             <td>Rs.{{ round($invoice->total) }}</td>
                         </tr>
 
@@ -187,7 +187,7 @@
                             <tr>    
                                 <td colspan="6"></td>
                                 <td><b>Total</b></td>
-                                <td><b>Rs.{{ $invoices->where('admin_id',$invoice->admin_id)->sum('total_cost') }}</b></td>
+                                <td><b>Rs.{{ $invoices->where('admin_id',$invoice->admin_id)->sum('total') }}</b></td>
                             </tr>
                         @endif
                     

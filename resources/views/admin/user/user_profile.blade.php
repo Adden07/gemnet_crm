@@ -809,7 +809,7 @@
                                             {{ date('d-M-Y H:i:s',strtotime($invoice->current_exp_date)) }}
                                         @endif
                                     </td>
-                                    <td>{{ date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) }}</td>
+                                    <td>{{ (!is_null($invoice->new_exp_date))? date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) : '' }}</td>
                                     <td>{{ round($invoice->total) }}</td>
                                     {{-- <td>
                                         @if($invoice->paid == 0)

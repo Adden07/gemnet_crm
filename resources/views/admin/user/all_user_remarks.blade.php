@@ -15,12 +15,23 @@
 </div>
 
 <div class="row">
-    {{-- <div class="col-lg-12">
+    <div class="col-lg-12">
         <div class="card-box">
             <div class=" align-items-center justify-content-between">
                 <form action="{{ route('admin.activity_logs.index') }}" method="GET" class="" novalidate>
                     @csrf
                     <div class="row">
+                        <div class="form-group col-md-5">
+                            <label for="from_date">Remark Type</label>
+                            <select class="form-control" name="remark_type" id="remark_type">
+                                <option value="">Select Remark Type</option>\
+                                @foreach($remark_types AS $type)
+                                    <option value="{{ $type->remark_type }}">{{ $type->remark_type }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    {{-- <div class="row">
                         <div class="form-group col-md-5">
                             <label for="from_date">From Date</label>
                             <input type="date" class="form-control" value="{{ $from_date ?? date('Y-m-d') }}" parsley-trigger="change" data-parsley-required  name="from_date" id="from_date">
@@ -32,11 +43,11 @@
                         <div class="col-md-2">
                             <input type="submit" class="form-control btn btn-primary mt-3" value="search">
                         </div>
-                    </div>
+                    </div> --}}
                 </form>
             </div>
         </div>
-    </div> --}}
+    </div>
     <div class="col-lg-12">
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
@@ -48,8 +59,8 @@
                     <tr>
                         <th width="20">S.No</th>
                         <th>Admin</th>
-                        <th>User</th>
                         <th>Remark Type</th>
+                        <th>User</th>
                         <th>Remark</th>
                         <th>Date</th>
                     </tr>
@@ -90,19 +101,20 @@
                             d.from_date = $('#from_date').val(),
                             d.to_date = $('#to_date').val(),
                             d.search = $('input[type="search"]').val()
+                            d.remark_type = $('#remark_type').val();
                         },
             },
             columns : [
                 { data : 'DT_RowIndex', name : 'DT_RowIndex', searchable:false },
                 { data : 'admin', name: 'admin' },
-                { data : 'user', name : 'user' },
                 { data : 'remark_type', name : 'remark_type' },
+                { data : 'user', name : 'user' },
                 { data : 'remark', name : 'remark' },
                 { data : 'date', name : 'date' }
             ],   
         });
 
-        $('#to_date, #from_date').change(function(){
+        $('#remark_type').change(function(){
             table.draw();
        });
     })

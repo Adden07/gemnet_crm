@@ -120,18 +120,18 @@ class UserController extends Controller
                                 ->addColumn('expiration',function($data){
                                     $status = '';
                                     if($data->status == 'active'){
-                                        $status = "<span class='badge badge-success'>".$data->current_expiration_date."</span>";
+                                        $status = "<span class='badge badge-success' style='font-size:12px !important'>".$data->current_expiration_date."</span>";
                                     }else{
-                                        $status = "<span class='badge badge-danger'>".$data->current_expiration_date."</span>";
+                                        $status = "<span class='badge badge-danger' style='font-size:12px !important'>".$data->current_expiration_date."</span>";
                                     }
                                     return $status;
                                 })
                                 ->addColumn('user_current_balance',function($data){
                                     $balance = '';
                                     if($data->user_current_balance < 0){
-                                        $status = "<span class='badge badge-danger'>".number_format($data->user_current_balance)."</span>";
+                                        $status = "<span class='badge badge-danger' style='font-size:12px !important'>".number_format($data->user_current_balance)."</span>";
                                     }elseif($data->user_current_balance > 0){
-                                        $status = "<span class='badge badge-success'>".number_format($data->user_current_balance)."</span>";
+                                        $status = "<span class='badge badge-success' style='font-size:12px !important'>".number_format($data->user_current_balance)."</span>";
 
                                     }else{
                                         $status = number_format($data->user_current_balance);
@@ -2078,10 +2078,10 @@ class UserController extends Controller
         if($req->ajax()){
             $data = Remarks::with('user')
                                     ->when(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin',function($query){
-                                         $query->where('user_id',auth()->user()->id);
+                                        //  $query->where('user_id',auth()->user()->id);
                                      })->when(auth()->user()->user_type == 'admin',function($query){
-                                        $super_admin = Admin::where('user_type', 'superadmin')->first();
-                                        $query->where('user_id','!=',$super_admin->id);
+                                        // $super_admin = Admin::where('user_type', 'superadmin')->first();
+                                        // $query->where('user_id','!=',$super_admin->id);
                                      });
 
             return DataTables::of($data)
@@ -2104,36 +2104,39 @@ class UserController extends Controller
                                      ->orderColumn('DT_RowIndex', function($query, $o){
                                         $query->orderBy('created_at', $o);
                                     })
-                                    // ->filter(function($query) use ($req){
-                                    //     if(isset($req->from_date) && isset($req->to_date)){
-                                    //         $query->whereDate('created_at', '>=', date('Y-m-d',strtotime($req->from_date)))
-                                    //         ->whereDate('created_at', '<=', date('Y-m-d',strtotime($req->to_date)));
-                                    //         // $query->whereBetween('created_at',[date('Y-m-d',strtotime($req->from_date)),date('Y-m-d',strtotime($req->to_date))]);
-                                    //     }
-                                    //     if(isset($req->search)){
-                                    //         $query->where(function($search_query) use ($req){
-                                    //             $search = $req->search;
-                                    //             $search_query->whereLike([
-                                    //                         // 'username',
-                                    //                         'user_ip',
-                                    //                         'activity',
-                                    //                         'created_at'
-                                    //                     ], 
-                                    //             $search);
-                                    //             // ->orWhereHas('admin', function($q) use ($search) {
-                                    //             //     $q->whereLike(['name','username'], '%'.$search.'%');
-                                    //             // });
-                                    //         });
-                                    //     }
-                                    // })
+                                    ->filter(function($query) use ($req){
+                                        
+                                        if(isset($req->remark_type)){
+                                            // dd('done');
+                                            $query->where('remark_type', 'LIKE', '%'.$req->remark_type.'%');
+                                            // $query->whereDate('created_at', '>=', date('Y-m-d',strtotime($req->from_date)))
+                                            // ->whereDate('created_at', '<=', date('Y-m-d',strtotime($req->to_date)));
+                                            // $query->whereBetween('created_at',[date('Y-m-d',strtotime($req->from_date)),date('Y-m-d',strtotime($req->to_date))]);
+                                        }
+                                        if(isset($req->search)){
+                                            $query->where(function($search_query) use ($req){
+                                                $search = $req->search;
+                                                $search_query->whereLike([
+                                                            // 'username',
+                                                            'user_ip',
+                                                            'activity',
+                                                            'created_at'
+                                                        ], 
+                                                $search);
+                                                // ->orWhereHas('admin', function($q) use ($search) {
+                                                //     $q->whereLike(['name','username'], '%'.$search.'%');
+                                                // });
+                                            });
+                                        }
+                                    })
                                      ->make(true);
         }
 
         $data = array(
             'title' => 'User Remarks',
-            'remarks'   => Remarks::latest()->get(),
+            'remark_types'  => RemarkType::latest()->get(),
         );
-        return view('admin.user.all_user_remarks');
+        return view('admin.user.all_user_remarks')->with($data);
     }
 
 }
