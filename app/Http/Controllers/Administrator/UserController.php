@@ -68,10 +68,14 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance');
-                        // ->when(auth()->user()->user_type != 'admin', function($query){
-                        //     // $query->whereIn('admin_id',$this->getChildIds());
-                        // });
+            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance')
+                        ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer', function($query){
+                            if(auth()->user()->user_type == 'sales_person'){
+                                $query->where('sales_id', auth()->id());
+                            }elseif(auth()->user()->user_type == 'field_engineer'){
+                                $query->where('fe_id', auth()->id());
+                            }
+                        });
 
             return DataTables::of($data)
                                 ->addIndexColumn()
@@ -208,6 +212,10 @@ class UserController extends Controller
                                                 ->whereDate('current_expiration_date', '<', $req->expiration_date);
                                         }
                                     }
+                                    if(isset($req->paid) && $req->paid != 'all'){
+                                        $query->where('paid', intval($req->paid));
+                                    }
+                                    
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
                                             $search = $req->search;
@@ -711,7 +719,16 @@ class UserController extends Controller
         }
 
         //get users of login user
-        $users = User::whereIn('admin_id',$this->getChildIds())->get()->pluck('username')->toArray();
+        if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
+            if(auth()->user()->user_type == 'sales_person'){
+                $users = User::whereIn('salee_id',auth()->id())->get()->pluck('username')->toArray();
+            }elseif(auth()->user()->user_type == 'field_engineer'){
+                $users = User::whereIn('fe_id',auth()->id())->get()->pluck('username')->toArray();
+            }
+        }else{
+            $users = User::get()->pluck('username')->toArray();
+
+        }   
         
         if($req->ajax()){
             // ini_set('memory_limit', '2000M');
@@ -722,7 +739,7 @@ class UserController extends Controller
                             ->select(['radacctid', 'acctstarttime', 'username', 
                             'callingstationid', 'framedipaddress' ,'acctinputoctets', 
                            'acctoutputoctets'])
-                            ->when(auth()->user()->user_type != 'admin',function($query) use ($users){
+                            ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query) use ($users){
                                 $query->whereIn('username',$users);
                             })
                             ->whereNull('acctstoptime');
@@ -821,8 +838,12 @@ class UserController extends Controller
         }
 
         $data = User::select(['id', 'name', 'username', 'current_expiration_date', 'last_login_time', 'last_logout_time', 'address'])
-                        ->when(auth()->user()->user_type != 'admin',function($query){
-                            $query->whereIn('admin_id',$this->getChildIds());
+                        ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                            if(auth()->user()->user_type == 'sales_person'){
+                                $query->whereIn('sales_id', auth()->id());
+                            }elseif(auth()->user()->user_type == 'fe_id'){
+                                $query->whereIn('fe_id', auth()->id());
+                            }
                         })
                         ->where('status','active')
                         ->whereYear('last_logout_time','!=',1970)
@@ -1447,7 +1468,13 @@ class UserController extends Controller
             // $data = User::when(auth()->user()->user_type != 'admin', function($query){
             //                 $query->whereIn('admin_id',$this->getChildIds());
             //             });
-            $data = User::query();
+            $data = User::when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                if(auth()->user()->user_type == 'sales_person'){
+                    $query->whereIn('sales_id', auth()->id());
+                }elseif(auth()->user()->user_type == 'fe_id'){
+                    $query->whereIn('fe_id', auth()->id());
+                }
+            });
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('name',function($data){
@@ -2079,12 +2106,13 @@ class UserController extends Controller
 
         if($req->ajax()){
             $data = Remarks::with('user')
-                                    ->when(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin',function($query){
-                                        //  $query->where('user_id',auth()->user()->id);
-                                     })->when(auth()->user()->user_type == 'admin',function($query){
-                                        // $super_admin = Admin::where('user_type', 'superadmin')->first();
-                                        // $query->where('user_id','!=',$super_admin->id);
-                                     });
+                        ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                            if(auth()->user()->user_type == 'sales_person'){
+                                $query->whereIn('sales_id', auth()->id());
+                            }elseif(auth()->user()->user_type == 'fe_id'){
+                                $query->whereIn('fe_id', auth()->id());
+                            }
+                        });
 
             return DataTables::of($data)
                                      ->addIndexColumn()

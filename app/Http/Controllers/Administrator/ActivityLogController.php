@@ -19,12 +19,13 @@ class ActivityLogController extends Controller
 
         if($req->ajax()){
             $data = ActivityLog::with('user')
-                                    ->when(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin',function($query){
-                                         $query->where('user_id',auth()->user()->id);
-                                     })->when(auth()->user()->user_type == 'admin',function($query){
-                                        $super_admin = Admin::where('user_type', 'superadmin')->first();
-                                        $query->where('user_id','!=',$super_admin->id);
-                                     });
+                            ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'filed_engineer',function($query){
+                                if(auth()->user()->user_type == 'sales_person'){
+                                    $query->whereIn('sales_id', auth()->id());
+                                }elseif(auth()->user()->user_type == 'fe_id'){
+                                    $query->whereIn('fe_id', auth()->id());
+                                }
+                            });
 
             return DataTables::of($data)
                                      ->addIndexColumn()

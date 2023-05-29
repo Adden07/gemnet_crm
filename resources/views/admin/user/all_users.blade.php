@@ -12,7 +12,7 @@
 
                 </ol>
             </div>
-            <h4 class="page-title">All Users | Active Users ({{ $users_count->where('status','active')->count() }}) | Expired Users ({{ $users_count->where('status','expired')->count() }}) | ({{ $users_count->where('status','terminated')->count() }}) | Total Users ({{ $users_count->count() }})</h4>
+            <h4 class="page-title">All Users | Active Users ({{ $users_count->where('status','active')->count() }}) | Expired Users ({{ $users_count->where('status','expired')->count() }}) | Terminated ({{ $users_count->where('status','terminated')->count() }}) | Total Users ({{ $users_count->count() }})</h4>
         </div>
     </div>
 </div>
@@ -36,13 +36,15 @@
                             <option value="expired_online">Expired Online</option>
                             <option value="expired_offline">Expired Offline</option>
                         </optgroup>
-                        <optgroup label="Registered">
+                        {{-- <optgroup label="Registered">
                             <option value="registered">Registered</option>
                         </optgroup>
                         <optgroup label="Disabled">
                             <option value="disabled">Disabled</option>
-                        </optgroup>
+                        </optgroup> --}}
                         <optgroup label="others">
+                            <option value="registered">Registered</option>
+                            <option value="disabled">Disabled</option>
                             <option value="terminated">Terminated</option>
                         </optgroup>
                     </select>
@@ -78,6 +80,14 @@
                         <option value="{{ date('Y-m-d',strtotime('+1 days')) }}">Tomorrow</option>
                         <option value="{{ date('Y-m-d',strtotime('+3 days')) }}">Next 3 Days</option>
                         <option value="{{ date('Y-m-d',strtotime('+1 week')) }}">Next 7 Days</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="">Paid/Unpaid</label>
+                    <select class="form-control" name="paid" id="paid">
+                        <option value="all">All</option>
+                        <option value="1">Paid</option>
+                        <option value="0">Unpaid</option>
                     </select>
                 </div>
             </div>  
@@ -165,6 +175,7 @@
                                     d.package_id    = $('#package_id').val();
                                     d.expiration_date = $('#expiration_date').val(),
                                     d.search        = $('input[type="search"]').val()
+                                    d.paid          = $('#paid').val()
                         },
                     },
                     
@@ -183,7 +194,7 @@
                 });
 
 
-       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date').change(function(){
+       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date,#paid').change(function(){
             if($(this).attr('id') == 'expiration_date'){
                 $('#from_date').val('');
                 $('#to_date').val('');

@@ -21,7 +21,15 @@ class InvoiceController extends Controller
         }
         $data = array(
             'title' => 'Invoices',
-            'invoices'  => Invoice::with(['admin','user','package'])
+            'invoices'  => Invoice::with(['admin','user'=>function($query){
+                                                        if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
+                                                            if(auth()->user()->user_type == 'sales_person'){
+                                                                $query->whereIn('sales_id', auth()->id());
+                                                            }elseif(auth()->user()->user_type == 'fe_id'){
+                                                                $query->whereIn('fe_id', auth()->id());
+                                                            }
+                                                        }
+                                                    },'package'])
                                     ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     },function($query){
@@ -34,7 +42,15 @@ class InvoiceController extends Controller
                                         // $query->whereIn('admin_id',\CommonHelpers::getChildIds());
                                     })->orderBy('admin_id','DESC')->orderBy('id','DESC')->paginate(1000)->withQueryString(),
                                     
-            'invoices_total'  => Invoice::select('type', 'total', 'pkg_id', 'id')->with(['package:id,name'])
+            'invoices_total'  => Invoice::with(['package:id,name','user'=>function($query){
+                if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
+                    if(auth()->user()->user_type == 'sales_person'){
+                        $query->whereIn('sales_id', auth()->id());
+                    }elseif(auth()->user()->user_type == 'fe_id'){
+                        $query->whereIn('fe_id', auth()->id());
+                    }
+                }
+            }])
                                     ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     },function($query){

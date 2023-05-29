@@ -26,8 +26,15 @@ class PaymentController extends Controller
         $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
         
         if($req->ajax()){
-            $data =                 Payment::with(['admin', 'receiver'])
-                                            ->select('payments.*');
+        $data =                 Payment::with(['admin', 'receiver'])
+                                        ->select('payments.*')
+                                        ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                                            if(auth()->user()->user_type == 'sales_person'){
+                                                $query->whereIn('sales_id', auth()->id());
+                                            }elseif(auth()->user()->user_type == 'fe_id'){
+                                                $query->whereIn('fe_id', auth()->id());
+                                            }
+                                        });
 
             return DataTables::of($data)
                                 ->addIndexColumn()
@@ -147,7 +154,13 @@ class PaymentController extends Controller
         $data = array(
             'title'     => 'Add Payment',
             'user_type' => auth()->user()->user_type,
-            'users'     => User::latest()->get(),
+            'users'     => User::when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                if(auth()->user()->user_type == 'sales_person'){
+                    $query->whereIn('sales_id', auth()->id());
+                }elseif(auth()->user()->user_type == 'fe_id'){
+                    $query->whereIn('fe_id', auth()->id());
+                }
+            })->latest()->get(),
         );
 
         return view('admin.payment.add_payment')->with($data);
