@@ -318,7 +318,8 @@ class UserController extends Controller
             'user_type'         => ['required', 'string', 'in:company,individual'],
             'business_name'     => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
             'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
-            'landline_no'       => ['string', 'nullable']
+            'landline_no'       => ['string', 'nullable'],
+            'email'             => ['nullable', 'string', 'email']
         ];
         
         $validator = Validator::make($req->all(),$rules);
@@ -382,6 +383,7 @@ class UserController extends Controller
         $user->fe_id       = hashids_decode($req->fe_id);
         $user->user_type   = $req->user_type;
         $user->ntn         = @$req->ntn;
+        $user->email         = @$req->email;
         $user->business_name = @$req->business_name;
         $user->landline_no   = @$req->landline_no;
         $user->save();
@@ -840,9 +842,9 @@ class UserController extends Controller
         $data = User::select(['id', 'name', 'username', 'current_expiration_date', 'last_login_time', 'last_logout_time', 'address'])
                         ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
                             if(auth()->user()->user_type == 'sales_person'){
-                                $query->whereIn('sales_id', auth()->id());
+                                $query->where('sales_id', auth()->id());
                             }elseif(auth()->user()->user_type == 'fe_id'){
-                                $query->whereIn('fe_id', auth()->id());
+                                $query->where('fe_id', auth()->id());
                             }
                         })
                         ->where('status','active')
