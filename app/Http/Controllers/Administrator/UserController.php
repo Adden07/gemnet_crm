@@ -127,7 +127,16 @@ class UserController extends Controller
                                     return $status;
                                 })
                                 ->addColumn('user_current_balance',function($data){
-                                    return number_format($data->user_current_balance);
+                                    $balance = '';
+                                    if($data->user_current_balance < 0){
+                                        $status = "<span class='badge badge-danger'>".number_format($data->user_current_balance)."</span>";
+                                    }elseif($data->user_current_balance > 0){
+                                        $status = "<span class='badge badge-success'>".number_format($data->user_current_balance)."</span>";
+
+                                    }else{
+                                        $status = number_format($data->user_current_balance);
+                                    }
+                                    return $status;
                                 })
                                 ->addColumn('action',function($data){
                                 $action = '';
@@ -219,7 +228,7 @@ class UserController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                 })
-                                ->rawColumns(['sales_person','status','expiration','action','name','username','package'])
+                                ->rawColumns(['sales_person','status','expiration','action','name','username','package','user_current_balance'])
                                 ->toJson();
         }
         
