@@ -184,6 +184,8 @@ class UserController extends Controller
                                             $query->where('status', 'registered')->where('user_status',1);
                                         }elseif($req->status == 'disabled'){
                                             $query->where('user_status',0);
+                                        }elseif($req->status == 'terminated'){
+                                            $query->where('status', 'terminated');
                                         }
                                     }
                                     $query->when(isset($req->from_date) && isset($req->to_date) && $req->expiration_date == 'all',function($query) use ($req){

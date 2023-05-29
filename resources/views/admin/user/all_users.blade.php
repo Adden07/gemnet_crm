@@ -42,6 +42,9 @@
                         <optgroup label="Disabled">
                             <option value="disabled">Disabled</option>
                         </optgroup>
+                        <optgroup label="others">
+                            <option value="terminated">Terminated</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="form-group col-md-3">
