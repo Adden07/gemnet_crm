@@ -205,10 +205,10 @@ class UserController extends Controller
                                                         'current_expiration_date',
                                                         'mobile'
                                                     ], 
-                                            $search)
-                                            ->orWhereHas('admin', function($q) use ($search) {
-                                                $q->whereLike(['name','username'], '%'.$search.'%');
-                                            });
+                                            $search);
+                                            // ->orWhereHas('admin', function($q) use ($search) {
+                                            //     $q->whereLike(['name','username'], '%'.$search.'%');
+                                            // });
                                         });
                                     }
                                 })
