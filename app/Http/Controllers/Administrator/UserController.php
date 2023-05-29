@@ -721,15 +721,15 @@ class UserController extends Controller
         //get users of login user
         if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
             if(auth()->user()->user_type == 'sales_person'){
-                $users = User::whereIn('salee_id',auth()->id())->get()->pluck('username')->toArray();
+                $users = User::where('sale_id',auth()->id())->get()->pluck('username')->toArray();
             }elseif(auth()->user()->user_type == 'field_engineer'){
-                $users = User::whereIn('fe_id',auth()->id())->get()->pluck('username')->toArray();
+                $users = User::where('fe_id',auth()->id())->get()->pluck('username')->toArray();
             }
         }else{
             $users = User::get()->pluck('username')->toArray();
 
         }   
-        
+
         if($req->ajax()){
             // ini_set('memory_limit', '2000M');
             
