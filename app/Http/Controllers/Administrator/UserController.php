@@ -67,10 +67,10 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package')
-                        ->when(auth()->user()->user_type != 'admin', function($query){
-                            // $query->whereIn('admin_id',$this->getChildIds());
-                        });
+            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package');
+                        // ->when(auth()->user()->user_type != 'admin', function($query){
+                        //     // $query->whereIn('admin_id',$this->getChildIds());
+                        // });
 
             return DataTables::of($data)
                                 ->addIndexColumn()

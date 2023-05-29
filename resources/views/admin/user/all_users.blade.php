@@ -184,7 +184,7 @@
                 $('#to_date').val('');
             }
             table.draw();
-            getPackageCount();
+            // getPackageCount();
        });
     });
     //get package count
