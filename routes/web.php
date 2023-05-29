@@ -311,6 +311,13 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/sms-by-users', 'smsByUser')->name('sms_by_user');
         Route::post('/send-sms-by-user', 'sendSmsByUser')->name('send_sms_by_user');
     });
+
+    Route::prefix('remarks')->controller(RemarkController::class)->name('remarks.')->group(function(){
+        Route::get('/', 'index')->name('index');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::get('/delete/{id}', 'delete')->name('delete');
+    });
 });
 
 Route::get('/errors/{method}', 'ErrorController@index');

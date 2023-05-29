@@ -390,6 +390,12 @@
                                 </a>
                             </li>
                         @endcan
+                        <li>
+                            <a href="{{ route('admin.remarks.index') }}">
+                                <i class="fe-airplay"></i>
+                                <span> Remarks </span>
+                            </a>
+                        </li>
                         {{-- @can('enabled-settings')
                         <li>
                             <a href="{{ route('admin.settings.index') }}">

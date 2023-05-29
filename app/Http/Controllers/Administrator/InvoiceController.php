@@ -30,14 +30,8 @@ class InvoiceController extends Controller
                                         $query->where('pkg_id',hashids_decode($req->package_id));
                                     })->when(isset($req->type),function($query) use ($req){//when type is iset
                                         $query->where('type',$req->type);
-                                    })->when((isset($req->franchise_id) && !isset($req->dealer_id) && !isset($req->subdealer_id)),function($query) use ($req){//get by franchise id
-                                        $query->where('admin_id',hashids_decode($req->franchise_id));
-                                    })->when((isset($req->franchise_id) && isset($req->dealer_id) && !isset($req->subdealer_id)),function($query) use ($req){//get by dealer
-                                        $query->where('admin_id',hashids_decode($req->dealer_id));
-                                    })->when((isset($req->franchise_id) && isset($req->dealer_id) && isset($req->subdealer_id)),function($query) use ($req){//get by subdealer id
-                                        $query->where('admin_id',hashids_decode($req->subdealer_id));
                                     })->when(auth()->user()->user_type != 'admin',function($query){
-                                        $query->whereIn('admin_id',\CommonHelpers::getChildIds());
+                                        // $query->whereIn('admin_id',\CommonHelpers::getChildIds());
                                     })->orderBy('admin_id','DESC')->orderBy('id','DESC')->paginate(1000)->withQueryString(),
                                     
             'invoices_total'  => Invoice::select('type', 'total', 'pkg_id', 'id')->with(['package:id,name'])
