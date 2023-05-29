@@ -181,6 +181,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         //new routes
         Route::get('/get-user-current-balance/{id}', 'UserController@getUserCurrentBalance')->name('get_user_current_balance');
         Route::get('/update-credit-limit', 'UserController@updateCreditLimit')->name('update_credit_limit');
+        //all remarks routes
+        Route::get('/all-users-remarks', 'UserController@allUserRemarks')->name('all_user_remarks');
     });
 
     //package routes

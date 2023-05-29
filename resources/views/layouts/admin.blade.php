@@ -295,6 +295,9 @@
                                         <a href="{{ route('admin.users.search') }}">Search User</a>
                                     </li>
                                 @endcan
+                                <li>
+                                    <a href="{{ route('admin.users.all_user_remarks') }}">Remarks</a>
+                                </li>
                             </ul>
                         </li>
                     @endcan

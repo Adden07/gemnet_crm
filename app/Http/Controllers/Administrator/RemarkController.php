@@ -53,7 +53,7 @@ class RemarkController extends Controller
     }
 
     public function delete($id){
-        RemarkType::findOrFail(hashids_decode($id));
+        RemarkType::destroy(hashids_decode($id));
         return response()->json([
             'success'   => 'Remark deleted successfully',
             'reload'    => true

@@ -36,6 +36,7 @@ use App\Imports\UpdateUserImport;
 use App\Models\FileLog;
 use App\Models\Remark;
 use App\Models\Remarks;
+use App\Models\RemarkType;
 
 class UserController extends Controller
 {   
@@ -534,6 +535,7 @@ class UserController extends Controller
                                             ->latest()->limit(6)->get(),
                 'packages'      =>      Package::get(),
                 'areas'         =>      Area::latest()->get(),
+                'remarks'       => RemarkType::latest()->get(),
             );
             if($remark_id != null){
                 $data['edit_remark'] = Remarks::findOrFail(hashids_decode($remark_id));
@@ -1220,7 +1222,8 @@ class UserController extends Controller
         $validate = $req->validate([
             'remark'   => ['required', 'max:250'],
             'user_id'  => ['required'],
-            'remark_id'=> ['nullable']
+            'remark_id'=> ['nullable'],
+            'remark_type'   => ['required', 'string', 'max:50']
         ]);
 
         if(auth()->user()->user_type != 'admin' && is_null($req->remark_id)){//admin users can remarks twice a day except admin
@@ -1239,6 +1242,7 @@ class UserController extends Controller
         }
         $remark->admin_id  = auth()->id();
         $remark->user_id   = hashids_decode($req->user_id);
+        $remark->remark_type = $req->remark_type;
         $remark->text      = $req->remark;
         $remark->save();
         // $user = User::findOrFail(hashids_decode($req->user_id));
@@ -2058,6 +2062,69 @@ class UserController extends Controller
             'success'   => 'User credit updated successfully',
             'reload'    => true
         ]);
+    }
+
+    public function allUserRemarks(Request $req){
+
+        if($req->ajax()){
+            $data = Remarks::with('user')
+                                    ->when(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin',function($query){
+                                         $query->where('user_id',auth()->user()->id);
+                                     })->when(auth()->user()->user_type == 'admin',function($query){
+                                        $super_admin = Admin::where('user_type', 'superadmin')->first();
+                                        $query->where('user_id','!=',$super_admin->id);
+                                     });
+
+            return DataTables::of($data)
+                                     ->addIndexColumn()
+                                     ->addColumn('admin',function($query){
+                                        return $query->admin->username;
+                                     })
+                                     ->addColumn('user',function($query){
+                                        return $query->user->username;
+                                     })
+                                     ->addColumn('remark_type',function($query){
+                                        return $query->remark_type;
+                                     })
+                                     ->addColumn('remark',function($query){
+                                        return $query->text;
+                                     })
+                                     ->addColumn('date',function($query){
+                                        return $query->created_at;
+                                     })
+                                     ->orderColumn('DT_RowIndex', function($query, $o){
+                                        $query->orderBy('created_at', $o);
+                                    })
+                                    // ->filter(function($query) use ($req){
+                                    //     if(isset($req->from_date) && isset($req->to_date)){
+                                    //         $query->whereDate('created_at', '>=', date('Y-m-d',strtotime($req->from_date)))
+                                    //         ->whereDate('created_at', '<=', date('Y-m-d',strtotime($req->to_date)));
+                                    //         // $query->whereBetween('created_at',[date('Y-m-d',strtotime($req->from_date)),date('Y-m-d',strtotime($req->to_date))]);
+                                    //     }
+                                    //     if(isset($req->search)){
+                                    //         $query->where(function($search_query) use ($req){
+                                    //             $search = $req->search;
+                                    //             $search_query->whereLike([
+                                    //                         // 'username',
+                                    //                         'user_ip',
+                                    //                         'activity',
+                                    //                         'created_at'
+                                    //                     ], 
+                                    //             $search);
+                                    //             // ->orWhereHas('admin', function($q) use ($search) {
+                                    //             //     $q->whereLike(['name','username'], '%'.$search.'%');
+                                    //             // });
+                                    //         });
+                                    //     }
+                                    // })
+                                     ->make(true);
+        }
+
+        $data = array(
+            'title' => 'User Remarks',
+            'remarks'   => Remarks::latest()->get(),
+        );
+        return view('admin.user.all_user_remarks');
     }
 
 }

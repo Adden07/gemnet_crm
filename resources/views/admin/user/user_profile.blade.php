@@ -839,6 +839,15 @@
                             <form action="{{ route('admin.users.remarks') }}"  method="GET" class="ajaxForm" id="remarks_form">
                                 @csrf
                                 <div class="form-group">
+                                    <label for="">Remark Type</label>
+                                    <select class="form-control" name="remark_type" id="">
+                                        <option value="">Select remark type</option>
+                                        @foreach($remarks AS $remark)
+                                            <option value="{{ $remark->remark_type }}" @if(@$edit_remark->remark_type == $remark->remark_type) selected @endif>{{ $remark->remark_type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="exampleFormControlTextarea1">Remarks</label>
                                     <textarea name="remark" class="form-control" id="exampleFormControlTextarea1" rows="3">{{ @$edit_remark->text }}</textarea>
                                   </div>
@@ -855,6 +864,7 @@
                                     <th>#</th>
                                     <th>DateTime</th>
                                     <th>By</th>
+                                    <th>Remark Type</th>
                                     <th>Text</th>
                                     <th>Action</th>
                                 </thead>
@@ -864,6 +874,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ date('d-M-Y H:i:s', strtotime($remark->created_at)) }}</td>
                                             <td>{{ $remark->admin->name }} ({{ $remark->admin->user_type }})</td>
+                                            <td>{{ $remark->remark_type }}</td>
                                             <td>{{ $remark->text }}</td>
                                             <td>
                                                 @if(auth()->user()->user_type != 'admin' && date('Y-m-d',strtotime($remark->created_at)) == date('Y-m-d'))

@@ -15,4 +15,8 @@ class Remarks extends Model
     public function admin(){
         return $this->belongsTo(Admin::class, 'admin_id', 'id');
     }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }
