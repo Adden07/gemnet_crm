@@ -553,7 +553,7 @@ class PackageController extends Controller
 
     //change user package
     public function upgradeUserPackage(Request $req){
-
+        
         if(CommonHelpers::rights('enabled-user','upgrade-user-package')){
             return redirect()->route('admin.home');
         }
@@ -625,7 +625,7 @@ class PackageController extends Controller
             if($user->user_current_balance < $pkg_price_to_deduct && $user->credit_limit == 0){
                 throw new Exception("Package could be upgrade because of insufficent balance");
             }elseif(($user->credit_limit > ($pkg_price_to_deduct)) || $user->credit_limit < ($pkg_price_to_deduct)){
-                if(($user->credit_limit-abs($user->user_current_balance)) < ($pkg_price_to_deduct)){
+                if(abs(($user->credit_limit-($user->user_current_balance))) < ($pkg_price_to_deduct)){
                     throw new Exception("User credit limit is less than the package price");
                 }
             }
