@@ -12,6 +12,9 @@ use App\Models\City;
 use App\Models\Admin;
 use App\Models\Permission;  
 use App\Models\ActivityLog;
+use App\Models\Invoice;
+use App\Models\Transaction;
+use App\Models\User;
 use App\Models\UserRolePermission;
 
 class StaffController extends Controller
@@ -348,8 +351,13 @@ class StaffController extends Controller
         if(\CommonHelpers::rights('enabled-staff','delete-staff')){
             return redirect()->route('admin.home');
         }
-
-        Admin::destroy(hashids_decode($id));
+        $id = hashids_decode($id);
+        if(User::where('activation_by', $id)->exists() || Transaction::where('admin_id',$id)->exists() || ActivityLog::where('user_id', $id)->exists() || Invoice::where('admin_id',$id)->exists()){
+            return response()->json([
+                'error' => 'Staff is in used',
+            ]);
+        }
+        Admin::destroy($id);
         return response()->json([
             'success'   => 'Staff deleted succcessfully',
             'reload'    => true

@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Ledger;
 use App\Models\Admin;
 use App\Models\Payment;
+use App\Models\Transaction;
 use App\Models\User;
 use DB;
 use DataTables;
@@ -182,6 +183,7 @@ class PaymentController extends Controller
                 if($req->hasFile('transaction_image')){ //store image
                     $req->transaction_image  = CommonHelpers::uploadSingleFile($req->transaction_image, 'admin_uploads/transactions/', "png,jpeg,jpg", 2000);
                 }
+                Transaction::insert($this->transactionArr($user, $req->amount));
                 Payment::create($this->createPaymentArr($req, $user));//add payment
                 $msg = [//success message
                     'success'   => 'Transaction added successfully',
@@ -403,5 +405,18 @@ class PaymentController extends Controller
             'success'   => 'Payment approved successfully',
             'reload'    => true 
         ]);
+    }
+
+    public function transactionArr($user, $amount){
+        return [
+            'transaction_id'    => rand(1111111111,9999999999),
+            'admin_id'          => auth()->id(),
+            'user_id'           => $user->id,
+            'amount'            => $amount,
+            'old_balance'       => $user->user_current_balance,
+            'new_balance'       => ($user->user_current_balance+$amount),
+            'type'              => 1,
+            'created_at'        =>now()
+        ];
     }
 }

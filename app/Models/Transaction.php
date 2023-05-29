@@ -11,7 +11,7 @@ class Transaction extends Model
     use HasFactory;
     
     protected $table = 'transactions';
-
+    protected $guarded = [];
     public $timestamps = false;
 
     public function admin(){

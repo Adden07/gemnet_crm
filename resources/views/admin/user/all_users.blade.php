@@ -104,6 +104,7 @@
                         <th>Package</th>
                         <th>Status</th>
                         <th>Expiration</th>
+                        <th>Balance</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -173,6 +174,7 @@
                         {data:'package', name:'primary_package.name'},
                         {data:'status',name:'users.status'},
                         {data:'expiration', name:'users.current_expiration_date'},
+                        {data:'user_current_balance', name:'users.user_current_balance'},
                         {data:'action',name:'action',orderable:false,searchable:false}
                     ],
                 });
@@ -185,7 +187,7 @@
             }
             table.draw();
             // getPackageCount();
-       });
+       });g
     });
     //get package count
     function getPackageCount(){

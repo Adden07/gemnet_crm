@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="">Users</label>
-                        <select class="form-control" name="receiver_id" id="receiver_id">
+                        <select class="form-control select2" name="receiver_id" id="receiver_id">
                             <option value="">Select user</option>
                             @foreach($users AS $user)
                                 <option value="{{ $user->hashid }}">{{ $user->name }}--( {{ $user->username }} )</option>

@@ -67,7 +67,7 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package');
+            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance');
                         // ->when(auth()->user()->user_type != 'admin', function($query){
                         //     // $query->whereIn('admin_id',$this->getChildIds());
                         // });
@@ -124,6 +124,9 @@ class UserController extends Controller
                                         $status = "<span class='badge badge-danger'>".$data->current_expiration_date."</span>";
                                     }
                                     return $status;
+                                })
+                                ->addColumn('user_current_balance',function($data){
+                                    return number_format($data->user_current_balance);
                                 })
                                 ->addColumn('action',function($data){
                                 $action = '';
