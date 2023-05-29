@@ -12,7 +12,7 @@
 
                 </ol>
             </div>
-            <h4 class="page-title">All Users | Active Users ({{ $users_count->where('status','active')->count() }}) | Expired Users ({{ $users_count->where('status','expired')->count() }}) | Total Users ({{ $users_count->count() }})</h4>
+            <h4 class="page-title">All Users | Active Users ({{ $users_count->where('status','active')->count() }}) | Expired Users ({{ $users_count->where('status','expired')->count() }}) | ({{ $users_count->where('status','terminated')->count() }}) | Total Users ({{ $users_count->count() }})</h4>
         </div>
     </div>
 </div>
