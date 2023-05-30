@@ -249,14 +249,25 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        <label for="subarea_id">Tax</label>
-                        <select class="form-control" name="is_tax" id="is_tax">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                        <div class="subarea_err"></div>
-                    </div>
+                    @if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'supervisor')
+                        <div class="form-group col-md-6">
+                            <label for="subarea_id">Paid</label>
+                            <select class="form-control" name="paid" id="paid">
+                                <option value="1">Paid</option>
+                                <option value="0">Unpaid</option>
+                            </select>
+                        </div>
+                    @endif
+                    {{-- @if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'supervisor')
+                        <div class="form-group col-md-6">
+                            <label for="subarea_id">Tax</label>
+                            <select class="form-control" name="is_tax" id="is_tax">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                            <div class="subarea_err"></div>
+                        </div>
+                    @endif --}}
                     <div class="form-group col-md-6">
                         <label for="subarea_id">Sales Person</label>
                         <select class="form-control" name="sales_id" id="sales_id">
@@ -279,13 +290,6 @@
                             @endforeach
                         </select>
                         <div class="subarea_err"></div>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="subarea_id">Paid</label>
-                        <select class="form-control" name="paid" id="paid">
-                            <option value="1">Paid</option>
-                            <option value="0">Unpaid</option>
-                        </select>
                     </div>
                 </div>
 

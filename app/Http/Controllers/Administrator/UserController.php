@@ -320,7 +320,7 @@ class UserController extends Controller
             'user_form_back'    => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2000'],
             'area_id'           => ['nullable'],
             'subarea_id'        => ['nullable'],
-            'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin'), 'nullable'],
+            // 'is_tax'            => [Rule::requiredIf(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'supervisor'), 'nullable'],
             'sales_id'          => ['required', 'string', 'max:100'],
             'fe_id'             => ['required', 'string', 'max:100'],
             'user_type'         => ['required', 'string', 'in:company,individual'],
@@ -336,7 +336,7 @@ class UserController extends Controller
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
-
+        $req->is_tax = 1;
         //check useranme existss
         if(User::where('username',auth()->user()->username.'-'.$req->username)->where('id','!=',@hashids_decode($req->user_id))->exists()){
             return response()->json([
@@ -350,8 +350,6 @@ class UserController extends Controller
             $activity   = "updated-user";
         }else{
             $user              = new User;
-            // $user->admin_id    = auth()->user()->id;
-            // $user->user_status = 'registered';
             $msg               = 'user Added Successfully';
             $activity          = "added-user";
         }
@@ -382,7 +380,7 @@ class UserController extends Controller
         $user->area_id     = @hashids_decode($req->area_id);
         $user->subarea_id  = @hashids_decode($req->subarea_id);
         $user->name        = $req->name ?? $req->comp_name;
-        $user->username    = (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin') ? $req->username : auth()->user()->username.'-'.$req->username;
+        $user->username    = $req->username;
         $user->password    = (!empty($req->password)) ? $req->password : $user->password;
         $user->nic         = $req->nic;
         $user->mobile      = ($req->user_type != 'company') ? '92'.$req->mobile : '92'.$req->comp_mobile;
