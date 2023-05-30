@@ -102,4 +102,8 @@ class User extends Model
         return $this->hasMany(Remarks::class, 'user_id', 'id');
     }
 
+    public function queue(){
+        return $this->hasMany(PkgQueue::class, 'user_id', 'id');
+    }
+
 }

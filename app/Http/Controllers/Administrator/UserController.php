@@ -34,6 +34,7 @@ use App\Exports\UpdateUserExport;
 use App\Imports\UpdateUserExpirationImport;
 use App\Imports\UpdateUserImport;
 use App\Models\FileLog;
+use App\Models\PkgQueue;
 use App\Models\Remark;
 use App\Models\Remarks;
 use App\Models\RemarkType;
@@ -548,7 +549,7 @@ class UserController extends Controller
         if(isset($id) && !empty($id)){
             $data = array(
                 'title' => 'User Profile',
-                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin'])->findORFail(hashids_decode($id)),
+                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin', 'queue.package'])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
                 'user_invoices' => Invoice::select(['id', 'invoice_id', 'created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price', 'total'])
@@ -2178,6 +2179,34 @@ class UserController extends Controller
             'remark_types'  => RemarkType::latest()->get(),
         );
         return view('admin.user.all_user_remarks')->with($data);
+    }
+
+    public function queueUsers(Request $req){
+        if($req->ajax()){
+            return DataTables::of(PkgQueue::with(['user', 'package']))
+                                ->addIndexColumn()
+                                ->addColumn('name',function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->user->hashid])." target='_blank'>{$data->user->username}</a>";
+                                })
+                                ->addColumn('package', function($data){
+                                    return $data->package->name;
+                                })
+                                ->addColumn('applied_on', function($data){
+                                    return (!is_null($data->applied_on)) ? date('m-D-Y', strtotime($data->applied_on)) : '';
+                                })
+                                ->addColumn('date', function($data){
+                                    return date('d-M-Y', strtotime($data->created_at));
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                })
+                                ->rawColumns(['name'])
+                                ->toJson();
+        }
+        $data = array(
+            'title' => 'Queue users'
+        );
+        return view('admin.user.queue_user')->with($data);
     }
 
 }

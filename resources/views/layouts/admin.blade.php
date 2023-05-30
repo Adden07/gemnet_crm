@@ -298,6 +298,9 @@
                                 <li>
                                     <a href="{{ route('admin.users.all_user_remarks') }}">Remarks</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.users.queue_user') }}">Queue User</a>
+                                </li>
                             </ul>
                         </li>
                     @endcan

@@ -183,6 +183,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/update-credit-limit', 'UserController@updateCreditLimit')->name('update_credit_limit');
         //all remarks routes
         Route::get('/all-users-remarks', 'UserController@allUserRemarks')->name('all_user_remarks');
+        //queue users
+        Route::get('/queu', 'UserController@queueUsers')->name('queue_user');
     });
 
     //package routes

@@ -128,6 +128,9 @@
             <a class="nav-link" id="credit_limit_tab" data-toggle="tab" href="#credit_limit" role="tab" aria-selected="true" >Credit Limit</a>
         </li>
     @endcan
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="queue_tab" data-toggle="tab" href="#queue" role="tab" aria-selected="true" >Queue</a>
+    </li>
 </ul>
 
 <div class="tab-content pt-0" id="myTabContent">
@@ -923,6 +926,32 @@
             </div>
         </div>
     </div>
+    <div class="tab-pane fade" id="queue" role="tabpanel">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-box">
+                    <table class="table">
+                        <thead>
+                            <th>No</th>
+                            <th>Package</th>
+                            <th>Applied On</th>
+                            <td>Date</td>
+                        </thead>
+                        <tbody>
+                            @foreach($user_details->queue AS $q)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ @$q->package->name }}</td>
+                                    <td>{{ (!is_null($q->applied_on)) ? date('d-M-Y', strtotime($q->applied_on)) : '' }}</td>
+                                    <td>{{ date('d-M-Y', strtotime($q->created_at)) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="tab-pane fade" id="edit_expiration" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">
@@ -1060,6 +1089,9 @@
     $('#edit_expiration_tab').click(function(){
         tabs_local_storage = localStorage.setItem('tab','edit_expiration');
     });
+    $('#queue_tab').click(function(){
+        tabs_local_storage = localStorage.setItem('tab','queue');
+    });
 
     if(tabs_local_storage == 'personal_info_tab'){
         $('#personal_info_tab').click();
@@ -1079,6 +1111,8 @@
         $('#edit_expiration_tab').click();
     }else if(tabs_local_storage == 'credit_limit'){
         $('#credit_limit_tab').click();
+    }else if(tabs_local_storage == 'queue'){
+        $('#queue_tab').click();
     }
 
 
