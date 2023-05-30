@@ -280,6 +280,13 @@
                         </select>
                         <div class="subarea_err"></div>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="subarea_id">Paid</label>
+                        <select class="form-control" name="paid" id="paid">
+                            <option value="1">Paid</option>
+                            <option value="0">Unpaid</option>
+                        </select>
+                    </div>
                 </div>
 
 
