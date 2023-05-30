@@ -144,6 +144,7 @@
                 <thead>
                     <tr>
                         <th width="20">S.No</th>
+                        <th>Invoice No</th>
                         <th>Datetime</th>
                         <th>Name</th>
                         <th>Username</th>
@@ -174,6 +175,7 @@
                         
                         <tr @if($invoice->type == 0) style="background-color:#DFDDD9" @elseif($invoice->type == 2) style="background-color:#82F1DB" @endif>
                             <td>{{ ++$page_counter }}</td>
+                            <td><a href="{{ route('admin.accounts.invoices.get_invoice', ['id'=>$invoice->hashid]) }}" target="_blank">{{ $invoice->invoice_id }}</a></td>
                             <td>{{ date('d-M-y H:i:s',strtotime($invoice->created_at)) }}</td>
                             <td>{{ @$invoice->user->name }}</td>
                             <td><a href="{{ route('admin.users.profile',['id'=>hashids_encode($invoice->user_id)]) }}" target="_blank">{{ @$invoice->user->username }}</a></td>

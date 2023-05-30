@@ -219,4 +219,14 @@ class InvoiceController extends Controller
             return Excel::download(new InvoiceTaxFbrExport($req->date), $file_name);
         }
     }
+
+    public function getInvoice($id){
+        $startDate = now()->subMonths(3)->startOfMonth()->format('Y-m-d');
+        $endDate   = now()->endOfMonth()->format('Y-m-d');
+        $data = array(
+            'invoice'   => Invoice::with(['user', 'package'])->findOrFail(hashids_decode($id)),
+        );
+        $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
+        return view('admin.invoice.get_invoice')->with($data);
+    }
 }
