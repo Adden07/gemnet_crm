@@ -185,6 +185,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/all-users-remarks', 'UserController@allUserRemarks')->name('all_user_remarks');
         //queue users
         Route::get('/queu', 'UserController@queueUsers')->name('queue_user');
+        Route::get('/immediate-queue/{id}', 'UserController@immediateQueue')->name('immediate_queue');
     });
 
     //package routes

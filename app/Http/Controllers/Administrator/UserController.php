@@ -2200,7 +2200,17 @@ class UserController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                 })
-                                ->rawColumns(['name'])
+                                ->addColumn('action', function($data){
+                                    if($data->user->c_package == $data->package_id && is_null($data->applied_on)){
+                                        $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.users.immediate_queue', ['id'=>$data->hashid])." class='btn btn-success btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    <i class='icon-check'></i>
+                                        </span>Immediate Queue
+                                    </button>";
+                                        return $html;
+                                    }
+                                    return '';
+                                })
+                                ->rawColumns(['name', 'action'])
                                 ->toJson();
         }
         $data = array(
@@ -2209,4 +2219,14 @@ class UserController extends Controller
         return view('admin.user.queue_user')->with($data);
     }
 
+    public function immediateQueue($id){
+        $queue = PkgQueue::findOrFail(hashids_decode($id));
+        $queue->applied_on = now();
+        $queue->save();
+        
+        return response()->json([
+            'success'   => 'Package queued successfully',
+            'reload'    => true
+        ]);
+    }
 }

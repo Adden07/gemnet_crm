@@ -29,6 +29,7 @@
                         <th>Package</th>
                         <th>Applied On</th>
                         <th>Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,7 +85,9 @@
                 {data:'name', name:'name'},
                 {data:'package', name:'package'},
                 {data:'applied_on', name:'applied_on'},
-                {data:'date', name:'date'}
+                {data:'date', name:'date'},
+                {data:'action', name:'action'}
+
             ]
         })
     });
