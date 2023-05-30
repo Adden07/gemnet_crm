@@ -216,6 +216,14 @@ class UserController extends Controller
                                         $query->where('paid', intval($req->paid));
                                     }
                                     
+                                    if(isset($req->balance) && $req->balance != 'all'){
+                                       if($req->balance == 1){
+                                            $query->where('user_current_balance', '>', 0);
+                                       }else{
+                                        $query->where('user_current_balance', '<', 0);
+                                        }
+                                    }
+                                    
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
                                             $search = $req->search;

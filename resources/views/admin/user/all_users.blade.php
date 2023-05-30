@@ -90,6 +90,14 @@
                         <option value="0">Unpaid</option>
                     </select>
                 </div>
+                <div class="form-group col-md-3">
+                    <label for="">Balance</label>
+                    <select class="form-control" name="balance" id="balance">
+                        <option value="all">All</option>
+                        <option value="1">Advance</option>
+                        <option value="0">Balance</option>
+                    </select>
+                </div>
             </div>  
         </div>
     </div>
@@ -174,8 +182,9 @@
                                     d.to_date       = $('#to_date').val(),
                                     d.package_id    = $('#package_id').val();
                                     d.expiration_date = $('#expiration_date').val(),
-                                    d.search        = $('input[type="search"]').val()
-                                    d.paid          = $('#paid').val()
+                                    d.search        = $('input[type="search"]').val(),
+                                    d.paid          = $('#paid').val(),
+                                    d.balance       = $('#balance').val()
                         },
                     },
                     
@@ -194,7 +203,7 @@
                 });
 
 
-       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date,#paid').change(function(){
+       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date,#paid,#balance').change(function(){
             if($(this).attr('id') == 'expiration_date'){
                 $('#from_date').val('');
                 $('#to_date').val('');
