@@ -328,7 +328,7 @@ class UserController extends Controller
             'ntn'               => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:100', 'nullable'],
             'landline_no'       => ['string', 'nullable'],
             'email'             => ['nullable', 'string', 'email'],
-            'paid'              => ['required', 'in:0,1']
+            'paid'              => ['nullable', 'in:0,1']
         ];
         
         $validator = Validator::make($req->all(),$rules);
