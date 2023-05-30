@@ -215,7 +215,7 @@ class UserController extends Controller
                                     if(isset($req->paid) && $req->paid != 'all'){
                                         $query->where('paid', intval($req->paid));
                                     }
-                                    
+
                                     if(isset($req->balance) && $req->balance != 'all'){
                                        if($req->balance == 1){
                                             $query->where('user_current_balance', '>', 0);
@@ -727,11 +727,11 @@ class UserController extends Controller
         if(CommonHelpers::rights('enabled-user','online-users')){
             return redirect()->route('admin.home');
         }
-
+        
         //get users of login user
         if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
             if(auth()->user()->user_type == 'sales_person'){
-                $users = User::where('sale_id',auth()->id())->get()->pluck('username')->toArray();
+                $users = User::where('sales_id',auth()->id())->get()->pluck('username')->toArray();
             }elseif(auth()->user()->user_type == 'field_engineer'){
                 $users = User::where('fe_id',auth()->id())->get()->pluck('username')->toArray();
             }
@@ -739,7 +739,7 @@ class UserController extends Controller
             $users = User::get()->pluck('username')->toArray();
 
         }   
-
+        
         if($req->ajax()){
             // ini_set('memory_limit', '2000M');
             
@@ -2115,14 +2115,15 @@ class UserController extends Controller
     public function allUserRemarks(Request $req){
 
         if($req->ajax()){
-            $data = Remarks::with('user')
-                        ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
-                            if(auth()->user()->user_type == 'sales_person'){
-                                $query->whereIn('sales_id', auth()->id());
-                            }elseif(auth()->user()->user_type == 'fe_id'){
-                                $query->whereIn('fe_id', auth()->id());
-                            }
-                        });
+            $data = Remarks::with(['user'=>function($query){
+                $query->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
+                    if(auth()->user()->user_type == 'sales_person'){
+                        $query->where('sales_id', auth()->id());
+                    }elseif(auth()->user()->user_type == 'fe_id'){
+                        $query->where('fe_id', auth()->id());
+                    }
+                });
+            }]);
 
             return DataTables::of($data)
                                      ->addIndexColumn()
@@ -2130,7 +2131,7 @@ class UserController extends Controller
                                         return $query->admin->username;
                                      })
                                      ->addColumn('user',function($query){
-                                        return $query->user->username;
+                                        return @$query->user->username;
                                      })
                                      ->addColumn('remark_type',function($query){
                                         return $query->remark_type;

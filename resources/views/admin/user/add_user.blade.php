@@ -33,8 +33,8 @@
                             <option value="company" @if(@$edit_user->user_type == 'company') selected @endif>Company</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-6 ind @if(@$edit_user->user_type == 'company') d-none @endif">
-                        <label for="name">Email<span class="text-danger">*</span></label>
+                    <div class="form-group col-md-6">
+                        <label for="name">Email</label>
                         <input type="text" name="email"   placeholder="Enter email" value="{{ @$edit_user->email }}" class="form-control" id="name">
                     </div>
                     <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
