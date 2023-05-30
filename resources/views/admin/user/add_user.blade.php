@@ -74,7 +74,7 @@
 
                     <div class="form-group col-md-6">
                         <label for="username">Username<span class="text-danger">*</span></label>
-                        @if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin')
+                        {{-- @if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin')
                             <input type="text" name="username"  minlength="1" maxlength="15"placeholder="Enter username" value="{{ @$edit_user->username }}" class="form-control" id="username" @if(isset($is_update)) readonly style="background-color:#e9ecef" @endif>
                             <div class="username_err w-100"></div>
                         @else 
@@ -85,7 +85,9 @@
                                 <input type="text" name="username"  minlength="1" maxlength="{{ (15 - (strlen(auth()->user()->username)+1)) }}"placeholder="Enter username" value="{{ @substr($edit_user->username,strlen(auth()->user()->username)+1) }}" class="form-control" id="username" @if(isset($is_update)) readonly style="background-color:#e9ecef" @endif>
                                 <div class="username_err w-100"></div>
                             </div>
-                        @endif
+                        @endif --}}
+                        <input type="text" name="username"  minlength="1" maxlength="15"placeholder="Enter username" value="{{ @$edit_user->username }}" class="form-control" id="username" @if(isset($is_update)) readonly style="background-color:#e9ecef" @endif>
+                        <div class="username_err w-100"></div>
                     </div>
                 </div>    
                 @if(!isset($is_update))
