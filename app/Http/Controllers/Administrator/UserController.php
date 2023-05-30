@@ -393,7 +393,7 @@ class UserController extends Controller
         $user->email         = @$req->email;
         $user->business_name = @$req->business_name;
         $user->landline_no   = @$req->landline_no;
-        $user->paid          = $req->paid;
+        $user->paid          = $req->paid ?? 1;
         $user->save();
 
         CommonHelpers::activity_logs($activity.' '.$user->username);

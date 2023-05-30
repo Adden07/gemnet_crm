@@ -234,7 +234,7 @@
                     <div class="card-box">
                         <div class="row">
                             <div class="col-lg-12">
-                                @if(auth()->user()->id == $user_details->admin_id || auth()->user()->user_type == 'admin')
+                                {{-- @if(auth()->user()->id == $user_details->admin_id || auth()->user()->user_type == 'admin') --}}
                                     @if(@$user_details->user_status == 1)
                                         <a href="#" class="btn btn-danger btn-sm float-right ml-2" data-btn-text="" data-msg="" onclick="ajaxRequest(this)" id="disable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>0]) }}">Disable</a>
                                         <a href="#" class="btn btn-info btn-sm float-right ml-2" id="user_password" data-pass="{{ $user_details->password }}">User Password</a>
@@ -267,11 +267,11 @@
                                             <a href="#" class="btn btn-secondary btn-sm float-right mr-2" id="remove_mac" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.remove_mac',['id'=>$user_details->hashid]) }}">Remove Mac</a>
                                         @endif
                                         @can('renew-user')
-                                            @if(auth()->user()->id == $user_details->admin_id)
+                                            {{-- @if(auth()->user()->id == $user_details->admin_id) --}}
                                                 <a href="{{ route('admin.packages.add_user_package',['id'=>$user_details->hashid]) }}" class="btn btn-primary float-right add_package btn-sm mr-2" title="Renew Package" data-status="{{ $user_details->status }}">
                                                     Renew Package
                                                 </a>
-                                            @endif
+                                            {{-- @endif --}}
                                         @endcan
                                     {{-- @endif --}}
                                     <!--if user_status is when then display disable button otherwise enable-->
@@ -281,7 +281,7 @@
                                     @elseif((($user_details->user_status == 2 || $user_details->user_status == 0) && auth()->user()->user_type == 'admin') || $user_details->user_status == 0 )
                                         <a href="#" class="btn btn-success btn-sm float-right mr-2" onclick="ajaxRequest(this)" id="enable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>1]) }}">Enable</a>
                                     @endif
-                                @endif
+                                {{-- @endif --}}
                                 {{-- <a href="{{ route('admin.users.edit',['id'=>$user_details->hashid]) }}" class="btn btn-primary float-right mb-3">Edit User</a> --}}
                             </div>
                         </div>
