@@ -184,6 +184,8 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         //laravel excel pacakge
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        //pdf
+        Barryvdh\DomPDF\ServiceProvider::class,
 
     ],
 
@@ -239,5 +241,7 @@ return [
         'Hashids' => Vinkla\Hashids\Facades\Hashids::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+
     ],
 ];

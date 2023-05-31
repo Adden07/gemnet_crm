@@ -22,16 +22,26 @@
         @page{
             margin-top: 20px;
         }
+		.button {
+			background-color: #4A81D4; /* Green */
+			border: none;
+			color: white;
+			padding: 10px 22px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			}
 	</style>
 
 </head>
 <body>
+	
 	<div style="width: 90%; margin: 0 auto;">
-	<?php if (!isset($gen_pdf)) { ?>
-			<div style="text-align:center" class="hidden-print">
-				<p style="margin:0;">This is Preview click on the button to generate the file</p>
-			</div>
-		<?php } ?>
+					<div style="text-align:center" class="hidden-print">
+						<p style="margin:0;">This is Preview click on the button to generate the file</p>
+						<a href="{{ route('admin.accounts.invoices.generate_pdf', ['id'=>$invoice->hashid]) }}" class="button">PDF</a>
+					</div>
 		<table style="width: 100%;">
 			<tr>
 				<td style="width: 30%;">
@@ -110,12 +120,12 @@
 					<table style="width: 100%; border-collapse: collapse;border: 1px solid #000;margin-left: 12px;">
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;width: 100px">Supplier Name:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">GEMNET Enterprise Solutions Pvt Ltd.</td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->company_name }}</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Address:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->address }}</td>
 						</tr>
 
 						<tr>
@@ -125,20 +135,20 @@
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Phone #:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->mobile }}</td>
 						</tr>
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Email:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->email }}</td>
 						</tr>
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">NTN #:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->ntn }}</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">SRB Sales Tax #:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ @$edit_setting->srb_sales_tax }}</td>
 						</tr>
 					</table>
 
@@ -280,20 +290,20 @@
 						<tr>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;font-weight: bold;width: 150px">Bank Name:</td>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;">
-
+								{{ @$edit_setting->bank_name }}
 							</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;font-weight: bold;">Account Title:</td>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;">
-
+								{{ @$edit_setting->account_title }}
 							</td>
 						</tr>
 						<tr>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;font-weight: bold;">Account Number #</td>
 							<td style="padding: 5px; border: 1px solid #000;text-align: left;">
-
+								{{ @$edit_setting->account_no }}
 							</td>
 						</tr>
 
@@ -310,26 +320,26 @@
 					<table style="width: 100%; border-collapse: collapse;border: 1px solid #000;margin-left: 12px;">
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;width: 100px">Customer ID: </td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ $invoice->user->c_id }}</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Customer Name: </td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ $invoice->user->name }}</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">CNIC:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ $invoice->user->nic }}</td>
 						</tr>
 
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Mobile No:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;"></td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ $invoice->user->mobile }}</td>
 						</tr>
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Amount:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">/td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ (($invoice->user->user_current_balance < 0)) ? number_format($invouce->user_current_balance) : 0 }}</td>
 						</tr>
 					</table>
 				</td>

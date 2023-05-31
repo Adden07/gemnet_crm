@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Package;
 use App\Models\Admin;
+use PDF;
+
+
 use DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -228,5 +231,17 @@ class InvoiceController extends Controller
         );
         $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
         return view('admin.invoice.get_invoice')->with($data);
+    }
+
+    public function generatePdf($id){
+        $startDate = now()->subMonths(3)->startOfMonth()->format('Y-m-d');
+        $endDate   = now()->endOfMonth()->format('Y-m-d');
+        $data = array(
+            'invoice'   => Invoice::with(['user', 'package'])->findOrFail(hashids_decode($id)),
+        );
+        $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
+
+        $pdf = PDF::loadView('admin.invoice.get_invoice', $data);
+        return $pdf->download('invoice.pdf');
     }
 }

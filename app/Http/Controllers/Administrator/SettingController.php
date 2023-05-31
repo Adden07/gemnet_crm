@@ -53,7 +53,12 @@ class SettingController extends Controller
             'sms_api_url'     => ['nullable', 'string', 'max:1000', 'url'],
             'sms_api_id'      => ['nullable', 'string', 'max:50'],
             'sms_api_pass'    => ['nullable', 'string', 'max:50'],
-            'is_sms'          => ['required', 'in:1,0']  
+            'is_sms'          => ['required', 'in:1,0'],
+            'ntn'             => ['nullable', 'string', 'max:50'],
+            'srb_sales_tax'   => ['nullable', 'string', 'max:50'],
+            'bank_name'    => ['nullable', 'string', 'max:50'],
+            'account_title'    => ['nullable', 'string', 'max:50'],
+            'account_no'    => ['nullable', 'string', 'max:50']    
         ];
 
         $validator = Validator::make($req->all(),$rules);
@@ -80,6 +85,11 @@ class SettingController extends Controller
         $setting->sms_api_id = $req->sms_api_id;
         $setting->sms_api_pass = $req->sms_api_pass;
         $setting->is_sms = $req->is_sms;
+        $setting->ntn = $req->ntn;
+        $setting->srb_sales_tax = $req->srb_sales_tax;
+        $setting->bank_name = $req->bank_name;
+        $setting->account_title = $req->account_title;
+        $setting->account_no = $req->account_no;
 
         if($req->hasFile('logo')){//store logo
             $logo = \CommonHelpers::uploadSingleFile($req->file('logo'),'admin_uploads/logo/');
