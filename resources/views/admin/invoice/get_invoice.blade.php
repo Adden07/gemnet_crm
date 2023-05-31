@@ -84,7 +84,7 @@
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;    font-weight: bold;">Customer ID:</td>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">
-								0000
+								{{ $invoice->user->c_id }}
 							</td>
 						</tr>
 						<tr>
