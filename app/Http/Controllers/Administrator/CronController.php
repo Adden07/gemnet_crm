@@ -22,34 +22,18 @@ use Illuminate\Support\Facades\DB;
 class CronController extends Controller
 {   
     private $user_id = null;
-    // public function __construct(){//only supeadmin can access this
-    //     $this->middleware(function ($request, $next) {
-    //         if(auth()->user()->user_type != 'superadmin'){
-    //             return redirect()->route('admin.login');
-    //         }
-    //         return $next($request);
-    //     });
-    // }
+
     public function userExpiry(){
-        // dd('done');
-        // $users = RadCheck::where('attribute','Expiration')->whereDate('value','>',date('Y-m-d'))->dd();
-        // $users = RadCheck::select(\DB::raw("username,STR_TO_DATE(value,'%d-%d-%Y') as date,value"))->where('attribute','Expiration')->where('value', '<',date('Y-m-d'))->get();
-        // $now = date('d-M-Y');
-        // $d = \DB::raw("SELECT * FROM radcheck WHERE `attribute`='Expiration' AND str_to_date(`value`,'%d-%m-%Y') > $now");
-        // $d = \DB::table('radcheck')->select(\DB::raw("*,str_to_date(`value`,'%d-%m-%Y') AS date"))->where('attribute','Expiration')->get();
-        // dd($d);
-        // $now = date('d M Y 12.00');
         $now    = date('Y-m-d');
         
         $now    = (date('H') == '00') ? $now.' 00:00' : $now.' 12:00';
-        // dd($now);
+
         $users  = RadCheck::where('attribute','Expiration')
                        ->whereNotNUll('value')
                        ->whereRaw("STR_TO_DATE(`value`, '%d %M %Y %H:%i') <= '$now'")
                        ->get();//get the expired user's usernames
-        // dd($users);
         $usernames     = $users->pluck('username')->toArray();//convert to array
-        $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->update(['status'=>'expired']);//expire user status
+        $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->update(['status'=>'expired']);//expire user status
         $updated_users = User::whereIn('username', $usernames)->get(['id']);
         
         foreach($updated_users AS $user){
