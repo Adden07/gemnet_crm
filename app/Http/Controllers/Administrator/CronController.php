@@ -175,7 +175,7 @@ class CronController extends Controller
                 $rec['failed']   += 1;
             }
         }
-        dd($rec);
+        return $rec;
     }
 
     public function autoRenew(){//auto renew users
@@ -207,11 +207,11 @@ class CronController extends Controller
                     
                     if($user->user_current_balance < ($package->price+$mrc_total) && $user->credit_limit == 0){
                         $rec['failed_of_balance'] += 1;
-                        continue;
+                        return;
                     }elseif(($user->credit_limit > ($package->price+$mrc_total)) || $user->credit_limit < ($package->price+$mrc_total)){
                         if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
                             $rec['failed_of_balance'] += 1;
-                            continue;
+                            return;
                         }
                     }
                     
@@ -254,7 +254,7 @@ class CronController extends Controller
                 $rec['failed'] += 1;
             }
         }
-        dd($rec);
+        return $rec;
     }
 
     public function updateRadUserGroup($username, $groupname){//update rad user group
@@ -330,5 +330,19 @@ class CronController extends Controller
         $invoice->adv_inc_tax       = $mrc_adv_inc_tax;
         $invoice->total             = round($package_price+$mrc_total);
         $invoice->save();
+    }
+
+    public function expiry(){
+        $arr = array();
+        try{
+            DB::transaction(function() use (&$arr){
+                $arr['queue']       = $this->queue();
+                $arr['auto_renew']  = $this->autoRenew();
+                $arr['expiry']      = $this->userExpiry();
+            });
+        }catch(Exception $e){
+            dd('Some Erro occoured');
+        }
+        dd($arr);
     }
 }

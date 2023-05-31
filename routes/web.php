@@ -21,7 +21,7 @@ Route::prefix('web_admin')->namespace('Auth')->group(function () {
         Route::get('/qt_over','CronController@qtOver')->name('qt_over');
         Route::get('/queu','CronController@queue');
         Route::get('/auto-renew', 'CronController@autoRenew');
-        
+        Route::get('/expiry', 'CronController@expiry');
     });
 
 //pages route
