@@ -210,7 +210,7 @@
             }
             table.draw();
             // getPackageCount();
-       });g
+       });
     });
     //get package count
     function getPackageCount(){

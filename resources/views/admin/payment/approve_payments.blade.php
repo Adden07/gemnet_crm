@@ -15,43 +15,25 @@
     </div>
 </div>
 <div class="row">
-    {{-- <div class="col-lg-12">
+    <div class="col-lg-12">
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
                 <h4 class="header-title">Filters</h4>
             </div>
-            <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
-                @csrf
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <label for="">Receiver Username</label>
-                        <select class="form-control" name="username" id="username">
-                            <option value="">Select Username</option>
-                            @foreach($admins as $admin)
-                                <option value="{{ $admin->hashid }}" @if(request()->has('username') && request()->get('username') == $admin->hashid) selected @endif>{{ $admin->username }}</option>
-                            @endforeach
-                        </select>
+                <form action="">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Status</label>
+                            <select class="form-control" name="payement_status" id="payement_status">
+                                <option value="">All</option>
+                                <option value="1">Approved</option>
+                                <option value="0">Unapproved</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group col-md-3">
-                        <label for="">Added By</label>
-                        <select class="form-control" name="added_by" id="added_by">
-                            <option value="">Select Added By</option>
-                            <option value="person" @if(request()->has('added_by') && request()->get('added_by') == 'person') selected @endif>Person</option>
-                            <option value="system" @if(request()->has('added_by') && request()->get('added_by') == 'system') selected @endif>System</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="">From Date</label>
-                        <input type="date" class="form-control" value="{{ (request()->has('from_date')) ? date('Y-m-d',strtotime(request()->get('from_date'))) : date('Y-m-d') }}" name="from_date" id="from_date">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="">To Date</label>
-                        <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
-                    </div>
-                </div>
-            </form>
+                </form>
         </div>
-    </div> --}}
+    </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
@@ -109,11 +91,7 @@
                     ajax:{
                         url : "{{ route('admin.accounts.payments.approve_payments') }}",
                         data:function(d){
-                                    d.username        = $('#username').val(),
-                                    d.added_by        = $('#added_by').val(),
-                                    d.from_date       = $('#from_date').val(),
-                                    d.to_date         = $('#to_date').val(),
-                                    d.search          = $('input[type="search"]').val()
+                            d.status= $('#payement_status').val()
                         },
                     },
                     drawCallback: function () {
@@ -142,7 +120,7 @@
                 });
 
 
-       $('#username,#from_date,#to_date,#added_by').change(function(){
+       $('#payement_status').change(function(){
             table.draw();
        });
     });

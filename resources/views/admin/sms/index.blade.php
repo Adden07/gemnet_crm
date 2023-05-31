@@ -34,6 +34,9 @@
                             <option value="user_add_payment" @if(@$edit_sms->type == 'user_add_payment') selected @endif>User Add Payment</option>
                             <option value="user_renew" @if(@$edit_sms->type == 'user_renew') selected @endif>User Renew</option>
                             <option value="user_activation" @if(@$edit_sms->type == 'user_activation') selected @endif>User Activation</option>
+                            <option value="user_near_expiry" @if(@$edit_sms->type == 'user_near_expiry') selected @endif>User Near Expiry</option>
+                            <option value="user_expired" @if(@$edit_sms->type == 'user_expired') selected @endif>User Expired</option>
+
                         </select>
                     </div>
                     <div class="form-group col-md-4">

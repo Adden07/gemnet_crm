@@ -364,15 +364,6 @@ class PaymentController extends Controller
                                     
                                     return $added_by;
                                 })
-                                // ->addColumn('type',function($data){
-                                //     $type = '';
-                                //     if($data->type == 'cash')
-                                //         $type = "<span class='badge badge-success'>Cash</span>";
-                                //     else   
-                                //         $type = "<span class='badge badge-primary'>Online</span>";
-                                    
-                                //     return $type;
-                                // })
                                 ->addColumn('amount',function($data){
                                     return number_format($data->amount);
                                 })
@@ -399,6 +390,11 @@ class PaymentController extends Controller
                                     </button>";
                                     }
                                 return $html;
+                                })
+                                ->filter(function($query) use ($req){
+                                    if(isset($req->status) && $req->status != 'all'){
+                                        $query->where('status', $req->status);
+                                    }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
