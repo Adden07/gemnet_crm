@@ -339,7 +339,7 @@
 						</tr>
 						<tr>
 							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;border-right: 1px solid #000;font-weight: bold;">Amount:</td>
-							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ (($invoice->user->user_current_balance < 0)) ? number_format($invouce->user_current_balance) : 0 }}</td>
+							<td style="padding: 5px; border-bottom: 1px solid #000;text-align: left;">{{ (($invoice->user->user_current_balance < 0)) ? number_format($invoice->user_current_balance) : 0 }}</td>
 						</tr>
 					</table>
 				</td>
