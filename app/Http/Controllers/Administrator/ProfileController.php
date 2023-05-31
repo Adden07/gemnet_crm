@@ -130,7 +130,6 @@ class ProfileController extends Controller
                                 ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
                                 ->make(true);
         }
-        // dd('dones');
         return view('admin.profile.index')->with($data);
     }
 

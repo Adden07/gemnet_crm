@@ -355,45 +355,47 @@
                             @endif
                         </thead>
                         <tbody>
-                            @foreach($packages AS $package)
-                                <tr class="class_row">
-                                    <td>
-                                        {{ $loop->iteration }}
-                                    </td>
+                                @if(!is_null($packages))
+                                        @foreach($packages AS $package)
+                                        <tr class="class_row">
+                                            <td>
+                                                {{ $loop->iteration }}
+                                            </td>
 
-                                    <td class="pkg_name">{{ $package->package->name }}</td>
-                                    <td>
-                                        {{ $users->where('admin_id',auth()->user()->id)->where('package',$package->package_id)->count() }} /
-                                        {{ $users->where('admin_id', '!=' ,auth()->user()->id)->where('package',$package->package_id)->count() }} 
-                                    </td>
-                                    <td><span class="badge badge-primary">{{ $package->package->volume/pow(1024,3) }} GB</span></td>
-                                    <td>
-                                        <input type="number" class="border-0 cost" disabled name="cost[]"  minlength="3" value="{{ $package->cost }}" style="max-width:150px;">
-                                    </td>
-                                    <td>
-                                        @if(date('l',strtotime($package->created_at)) == 'Saturday')
-                                            <span class="badge" style="background-color: #0071bd
-                                            ">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Sunday')
-                                            <span class="badge" style="background-color: #f3872f">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Monday') 
-                                            <span class="badge" style="background-color: #236e96">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Tuesday')
-                                            <span class="badge" style="background-color: #ef5a54">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Wednesday')
-                                            <span class="badge" style="background-color: #8b4f85" style="background-color: #000">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Thursday')
-                                            <span class="badge" style="background-color: #ca4236
-                                            ">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @elseif(date('l',strtotime($package->created_at)) == 'Friday')
-                                            <span class="badge" style="background-color: #6867ab">{{ date('d-M-Y',strtotime($package->created_at)) }}
-                                        @endif
-                                    </span></td>
-                                    @if(auth()->user()->user_type == 'admin')
-                                        <td>{{ $package->admin->name }}</td>
-                                    @endif
-                                </tr>
-                            @endforeach
+                                            <td class="pkg_name">{{ $package->package->name }}</td>
+                                            <td>
+                                                {{ $users->where('admin_id',auth()->user()->id)->where('package',$package->package_id)->count() }} /
+                                                {{ $users->where('admin_id', '!=' ,auth()->user()->id)->where('package',$package->package_id)->count() }} 
+                                            </td>
+                                            <td><span class="badge badge-primary">{{ $package->package->volume/pow(1024,3) }} GB</span></td>
+                                            <td>
+                                                <input type="number" class="border-0 cost" disabled name="cost[]"  minlength="3" value="{{ $package->cost }}" style="max-width:150px;">
+                                            </td>
+                                            <td>
+                                                @if(date('l',strtotime($package->created_at)) == 'Saturday')
+                                                    <span class="badge" style="background-color: #0071bd
+                                                    ">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Sunday')
+                                                    <span class="badge" style="background-color: #f3872f">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Monday') 
+                                                    <span class="badge" style="background-color: #236e96">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Tuesday')
+                                                    <span class="badge" style="background-color: #ef5a54">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Wednesday')
+                                                    <span class="badge" style="background-color: #8b4f85" style="background-color: #000">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Thursday')
+                                                    <span class="badge" style="background-color: #ca4236
+                                                    ">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @elseif(date('l',strtotime($package->created_at)) == 'Friday')
+                                                    <span class="badge" style="background-color: #6867ab">{{ date('d-M-Y',strtotime($package->created_at)) }}
+                                                @endif
+                                            </span></td>
+                                            @if(auth()->user()->user_type == 'admin')
+                                                <td>{{ $package->admin->name }}</td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                @endif
                         </tbody>
                     </table>
                 </div>
