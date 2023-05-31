@@ -374,6 +374,10 @@ class PackageController extends Controller
             if($validated['status'] == 'expired' && $user->last_logout_time == null){
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user
             }
+            ($validated['status'] == 'registered') ? 
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_activation', $user->mobile, null, $package->name) :             
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null, $package->name);
+
 
             CommonHelpers::activity_logs($activity_log);
         });

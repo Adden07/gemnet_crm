@@ -26,9 +26,14 @@
                         <select class="form-control" name="type" id="type">
                             <option value="">Select sms type</option>
                             <option value="alert" @if(@$edit_sms->type == 'alert') selected @endif>Alert</option>
-                            <option value="user_created" @if(@$edit_sms->type == 'user_createds') selected @endif>User Created</option>
-                            <option value="user_registered" @if(@$edit_sms->type == 'user_registered') selected @endif>User Renew</option>
-                            <option value="user_registered" @if(@$edit_sms->type == 'user_registered') selected @endif>User Registered</option>
+                            <option value="user_created" @if(@$edit_sms->type == 'user_registrtaion') selected @endif>User Registration</option>
+                            <option value="expiry_alert" @if(@$edit_sms->type == 'expiry_alert') selected @endif>Expiry Alert</option>
+                            <option value="low_qouta" @if(@$edit_sms->type == 'low_qouta') selected @endif>low qouta</option>
+                            <option value="user_balance" @if(@$edit_sms->type == 'user_balance') selected @endif>User Balance</option>
+                            <option value="admin_registration" @if(@$edit_sms->type == 'admin_registration') selected @endif>Admin Registration</option>
+                            <option value="user_add_payment" @if(@$edit_sms->type == 'user_add_payment') selected @endif>User Add Payment</option>
+                            <option value="user_renew" @if(@$edit_sms->type == 'user_renew') selected @endif>User Renew</option>
+                            <option value="user_activation" @if(@$edit_sms->type == 'user_activation') selected @endif>User Activation</option>
                         </select>
                     </div>
                     <div class="form-group col-md-4">

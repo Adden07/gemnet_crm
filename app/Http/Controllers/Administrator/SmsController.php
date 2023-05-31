@@ -27,7 +27,7 @@ class SmsController extends Controller
     public function store(Request $req){
         $rules = [
             'type'    => ['required', 'string', 'max:30'],
-            'message' => ['required', 'string', 'max:30'],
+            'message' => ['required', 'string', 'max:200'],
             'status'  => ['required', 'string', 'in:1,0'],
             'sms_id'  => ['nullable', 'string', 'max:100']
         ];
@@ -49,7 +49,7 @@ class SmsController extends Controller
             $msg = 'SMS added successfully';
         }
 
-        Cache::forget('sms_cache');//for resetting cache
+        \Cache::forget('sms_cache');//for resetting cache
 
         return response()->json([
             'success'  => $msg,

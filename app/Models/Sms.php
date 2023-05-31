@@ -12,5 +12,5 @@ class Sms extends Model
 
     protected $table = 'sms';
 
-    protected $guarded = [];
+    protected $fillable = ['type', 'message', 'status'];
 }

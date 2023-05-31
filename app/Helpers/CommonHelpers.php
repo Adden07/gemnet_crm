@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
+use App\Models\Sms;
 use App\Models\SmsLog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -296,7 +297,6 @@ class CommonHelpers
     }
 
     public static function sendSms($mobile_no, $message){
-        // $sms_cache     = Cache::get('sms_cache');
         $params = [
             'id'    => config('sms.sms_api_id'),
             'pass'  => config('sms.sms_api_pass'),
@@ -326,6 +326,29 @@ class CommonHelpers
         ]);
     }
 
+    public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null){
+        
+        $sms = Sms::where('type',$sms_type)->first();
+;
+        if(strpos($sms->message, '$username') !== false){//check if $username exists in string
+            $sms->message = str_replace('$username', $username, $sms->message);//replace the $username with the actual username
+        }
+        
+        if(strpos($sms->message, '$amount') !== false && $amount != null){//check if $amount exists in string
+            $sms->message = str_replace('$amount', $amount, $sms->message);//replace the $amount with the actual amount
+        }
+
+        if(strpos($sms->message, '$package') !== false && $package != null){//check if $package exists in string
+            $sms->message = str_replace('$package', $package, $sms->message);//replace the $amount with the actual amount
+        }
+
+        if(self::sendSms($mobile_no, $sms->message) == 'Success'){//send sms and check status
+            self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
+        }else{
+            self::smsLog($user_id, $sms_type, $mobile_no, $sms->message, 0,0);//save the failded log
+        }
+
+    }
     //limit permission
     // public static function setPermissionLimit($id, $limit){
     //     $user = Admin::findOrFail(hashids_decode($id));

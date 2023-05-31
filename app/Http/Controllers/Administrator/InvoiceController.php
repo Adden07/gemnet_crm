@@ -242,6 +242,7 @@ class InvoiceController extends Controller
         $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
 
         $pdf = PDF::loadView('admin.invoice.get_invoice', $data);
+        dd($pdf);
         return $pdf->download('invoice.pdf');
     }
 }
