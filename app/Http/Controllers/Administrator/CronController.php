@@ -336,6 +336,7 @@ class CronController extends Controller
     }
 
     public function updateTransactionImagePath(){
+        set_time_limit(0);
         $payment = Payment::whereNotNUll('transaction_image')->get(['id', 'transaction_image']);
         $total   = 0;
         foreach($payment AS $path){
