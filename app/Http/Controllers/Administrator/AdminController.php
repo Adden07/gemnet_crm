@@ -270,10 +270,10 @@ class AdminController extends Controller
 
     //update admin password
     public function updatePassword(Request $req){
-        
-        if(\CommonHelpers::rights('enabled-admin','view-admin')){
-            return redirect()->route('admin.home');
-        }
+        // dd('done');
+        // if(\CommonHelpers::rights('enabled-admin','view-admin')){
+        //     return redirect()->route('admin.home');
+        // }
 
         $rules = [
             'password'  => ['required', 'min:6', 'max:12', 'confirmed'],

@@ -94,11 +94,13 @@ class StaffController extends Controller
             $image = \CommonHelpers::uploadSingleFile($req->image, 'admin_uploads/images/');
             $admin->image = $image;
         }
-
+        if($req->has('password')){
+            $admin->password    = Hash::make($req->password);
+        }
         // $admin->edit_by_id  = auth()->user()->id;
         $admin->name        = $req->name;
         $admin->username    = $req->username;
-        $admin->password    = Hash::make(@$req->password);
+        
         $admin->email       = $req->email;
         $admin->nic         = $req->nic;
         $admin->mobile      = '92'.$req->mobile;
