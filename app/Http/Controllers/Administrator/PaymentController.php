@@ -146,14 +146,6 @@ class PaymentController extends Controller
     }
 
     public function add(Request $req){
-        $payment = Payment::whereNotNUll('transaction_image')->limit(10)->get(['id', 'transaction_image']);
-        foreach($payment AS $path){
-            $payment = Payment::findOrFail($path->id);
-            $new_path = 'admin_uploads/transactions/2023/'.basename(strchr($path->transaction_image, '/'));
-            $payment->transaction_image = $new_path;
-            $payment->save();
-            dd('done');
-        }
         if(CommonHelpers::rights('enabled-finance','add-payments')){
             return redirect()->route('admin.home');
         }
