@@ -848,12 +848,11 @@ class UserController extends Controller
                 $time = date('Y-m-d',strtotime('+1 day'));
             }    
         }
-
         $data = User::select(['id', 'name', 'username', 'current_expiration_date', 'last_login_time', 'last_logout_time', 'address'])
                         ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
                             if(auth()->user()->user_type == 'sales_person'){
                                 $query->where('sales_id', auth()->id());
-                            }elseif(auth()->user()->user_type == 'fe_id'){
+                            }elseif(auth()->user()->user_type == 'field_engineer'){
                                 $query->where('fe_id', auth()->id());
                             }
                         })
