@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Ledger;
 use App\Models\LogProcess;
 use App\Models\Package;
+use App\Models\Payment;
 use App\Models\PkgQueue;
 use App\Models\QtOver;
 use Illuminate\Http\Request;
@@ -332,5 +333,18 @@ class CronController extends Controller
             dd('Some Erro occoured');
         }
         dd($arr);
+    }
+
+    public function updateTransactionImagePath(){
+        $payment = Payment::whereNotNUll('transaction_image')->limit(10)->get(['id', 'transaction_image']);
+        $total   = 0;
+        foreach($payment AS $path){
+            $payment = Payment::findOrFail($path->id);
+            $new_path = 'admin_uploads/transactions/2023/'.basename(strchr($path->transaction_image, '/'));
+            $payment->transaction_image = $new_path;
+            $payment->save();
+            $total += 1;
+        }
+        dd("Total updated row $total");
     }
 }
