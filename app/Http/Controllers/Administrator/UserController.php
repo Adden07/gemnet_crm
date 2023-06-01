@@ -420,16 +420,16 @@ class UserController extends Controller
                 'edit_user' => User::findOrFail(hashids_decode($id)),
                 'is_update' => TRUE,
                 'user_types' => Admin::whereIn('user_type', ['field_engineer','sales_person'])->get(),
-
+                'areas'     => Area::where('area_id',0)->latest()->get(),
             );
-
-            if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
-                $data['areas']    = Area::where('city_id',$data['edit_user']->city_id)->where('type','area')->get();
-                $data['subareas'] = Area::where('area_id',$data['edit_user']->area_id)->get();
-            }else{
-                $data['areas']    = auth()->user()->areas()->where('type','area')->get();
-                $data['subareas'] = auth()->user()->areas()->where('type','sub_area')->get()->where('area_id',$data['edit_user']->area_id);
-            }
+            @$data['subareas'] = Area::where('area_id', $data['edit_user']->sub_id)->get();
+            // if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
+            //     $data['areas']    = Area::where('city_id',$data['edit_user']->city_id)->where('type','area')->get();
+            //     $data['subareas'] = Area::where('area_id',$data['edit_user']->area_id)->get();
+            // }else{
+            //     $data['areas']    = auth()->user()->areas()->where('type','area')->get();
+            //     $data['subareas'] = auth()->user()->areas()->where('type','sub_area')->get()->where('area_id',$data['edit_user']->area_id);
+            // }
 
             CommonHelpers::activity_logs('edit-user');
 
