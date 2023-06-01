@@ -36,7 +36,7 @@
             </select>
         </div>
         <label for="package">Packages:</label>
-        <select class="form-control package_id first_pacakge @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
+        <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
             <option value="">Select Package</option>
             @foreach($packages AS $package)
                 <option value="{{ $package->hashid }}" @if(@$user_package_id->package_id == $package->id) selected @endif>{{ $package->name }}</option>
@@ -119,7 +119,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 
     @if($user->status == 'expired' || $user->status == 'registered' || $current_date > $exp) 
         <label for="package">Packages:</label>
-        <select class="form-control package_id second_package @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
+        <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
             <option value="">Select Package</option>
             @if(isset($user_packages))<!--when user is subdealer-->
                 @foreach($user_packages AS $s_package)

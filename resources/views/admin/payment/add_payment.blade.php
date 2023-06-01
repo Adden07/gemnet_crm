@@ -58,12 +58,12 @@
                             <input type="number" class="form-control" placeholder="0" value="" name="amount" id="available_balance" disabled>
                         </div>
                     </div>
-                    <div class="col-md-6 d-none online" id="transaction_id_col">
+                    {{-- <div class="col-md-6 d-none online" id="transaction_id_col">
                         <div class="form-group">
                             <label for="">Transaction ID</label>
                             <input type="number" class="form-control" placeholder="0" value="" name="transaction_id" id="transaction_id">
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-6 d-none online" id="online_transaction_col">
                         <div class="form-group">
                             <label for="">Online Transaciton</label>

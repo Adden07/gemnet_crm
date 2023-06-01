@@ -172,7 +172,7 @@ class PaymentController extends Controller
             'type'                  => ['required', 'in:cash,online,cheque'],
             'receiver_id'           => ['required','string', 'max:100'],
             'amount'                => ['required', 'integer', 'min:1'],
-            'transaction_id'        => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
+            // 'transaction_id'        => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
             'online_transaction'    => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
             'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
             'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
@@ -195,8 +195,9 @@ class PaymentController extends Controller
                 if($req->hasFile('transaction_image')){ //store image
                     $req->transaction_image  = CommonHelpers::uploadSingleFile($req->transaction_image, 'admin_uploads/transactions/', "png,jpeg,jpg", 2000);
                 }
-                Transaction::insert($this->transactionArr($user, $req->amount));
-                Payment::create($this->createPaymentArr($req, $user));//add payment
+                $transation_arr = $this->transactionArr($user, $req->amount);
+                Transaction::insert($transation_arr);
+                Payment::create($this->createPaymentArr($req, $user, $transation_arr['transaction_id']));//add payment
                 $msg = [//success message
                     'success'   => 'Transaction added successfully',
                     'redirect'    => route('admin.accounts.payments.index')
@@ -276,10 +277,10 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function createPaymentArr(object $arr, object $user_arr){
+    public function createPaymentArr(object $arr, object $user_arr, $transaction_id){
         return [    
             'admin_id'  => auth()->id(),
-            'transaction_id'    => $arr->transaciton_id,
+            'transaction_id'    => $transaction_id,
             'receiver_id'       => $user_arr->id,
             'amount'            => (int) $arr->amount,
             'new_balance'       => (int) $user_arr->user_current_balance + $arr->amount,

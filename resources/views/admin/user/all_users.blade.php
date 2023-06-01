@@ -394,10 +394,8 @@
     $(document).on('change', '#renew_type', function(){
         if($(this).val() == 'queue'){
             $('#queue_package').removeClass('d-none');
-            $('.first_package').addClass('d-none');
         }else{
-            $('#queue_package').addClass('d-none');
-            $('.first_package').removeClass('d-none');
+            $('#queue_package').addClass('d-none')
         }
         
     });
