@@ -55,7 +55,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Available Balance</label>
-                            <input type="number" class="form-control" placeholder="0" value="" name="amount" id="available_balance" disabled>
+                            <input type="number" class="form-control" placeholder="0" value="" name="amount" id="available_balance" disabled style="background-color: #EBF4E6">
                         </div>
                     </div>
                     {{-- <div class="col-md-6 d-none online" id="transaction_id_col">
