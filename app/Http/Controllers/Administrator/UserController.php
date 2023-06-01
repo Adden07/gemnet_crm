@@ -422,7 +422,7 @@ class UserController extends Controller
                 'user_types' => Admin::whereIn('user_type', ['field_engineer','sales_person'])->get(),
                 'areas'     => Area::where('area_id',0)->latest()->get(),
             );
-            @$data['subareas'] = Area::where('area_id', $data['edit_user']->area_d)->get();
+            @$data['subareas'] = Area::where('area_id', $data['edit_user']->area_id)->get();
             // if(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin'){
             //     $data['areas']    = Area::where('city_id',$data['edit_user']->city_id)->where('type','area')->get();
             //     $data['subareas'] = Area::where('area_id',$data['edit_user']->area_id)->get();

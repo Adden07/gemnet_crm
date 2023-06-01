@@ -353,6 +353,12 @@ class PaymentController extends Controller
                                     }
                                     return '';
                                 })
+                                ->addColumn('online_date',function($data){
+                                    if($data->online_date != null){
+                                        return date('d-M-Y H:i:s', strtotime($data->online_date));
+                                    }
+                                    return '';
+                                })
                                 ->addColumn('reciever_name',function($data){
                                     return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";
                                 })

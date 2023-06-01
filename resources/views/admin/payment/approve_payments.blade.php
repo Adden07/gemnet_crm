@@ -43,6 +43,7 @@
                     <tr>
                         <th width="20">S.No</th>
                         <th>Date</th>
+                        <th>Transaction <br />Date</th>
                         <th>Approved <br />Date</th>
                         <th>Receiver Name</th>
                         <th>Added By</th>
@@ -105,6 +106,7 @@
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
+                        {data:'online_date', name:'payments.online_date', orderable:true, searchable:true},  
                         {data:'approved_date', name:'payments.approved_date', orderable:true, searchable:true},  
                         {data:'reciever_name', name:'receiver.name',orderable:false,searchable:true},
                         {data:'added_by', name:'admin.name',orderable:false,searchable:true},
