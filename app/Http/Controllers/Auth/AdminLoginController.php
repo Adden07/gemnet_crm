@@ -62,7 +62,7 @@ class AdminLoginController extends Controller
             
             LoginFailLog::create(['username'=>$request->username, 'ip'=>$request->ip()]); 
 
-            RateLimiter::attempt($request->ip().$request->username, $perMinute=5,function(){},3600);
+            RateLimiter::attempt($request->ip().$request->username, $perMinute=5,function(){},11);
             if (RateLimiter::tooManyAttempts($request->ip().$request->username, $perMinute = 5)) {
                 $seconds = RateLimiter::availableIn(($request->ip().$request->username));
                 $seconds = gmdate("i:s", $seconds);
