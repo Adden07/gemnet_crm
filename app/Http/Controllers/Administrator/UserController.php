@@ -212,6 +212,7 @@ class UserController extends Controller
                                             $query->whereDate('current_expiration_date', '>=', date('Y-m-d'))
                                                 ->whereDate('current_expiration_date', '<', $req->expiration_date);
                                         }
+                                        
                                     }
                                     if(isset($req->paid) && $req->paid != 'all'){
                                         $query->where('paid', intval($req->paid));

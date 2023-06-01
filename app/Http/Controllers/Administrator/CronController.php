@@ -33,6 +33,7 @@ class CronController extends Controller
                        ->whereRaw("STR_TO_DATE(`value`, '%d %M %Y %H:%i') <= '$now'")
                        ->get();//get the expired user's usernames
         $usernames     = $users->pluck('username')->toArray();//convert to array
+        // dd(User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->get()->pluck('username'));
         $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->update(['status'=>'expired']);//expire user status
         $updated_users = User::whereIn('username', $usernames)->get(['id']);
         
@@ -163,7 +164,8 @@ class CronController extends Controller
     }
 
     public function autoRenew(){//auto renew users
-        $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->get();
+        $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->orderBy('id', 'desc')->get();
+
         $rec = array(
             'success'   => 0,
             'failed'    => 0,
@@ -190,10 +192,12 @@ class CronController extends Controller
                     $this->user_id       = $user->id;//set the value to private variable to later access in catch
                     
                     if($user->user_current_balance < ($package->price+$mrc_total) && $user->credit_limit == 0){
+                        // dd($user->name);
                         $rec['failed_of_balance'] += 1;
                         return;
                     }elseif(($user->credit_limit > ($package->price+$mrc_total)) || $user->credit_limit < ($package->price+$mrc_total)){
-                        if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
+                        if((abs($user->credit_limit-abs($user->user_current_balance))) < ($package->price+$mrc_total)){
+                            // dd($user->credit_limit-abs($user->user_current_balance));
                             $rec['failed_of_balance'] += 1;
                             return;
                         }
