@@ -389,9 +389,10 @@
                 username:{
                     required:true,
                     minlength:3,
-                    maxlength:function(){
-                        return "{{ (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin') ? 14 : (15- (strlen(auth()->user()->username))+1) }}"
-                    },
+                    // maxlength:function(){
+                    //     return "{{ (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'superadmin') ? 14 : (15- (strlen(auth()->user()->username))+1) }}"
+                    // },
+                    maxlength:15,
                     nowhitespace:true,
                     remote:{
                         url  : "{{ route('admin.users.check_unique') }}",

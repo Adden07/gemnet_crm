@@ -66,7 +66,7 @@
                     </div> --}}
                     <div class="col-md-6 d-none online" id="online_transaction_col">
                         <div class="form-group">
-                            <label for="">Online Transaciton</label>
+                            <label for="">Online Transaciton ID</label>
                             <input type="number" class="form-control" placeholder="0" value="" name="online_transaction" id="online_transaction">
                         </div>
                     </div>
