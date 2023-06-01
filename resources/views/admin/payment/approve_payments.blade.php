@@ -50,6 +50,7 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
+                        <th>Image</th>
                         <th>Status</th>
                         @can('approve-payments')
                             <th>Approve</th>
@@ -111,6 +112,7 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
+                        {data:'image', name:'image',orderable:false,searchable:false},
                         {data:'status', name:'payments.status',orderable:false,searchable:false},
                         @can('approve-payments')
                             {data:'action', name:'payments.action',orderable:false,searchable:false},

@@ -382,6 +382,16 @@ class PaymentController extends Controller
                                         }
                                         return $html;
                                     })
+                                ->addColumn('image', function($data){
+                                    $action = '';
+                                    if(file_exists($data->transaction_image)){
+                                        $action = "<a href=".asset($data->transaction_image)." class='btn btn-primary btn-xs waves-effect waves-light' title='Edit' target='_blank'>
+                                            <i class='icon-eye'></i>
+                                        </a>";
+                                    }
+                                    
+                                   return $action;
+                                })
                                 ->addColumn('action', function($data){
                                     $html = '';
                                     if($data->approved_by_id == null){
@@ -390,8 +400,9 @@ class PaymentController extends Controller
                                         </span>Approve
                                     </button>";
                                     }
-                                return $html;
+                                    return $html;
                                 })
+                                
                                 ->filter(function($query) use ($req){
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
@@ -400,7 +411,7 @@ class PaymentController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action'])
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image'])
                                 ->make(true);
         }
         $data = array(
