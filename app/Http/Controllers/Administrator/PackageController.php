@@ -474,15 +474,17 @@ class PackageController extends Controller
             $user_package_record->package_id     = $package->id;
             $user_package_record->status         = 'change';
             // $user_package_record->package_status = $user->status;
+            
             $user_package_record->expiration     =  $user->current_expiration_date; 
             $user_package_record->created_at     = date('y-m-d H:i:s');
-            $user_package_record->last_package_id= $last_package_record->package_id;
-            $user_package_record->last_expiration= $last_package_record->expiration;
+            $user_package_record->last_package_id= @$last_package_record->package_id;
+            $user_package_record->last_expiration= @$last_package_record->expiration;
             $user_package_record->save();
             //update radusergroup table
             $rad_user_group->groupname = $package->groupname;
             $rad_user_group->save();
             //update users table when pkg type primary update current and primary pkg otherwise update only current pkg
+            
             if($validated['package_type'] == 'primary'){
                 $user->package   = $package->id;
                 $user->c_package = $package->id;
@@ -491,7 +493,7 @@ class PackageController extends Controller
             }
             $user->last_pkg_chg_time = date('Y-m-d H:i:s');
             $user->save();
-
+            
             if(is_null($user->last_logout_time) || $user_qt_expired == 1){//when user is online or qt_expired is 1 then kick user
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user
             }

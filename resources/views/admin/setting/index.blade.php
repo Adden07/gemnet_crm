@@ -75,7 +75,7 @@
                             </div>
                         </div>    
         
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="form-group mb-3 col-md-6">
                                 <label for="mobile">Mobile<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
@@ -86,8 +86,12 @@
                                     <div class="mobile_err w-100"></div>
                                 </div>
                                 
+                            </div> --}}
+                            <div class="row">
+                            <div class="form-group mb-3 col-md-6">
+                                <label for="email">Landline<span class="text-danger">*</span></label>
+                                <input type="text" name="mobile"  placeholder="Enter landline no" value="{{ @$edit_setting->mobile }}" class="form-control" id="email" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
                             </div>
-        
                             <div class="form-group mb-3 col-md-6">
                                 <label for="email">Email<span class="text-danger">*</span></label>
                                 <input type="email" name="email"  placeholder="Enter email" value="{{ @$edit_setting->email }}" class="form-control" id="email" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
