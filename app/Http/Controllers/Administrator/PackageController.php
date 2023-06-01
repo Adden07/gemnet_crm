@@ -42,7 +42,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-
+        
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
