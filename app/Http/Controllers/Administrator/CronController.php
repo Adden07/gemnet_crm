@@ -167,11 +167,10 @@ class CronController extends Controller
     public static function autoRenew($user_id=null){//auto renew users if user_id is give then only auto renew the specified user
 
         $auto_renew_users = User::when($user_id != null, function($query) use ($user_id){
-                                $query->where('id', $user_id);
+                                $query->where('id', $user_id)->where('status', 'expired');
                             }, function($query){
                                 $query->whereDate('current_expiration_date', now())->where('autorenew', 1);
                             })->orderBy('id', 'desc')->get();
-
         $rec = array(
             'success'   => 0,
             'failed'    => 0,
@@ -358,7 +357,7 @@ class CronController extends Controller
     public function usersAboutToExpire(){
 
         $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->limit(100)->get(['id', 'username', 'mobile', 'current_expiration_date']);
-        
+        // dd($users[58]);
         // $users->chunk(30, function($u){
         //     dd($u);
         //     foreach($u AS $user){
@@ -369,9 +368,9 @@ class CronController extends Controller
         // });
         foreach($users->chunk(30) AS $chunk){
             foreach($chunk AS $user){
-                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
+                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', '3163779433',null,null,null,$user->current_expiration_date);
             }
-            sleep(5);
+            // sleep(30);
         }
 
         dd("Send sms to {$users->count()} users");

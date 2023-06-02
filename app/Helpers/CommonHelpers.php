@@ -309,9 +309,20 @@ class CommonHelpers
         ];
         $url  = config('sms.sms_api_url');
         $url  = $url.'?'.http_build_query($params);
-        $response = Http::post($url);
+        // $response = Http::post($url);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch); //This is the result from Outreach
+        curl_close($ch);
         
-        return json_decode($response)->corpsms[0]->type;
+        $res = json_decode($response)->corpsms[0]->type;
+        
+        if($res == 'Success'){
+            return 'Success';
+        }
+        return false;
     }
 
     public static function smsLog($user_id=null, $sms_type=null, $mobile_no=null, $sms, $status, $is_manual){
@@ -355,7 +366,7 @@ class CommonHelpers
         if(self::sendSms($mobile_no, $sms->message) == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
         }else{
-            self::smsLog($user_id, $sms_type, $mobile_no, $sms->message, 0,0);//save the failded log
+            self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message ?? '', 0,0);//save the failded log
         }
 
     }
