@@ -23,5 +23,8 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'receiver_id', 'id');
     }
 
+    public function transaciton(){
+        return $this->hasOne(Transaction::class, 'transaction_id', 'transaction_id');
+    }
 
 }

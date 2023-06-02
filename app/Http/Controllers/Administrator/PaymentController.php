@@ -318,6 +318,7 @@ class PaymentController extends Controller
         try{
             DB::transaction(function() use (&$id, &$msg){
                 $payment = Payment::findOrFail(hashids_decode($id));
+                $payment->transaciton()->delete();
                 User::findOrFail($payment->receiver->id)->decrement('user_current_balance', $payment->amount);
                 $payment->delete();
             });
