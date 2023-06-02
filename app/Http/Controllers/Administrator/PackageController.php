@@ -477,8 +477,8 @@ class PackageController extends Controller
             
             $user_package_record->expiration     =  $user->current_expiration_date; 
             $user_package_record->created_at     = date('y-m-d H:i:s');
-            $user_package_record->last_package_id= @$last_package_record->package_id;
-            $user_package_record->last_expiration= @$last_package_record->expiration;
+            $user_package_record->last_package_id= $user->last_package;
+            $user_package_record->last_expiration= $user->expiration->last_expiration_date;
             $user_package_record->save();
             //update radusergroup table
             $rad_user_group->groupname = $package->groupname;

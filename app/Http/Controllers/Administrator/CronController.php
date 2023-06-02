@@ -350,6 +350,7 @@ class CronController extends Controller
     }
 
     public function usersAboutToExpire(){
+        set_time_limit(0);
         $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->get(['id', 'username', 'mobile', 'current_expiration_date']);
         foreach($users AS $user){
             CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
