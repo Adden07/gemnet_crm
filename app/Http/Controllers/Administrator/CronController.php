@@ -357,20 +357,11 @@ class CronController extends Controller
     public function usersAboutToExpire(){
 
         $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->limit(1)->get(['id', 'username', 'mobile', 'current_expiration_date']);
-        // dd($users[58]);
-        // $users->chunk(30, function($u){
-        //     dd($u);
-        //     foreach($u AS $user){
-        //         CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
-        //     }
-        //     // Delay between chunks
-        //     sleep(1);
-        // });
+
         foreach($users->chunk(30) AS $chunk){
             foreach($chunk AS $user){
                 CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
             }
-            // sleep(30);
         }
 
         dd("Send sms to {$users->count()} users");
