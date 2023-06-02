@@ -42,7 +42,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-        
+
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -53,7 +53,7 @@ class PackageController extends Controller
             'otc'        => [Rule::requiredIf(empty($req->renew_type)), 'in:1,0'], 
             'renew_type' => [Rule::requiredIf(empty(!$req->renew_type)), 'in:immediate,queue'] 
         ];
-        
+
         $validator = Validator::make($req->all(),$rules);
         
         if($validator->fails()){
@@ -63,11 +63,11 @@ class PackageController extends Controller
         $validated  = $validator->validated();
         $msg        = '';
         $user       = User::findOrFail(hashids_decode($validated['user_id']));
-        
-        if(isset($validated['renew_type']) && $validated['renew_type'] == 'immediate'){
-            $validated['package_id'] =hashids_encode( $user->c_package);
-        }
 
+        if(isset($validated['renew_type']) && $validated['renew_type'] == 'immediate'){
+            $validated['package_id'] =hashids_encode( $user->package);
+        }
+        // dd(hashids_decode($validated['package_id']));
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
         
         $package->id = (!is_null($package->m_pkg)) ? $package->m_pkg : $package->id;
@@ -142,7 +142,7 @@ class PackageController extends Controller
             
             $user_status            = $user->status;
             $last_expiration_date   = $user->current_expiration_date;
-            $last_package           = $user->c_package;
+            $last_package           = $user->package;
             $user_current_balance   = $user->user_current_balance;
             
             if($user->paid == 1){
