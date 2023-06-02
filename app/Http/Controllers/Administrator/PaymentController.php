@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\Ledger;
 use App\Models\Admin;
+use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
@@ -187,7 +188,8 @@ class PaymentController extends Controller
             'cheque_no'             => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'integer'],
             'cheque_date'           => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'date'],
             'transaction_image'     => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
-            'payment_id'            => ['nullable', 'string', 'max:100']
+            'payment_id'            => ['nullable', 'string', 'max:100'],
+            'auto_renew'            => ['required', 'in:1,0'],
         ];
         
         $validator = Validator::make($req->all(),$rules);
@@ -212,6 +214,14 @@ class PaymentController extends Controller
                 ];
                 $user->increment('user_current_balance', $req->amount);//update user balance
                 $user->save();
+
+                if($req->auto_renew == 1 && $user->status != 'registered'){
+                    $package = Package::where('id', $user->c_package)->first();
+                    CronController::autoRenew($user->id);
+                    CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null,$package->name, null);
+                    CommonHelpers::activity_logs("Renew Package - $user->username");//add the activity log 
+                }
+
             });
             CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_add_payment', $user->mobile, $req->amount, null, $req->type);
             CommonHelpers::activity_logs("Added payment - $user->username");//add the activity log

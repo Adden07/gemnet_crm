@@ -106,6 +106,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <label for="">Auto renew</label>
+                        <select class="form-control" name="auto_renew" id="auto_renew">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">

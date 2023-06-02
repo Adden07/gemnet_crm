@@ -164,8 +164,13 @@ class CronController extends Controller
         return $rec;
     }
 
-    public function autoRenew(){//auto renew users
-        $auto_renew_users = User::whereDate('current_expiration_date', now())->where('autorenew', 1)->orderBy('id', 'desc')->get();
+    public static function autoRenew($user_id=null){//auto renew users if user_id is give then only auto renew the specified user
+
+        $auto_renew_users = User::when($user_id != null, function($query) use ($user_id){
+                                $query->where('id', $user_id);
+                            }, function($query){
+                                $query->whereDate('current_expiration_date', now())->where('autorenew', 1);
+                            })->orderBy('id', 'desc')->get();
 
         $rec = array(
             'success'   => 0,
@@ -173,7 +178,7 @@ class CronController extends Controller
             'total'     => $auto_renew_users->count(),
             'failed_of_balance' => 0
         );
-
+    
         foreach($auto_renew_users AS $user){
             try{
                 DB::transaction(function() use (&$user, &$rec){
@@ -190,7 +195,7 @@ class CronController extends Controller
                     $user_current_balance   = $user->user_current_balance;
                     $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax);
                     $current_exp_date       = $user->current_expiration_date;
-                    $this->user_id       = $user->id;//set the value to private variable to later access in catch
+                    // $this->user_id       = $user->id;//set the value to private variable to later access in catch
                     
                     if($user->user_current_balance < ($package->price+$mrc_total) && $user->credit_limit == 0){
                         // dd($user->name);
@@ -222,24 +227,24 @@ class CronController extends Controller
                         
                         $transaction_id = rand(1111111111,9999999999);
                         //generate transction
-                        $this->generateTransaction($transaction_id, $user->id, $package->price, $mrc_total, $user_current_balance);
+                        self::generateTransaction($transaction_id, $user->id, $package->price, $mrc_total, $user_current_balance);
                         //generate invoice for this package
-                        $this->generateInvoice($transaction_id, $user->id, $package->id, $package->price,$current_exp_date, $new_expiration_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total);
+                        self::generateInvoice($transaction_id, $user->id, $package->id, $package->price,$current_exp_date, $new_expiration_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total);
                         //update rad_user_group table
-                        $this->updateRadUserGroup($user->username, $package->groupname);
+                        self::updateRadUserGroup($user->username, $package->groupname);
                         //update radcheck table
-                        $this->updateRadCheck($user->username, $new_expiration_date);
+                        self::updateRadCheck($user->username, $new_expiration_date);
                         //update user package record
-                        $this->updateUserPackageRecord($user, null, $new_expiration_date);
+                        self::updateUserPackageRecord($user, null, $new_expiration_date);
                         
                         //update log process table
-                        $this->logProcess($user->id, 2, null, 1);
+                        self::logProcess($user->id, 2, null, 1);
                         //update queue table applied on column
                         $rec['success'] += 1;
                     }
                 });
             }catch(Exception $e){
-                $this->logProcess($this->user_id, 1, null, 0);
+                // $this->logProcess($this->user_id, 1, null, 0);
                 $rec['failed'] += 1;
             }
         }
@@ -350,11 +355,24 @@ class CronController extends Controller
     }
 
     public function usersAboutToExpire(){
-        set_time_limit(0);
-        $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->get(['id', 'username', 'mobile', 'current_expiration_date']);
-        foreach($users AS $user){
-            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
+
+        $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->limit(100)->get(['id', 'username', 'mobile', 'current_expiration_date']);
+        
+        // $users->chunk(30, function($u){
+        //     dd($u);
+        //     foreach($u AS $user){
+        //         CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
+        //     }
+        //     // Delay between chunks
+        //     sleep(1);
+        // });
+        foreach($users->chunk(30) AS $chunk){
+            foreach($chunk AS $user){
+                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
+            }
+            sleep(5);
         }
+
         dd("Send sms to {$users->count()} users");
     }
 }
