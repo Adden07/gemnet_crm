@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
+use App\Models\Setting;
 use App\Models\Sms;
 use App\Models\SmsLog;
 use Illuminate\Support\Arr;
@@ -296,33 +297,43 @@ class CommonHelpers
         return $result;  // Output: 02
     }
 
-    public static function sendSms($mobile_no, $message){
+    public static function sendSms($mobile_no, $message, $sms_type=null){
         // return 'Success';
-        $params = [
-            'id'    => config('sms.sms_api_id'),
-            'pass'  => config('sms.sms_api_pass'),
-            'msg'   => $message,
-            'to'    => $mobile_no,
-            'lang'  => 'English',
-            'mask'  => 'Gemnet',
-            'type'  => 'json'
-        ];
-        $url  = config('sms.sms_api_url');
-        $url  = $url.'?'.http_build_query($params);
-        // $response = Http::post($url);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch); //This is the result from Outreach
-        curl_close($ch);
+        // return 'Success';
         
-        $res = json_decode($response)->corpsms[0]->type;
-        
-        if($res == 'Success'){
-            return 'Success';
+        $setting = Cache::get('edit_setting');
+        $sms     = Cache::get('sms_cache')->where('type', $sms_type)->first();
+        // dd($setting);
+        // dd($setting->is_sms);
+        if($setting->is_sms == 1 && $sms->status == 1){
+            $params = [
+                'id'    => config('sms.sms_api_id'),
+                'pass'  => config('sms.sms_api_pass'),
+                'msg'   => $message,
+                'to'    => $mobile_no,
+                'lang'  => 'English',
+                'mask'  => 'Gemnet',
+                'type'  => 'json'
+            ];
+            $url  = config('sms.sms_api_url');
+            $url  = $url.'?'.http_build_query($params);
+            // $response = Http::post($url);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch); //This is the result from Outreach
+            curl_close($ch);
+            
+            $res = json_decode($response)->corpsms[0]->type;
+            
+            if($res == 'Success'){
+                return 'Success';
+            }else{
+                return false;
+            }
         }
-        return false;
+        return null;
     }
 
     public static function smsLog($user_id=null, $sms_type=null, $mobile_no=null, $sms, $status, $is_manual){
@@ -362,12 +373,16 @@ class CommonHelpers
             $sms->message = str_replace('$date', $date, $sms->message);//replace the $date with the actual payment_type
         }
 
-
-        if(self::sendSms($mobile_no, $sms->message) == 'Success'){//send sms and check status
+        $sms_status = self::sendSms($mobile_no, $sms->message, $sms_type);
+        
+        if($sms_status == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
-        }else{
+            return true;
+        }elseif($sms_status != null){
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message ?? '', 0,0);//save the failded log
+            return false;
         }
+        return null;
 
     }
     //limit permission

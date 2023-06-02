@@ -35,14 +35,23 @@ class CronController extends Controller
                        ->get();//get the expired user's usernames
         $usernames     = $users->pluck('username')->toArray();//convert to array
         // dd(User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->get()->pluck('username'));
-        $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->update(['status'=>'expired']);//expire user status
-        $updated_users = User::whereIn('username', $usernames)->get(['id', 'username', 'mobile']);
-        
-        foreach($updated_users AS $user){
+        $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated')->get(['id']);//expire user status
+        $counter = 0;
+        // dd($count);
+        // $updated_users = User::whereIn('username', $usernames)->where('status', 'expired')->get(['id', 'username', 'mobile']);
+        foreach($count As $user){
+            $user = User::find($user->id);
+            $user->status = 'expired';
+            $user->save();
             $this->logProcess($user->id, 3, null, 1);
-            // CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
+            ++$counter;
         }
-        return "$count Users Expired Successfully";
+        // foreach($updated_users AS $user){
+        //     $this->logProcess($user->id, 3, null, 1);
+        //     CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
+        // }
+        return "$counter Users Expired Successfully";
     }
 
     public function resetQouta(){
@@ -154,6 +163,7 @@ class CronController extends Controller
                     $this->logProcess($user->id, 1, $queue->id, 1);
                     //update queue table applied on column
                     $this->updatePkgQueue($queue->id);
+
                     $rec['success']   += 1;
                 });
             }catch(Exception $e){
@@ -177,7 +187,7 @@ class CronController extends Controller
             'total'     => $auto_renew_users->count(),
             'failed_of_balance' => 0
         );
-    
+
         foreach($auto_renew_users AS $user){
             try{
                 DB::transaction(function() use (&$user, &$rec){
@@ -239,7 +249,7 @@ class CronController extends Controller
                         
                         //update log process table
                         $instance->logProcess($user->id, 2, null, 1);
-                        //update queue table applied on column
+                        CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile);
                         $rec['success'] += 1;
                     }
                 });
@@ -356,7 +366,7 @@ class CronController extends Controller
 
     public function usersAboutToExpire(){
 
-        $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->limit(100)->get(['id', 'username', 'mobile', 'current_expiration_date', 'c_package']);
+        $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->get(['id', 'username', 'mobile', 'current_expiration_date', 'c_package']);
         $site_setting           = Cache::get('edit_setting');
         $count                  = 0;
         foreach($users->chunk(30) AS $chunk){
@@ -369,8 +379,9 @@ class CronController extends Controller
                 
                 
                 if($user->user_current_balance < ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
-                    CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
-                    ++$count;
+                    if(CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date != null)){
+                        ++$count;
+                    }
                 }
             }
         }

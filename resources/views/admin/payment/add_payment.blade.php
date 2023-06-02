@@ -107,7 +107,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="">Auto renew</label>
+                        <label for="">Auto Renew If Expired</label>
                         <select class="form-control" name="auto_renew" id="auto_renew">
                             <option value="1">Yes</option>
                             <option value="0">No</option>
