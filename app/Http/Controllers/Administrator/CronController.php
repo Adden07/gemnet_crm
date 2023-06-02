@@ -40,7 +40,7 @@ class CronController extends Controller
         
         foreach($updated_users AS $user){
             $this->logProcess($user->id, 3, null, 1);
-            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
+            // CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
         }
         return "$count Users Expired Successfully";
     }

@@ -297,7 +297,7 @@ class CommonHelpers
     }
 
     public static function sendSms($mobile_no, $message){
-        return 'Success';
+        // return 'Success';
         $params = [
             'id'    => config('sms.sms_api_id'),
             'pass'  => config('sms.sms_api_pass'),

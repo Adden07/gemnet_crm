@@ -782,10 +782,6 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card-box">
-                    {{-- <h4 class="header-title m-t-0">Conntaction Pass</h4>
-                    <p class="text-muted font-14 m-b-20">
-                        Here you can change Settings.
-                    </p> --}}
                     <table class="table">
                         <thead>
                             <th>S.No</th>
@@ -794,11 +790,8 @@
                             <th>Package</th>
                             <th>Current Exp</th>
                             <th>New Exp</th>
-                            {{-- <th>Package Date</th> --}}
                             <th>Amount</th>
-                            {{-- <th>Paid</th> --}}
-                            {{-- <th>New Expiration</th> --}}
-                            {{-- <th>Package Status</th> --}}
+
                         </thead>
                         <tbody>
                             @foreach($user_invoices As $invoice)
@@ -825,6 +818,48 @@
                                         @endif
                                     </td> --}}
                                 </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card-box">
+                    <table class="table">
+                        <thead>
+                            <th>S.No</th>
+                            <th>Online Date</th>
+                            <th>Amount</th>
+                            <th>New Balance</th>
+                            <th>Old Balance</th>
+                            <th>Type</th>
+                            <th>DateTime</th>
+
+                        </thead>
+                        <tbody>
+                            @foreach($user_details->payments As $payment)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ (!is_null($payment->online_date)) ? date('d-M-Y', strtotime($payment->online_date)) : '' }}</td>
+                                    <td>{{ number_format($payment->amount) }}</td>
+                                    <td>{{ number_format($payment->old_balance) }}</td>
+                                    <td>{{ number_format($payment->new_balance) }}</td>
+                                    <td>{{ $payment->type }}</td>
+                                    <td>{{ date('d-M-Y H:i:s', strtotime($payment->created_at)) }}</td>
+                                </tr>
+                                {{-- <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $invoice->invoice_id }}</td>
+                                    <td>{{ date('d-M-Y H:i:s',strtotime($invoice->created_at)) }}</td>
+                                    <td>{{  $invoice->package->name}}</td>
+                                    <td>
+                                        @if(date('Y',strtotime($invoice->current_exp_date)) != 1970)
+                                            {{ date('d-M-Y H:i:s',strtotime($invoice->current_exp_date)) }}
+                                        @endif
+                                    </td>
+                                    <td>{{ (!is_null($invoice->new_exp_date))? date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) : '' }}</td>
+                                    <td>{{ round($invoice->total) }}</td>
+                                </tr> --}}
                             @endforeach
                         </tbody>
                     </table>

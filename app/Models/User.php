@@ -106,4 +106,8 @@ class User extends Model
         return $this->hasMany(PkgQueue::class, 'user_id', 'id');
     }
 
+    public function payments(){
+        return $this->hasMany(Payment::class, 'receiver_id', 'id');
+    }
+
 }
