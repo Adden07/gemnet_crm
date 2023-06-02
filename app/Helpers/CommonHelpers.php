@@ -326,10 +326,10 @@ class CommonHelpers
         ]);
     }
 
-    public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null){
+    public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null, $payment_type=null){
         
         $sms = Sms::where('type',$sms_type)->first();
-;
+
         if(strpos($sms->message, '$username') !== false){//check if $username exists in string
             $sms->message = str_replace('$username', $username, $sms->message);//replace the $username with the actual username
         }
@@ -340,6 +340,10 @@ class CommonHelpers
 
         if(strpos($sms->message, '$package') !== false && $package != null){//check if $package exists in string
             $sms->message = str_replace('$package', $package, $sms->message);//replace the $amount with the actual amount
+        }
+
+        if(strpos($sms->message, '$type') !== false && $payment_type != null){//check if $type exists in string
+            $sms->message = str_replace('$type', $payment_type, $sms->message);//replace the $type with the actual payment_type
         }
 
         if(self::sendSms($mobile_no, $sms->message) == 'Success'){//send sms and check status

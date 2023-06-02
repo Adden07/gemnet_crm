@@ -55,7 +55,7 @@ class SettingController extends Controller
             'sms_api_pass'    => ['nullable', 'string', 'max:50'],
             'is_sms'          => ['required', 'in:1,0'],
             'ntn'             => ['nullable', 'string', 'max:50'],
-            'srb_sales_tax'   => ['nullable', 'string', 'max:50'],
+            // 'srb_sales_tax'   => ['nullable', 'string', 'max:50'],
             'bank_name'    => ['nullable', 'string', 'max:50'],
             'account_title'    => ['nullable', 'string', 'max:50'],
             'account_no'    => ['nullable', 'string', 'max:50']    
@@ -86,7 +86,7 @@ class SettingController extends Controller
         $setting->sms_api_pass = $req->sms_api_pass;
         $setting->is_sms = $req->is_sms;
         $setting->ntn = $req->ntn;
-        $setting->srb_sales_tax = $req->srb_sales_tax;
+        // $setting->srb_sales_tax = $req->srb_sales_tax;
         $setting->bank_name = $req->bank_name;
         $setting->account_title = $req->account_title;
         $setting->account_no = $req->account_no;

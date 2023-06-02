@@ -180,23 +180,22 @@
                                 <label for="mrc_sales_tax ">NTN</label>
                                 <input type="text" class="form-control"  placeholder="Enter NTN" value="{{ @$edit_setting->ntn }}" name="ntn" id="ntn" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
                             </div>
-                            <div class="form-group col-md-6">
+                            {{-- <div class="form-group col-md-6">
                                 <label for="mrc_sales_tax ">SRB Sales Tax</label>
                                 <input type="text" class="form-control"  placeholder="Enter SRB sales tax" value="{{ @$edit_setting->srb_sales_tax }}" name="srb_sales_tax" id="srb_sales_tax" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
-                            </div>
-                        </div>
-
-                        <div class="row">
+                            </div> --}}
                             <div class="form-group col-md-6">
                                 <label for="mrc_sales_tax ">Bank Name</label>
                                 <input type="text" class="form-control"  placeholder="Enter account name" value="{{ @$edit_setting->bank_name }}" name="bank_name" id="bank_name" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
                             </div>
+                        </div>
+
+                        <div class="row">
+
                             <div class="form-group col-md-6">
                                 <label for="mrc_sales_tax ">Account Title</label>
                                 <input type="text" class="form-control"  placeholder="Enter account title" value="{{ @$edit_setting->account_title }}" name="account_title" id="account_title" @if(auth()->user()->user_type != 'superadmin') disabled @endif>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="mrc_sales_tax ">Account No</label>
                                 <input type="text" class="form-control"  placeholder="Enter account no" value="{{ @$edit_setting->account_no }}" name="account_no" id="account_no" @if(auth()->user()->user_type != 'superadmin') disabled @endif>

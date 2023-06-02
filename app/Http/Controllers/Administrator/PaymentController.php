@@ -212,7 +212,7 @@ class PaymentController extends Controller
                 $user->increment('user_current_balance', $req->amount);//update user balance
                 $user->save();
             });
-            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_add_payment', $user->mobile, $req->amount);
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_add_payment', $user->mobile, $req->amount, null, $req->type);
             CommonHelpers::activity_logs("Added payment - $user->username");//add the activity log
         }catch(Exception $e){
             $msg = [
