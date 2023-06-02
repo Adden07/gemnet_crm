@@ -226,19 +226,20 @@ class CronController extends Controller
                         $user->save();//update the users columns
                         
                         $transaction_id = rand(1111111111,9999999999);
+                        $instance = new self();
                         //generate transction
-                        self::generateTransaction($transaction_id, $user->id, $package->price, $mrc_total, $user_current_balance);
+                        $instance->generateTransaction($transaction_id, $user->id, $package->price, $mrc_total, $user_current_balance);
                         //generate invoice for this package
-                        self::generateInvoice($transaction_id, $user->id, $package->id, $package->price,$current_exp_date, $new_expiration_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total);
+                        $instance->generateInvoice($transaction_id, $user->id, $package->id, $package->price,$current_exp_date, $new_expiration_date, $mrc_sales_tax, $mrc_adv_inc_tax, $mrc_total);
                         //update rad_user_group table
-                        self::updateRadUserGroup($user->username, $package->groupname);
+                        $instance->updateRadUserGroup($user->username, $package->groupname);
                         //update radcheck table
-                        self::updateRadCheck($user->username, $new_expiration_date);
+                        $instance->updateRadCheck($user->username, $new_expiration_date);
                         //update user package record
-                        self::updateUserPackageRecord($user, null, $new_expiration_date);
+                        $instance->updateUserPackageRecord($user, null, $new_expiration_date);
                         
                         //update log process table
-                        self::logProcess($user->id, 2, null, 1);
+                        $instance->logProcess($user->id, 2, null, 1);
                         //update queue table applied on column
                         $rec['success'] += 1;
                     }
