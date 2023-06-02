@@ -23,7 +23,7 @@ class PaymentController extends Controller
         if(CommonHelpers::rights('enabled-finance','view-payments')){
             return redirect()->route('admin.home');
         }
-        $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
+        // $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
         
         if($req->ajax()){
         $data =                 Payment::with(['admin', 'receiver'])
@@ -97,15 +97,11 @@ class PaymentController extends Controller
                                 return $html;
                                 })
                                 ->filter(function($query) use ($req){
-                                    if(isset($req->username)){
-                                        $query->where('receiver_id',hashids_decode($req->username));
+                                    if(isset($req->receiver_id) && $req->receiver_id != 'all'){
+                                        $query->where('receiver_id',hashids_decode($req->receiver_id));
                                     }
-                                    if(isset($req->added_by)){
-                                        if($req->added_by == 'system'){
-                                            $query->where('type',0);
-                                        }elseif($req->added_by == 'person'){
-                                            $query->where('type',1);
-                                        }
+                                    if(isset($req->admin_id) && $req->admin_id != 'all'){
+                                        $query->where('admin_id',hashids_decode($req->admin_id));
                                     }
                                     if(isset($req->from_date) && isset($req->to_date)){
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
@@ -145,9 +141,14 @@ class PaymentController extends Controller
                                 //     return $data->sum('amount');
                                 // });
         }
+        $admin_id = Payment::groupBy('admin_id')->get(['admin_id'])->pluck('admin_id')->toArray();
+        $receiver_id = Payment::groupBy('receiver_id')->get(['receiver_id'])->pluck('receiver_id')->toArray();
+
         $data = array(
             'title' => 'Payments',
             'admins'        => Admin::where('user_type','!=','superadmin')->get(),
+            'receivers'     => User::whereIn('id', $receiver_id)->get(['id', 'name', 'username']),
+            'admins'        => Admin::whereIn('id', $admin_id)->get(['id', 'name', 'username']), 
         );
         return view('admin.payment.all_payments')->with($data);
     }

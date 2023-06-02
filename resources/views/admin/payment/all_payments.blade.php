@@ -25,10 +25,21 @@
                 <div class="row">
                     <div class="form-group col-md-3">
                         <label for="">Username</label>
-                        <select class="form-control" name="username" id="username">
+                        <select class="form-control select2" name="username" id="receiver_id">
                             <option value="">Select Username</option>
-                            @foreach($admins as $admin)
-                                <option value="{{ $admin->hashid }}" @if(request()->has('username') && request()->get('username') == $admin->hashid) selected @endif>{{ $admin->username }}</option>
+                            @foreach($receivers as $user)
+                                <option value="all">All</option>
+                                <option value="{{ $user->hashid }}" @if(request()->has('username') && request()->get('username') == $user->hashid) selected @endif>{{ $user->username }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="">Added By</label>
+                        <select class="form-control select2" name="added_by" id="admin_id">
+                            <option value="">Select Added By</option>
+                            <option value="all">All</option>
+                            @foreach($admins as $user)
+                                <option value="{{ $user->hashid }}" @if(request()->has('username') && request()->get('username') == $user->hashid) selected @endif>{{ $user->username }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -121,7 +132,8 @@
                     ajax:{
                         url : "{{ route('admin.accounts.payments.index') }}",
                         data:function(d){
-                                    d.username        = $('#username').val(),
+                                    d.receiver_id        = $('#receiver_id').val(),
+                                    d.admin_id        = $('#admin_id').val(),
                                     d.added_by        = $('#added_by').val(),
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
@@ -153,7 +165,7 @@
                 });
 
 
-       $('#username,#from_date,#to_date,#added_by,#type').change(function(){
+       $('#receiver_id,#admin_id,#from_date,#to_date,#added_by,#type').change(function(){
             table.draw();
        });
     });
