@@ -36,12 +36,12 @@ class CronController extends Controller
         $usernames     = $users->pluck('username')->toArray();//convert to array
         // dd(User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->get()->pluck('username'));
         $count         = User::whereIn('username',$usernames)->where('status','!=','expired')->where('status', '!=', 'terminated ')->update(['status'=>'expired']);//expire user status
-        $updated_users = User::whereIn('username', $usernames)->get(['id']);
+        $updated_users = User::whereIn('username', $usernames)->get(['id', 'username', 'mobile']);
         
         foreach($updated_users AS $user){
             $this->logProcess($user->id, 3, null, 1);
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_expired', $user->mobile);
         }
-
         return "$count Users Expired Successfully";
     }
 
@@ -347,5 +347,13 @@ class CronController extends Controller
             $total += 1;
         }
         dd("Total updated row $total");
+    }
+
+    public function usersAboutToExpire(){
+        $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->limit(1)->get(['id', 'username', 'mobile', 'current_expiration_date']);
+        foreach($users AS $user){
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date);
+        }
+        dd("Send sms to {$users->count()} users");
     }
 }

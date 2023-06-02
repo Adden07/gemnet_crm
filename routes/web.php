@@ -23,6 +23,7 @@ Route::prefix('web_admin')->namespace('Auth')->group(function () {
         Route::get('/auto-renew', 'CronController@autoRenew');
         Route::get('/expiry', 'CronController@expiry');
         Route::get('/update-transcation-image-path', 'CronController@updateTransactionImagePath');
+        Route::get('/users-about-to-expire', 'CronController@usersAboutToExpire');
     });
 
 //pages route

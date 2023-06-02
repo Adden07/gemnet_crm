@@ -24,7 +24,7 @@
                 @csrf
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label for="">Receiver Username</label>
+                        <label for="">Username</label>
                         <select class="form-control" name="username" id="username">
                             <option value="">Select Username</option>
                             @foreach($admins as $admin)
@@ -35,7 +35,6 @@
                     <div class="form-group col-md-3">
                         <label for="">Mode</label>
                         <select class="form-control" name="type" id="type">
-                            <option value="">Select mode</option>
                             <option value="all" @if(request()->has('type') && request()->get('type') == 'all') selected @endif>All</option>
                             <option value="cash" @if(request()->has('type') && request()->get('type') == 'cash') selected @endif>Cash</option>
                             <option value="online" @if(request()->has('type') && request()->get('type') == 'online') selected @endif>Online</option>

@@ -326,7 +326,7 @@ class CommonHelpers
         ]);
     }
 
-    public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null, $payment_type=null){
+    public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null, $payment_type=null, $date=null){
         
         $sms = Sms::where('type',$sms_type)->first();
 
@@ -345,6 +345,11 @@ class CommonHelpers
         if(strpos($sms->message, '$type') !== false && $payment_type != null){//check if $type exists in string
             $sms->message = str_replace('$type', $payment_type, $sms->message);//replace the $type with the actual payment_type
         }
+
+        if(strpos($sms->message, '$date') !== false && $date != null){//check if $date exists in string
+            $sms->message = str_replace('$date', $date, $sms->message);//replace the $date with the actual payment_type
+        }
+
 
         if(self::sendSms($mobile_no, $sms->message) == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
