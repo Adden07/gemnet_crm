@@ -110,6 +110,11 @@ class PaymentController extends Controller
                                     if(isset($req->from_date) && isset($req->to_date)){
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     }
+
+                                    if(isset($req->type) && $req->type != 'all'){
+                                        $query->where('type', $req->type);
+                                    }
+
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
                                             $search = $req->search;
@@ -128,6 +133,8 @@ class PaymentController extends Controller
                                                         });      
                                         });
                                     }
+
+                                    
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);

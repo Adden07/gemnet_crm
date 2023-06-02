@@ -1521,11 +1521,12 @@
     $('#update_package').click(function(){
         // alert('done');
         var current_package = "{{ @$user_details->current_package->name }}";
-        var new_package     = $('#current_package_ddl').find(':selected').text();
+        // var new_package     = $('#current_package_ddl').find(':selected').text();
+        var new_package     = $('#primary_package_ddl').find(':selected').text();
         var nopopup         = false;
         var btn_txt         = 'yes, confirm it!';
         var data_msg        = '';
-        
+
         if (!nopopup) {
             Swal.fire({
                 title: "Want to change package?",

@@ -464,7 +464,7 @@ class PackageController extends Controller
             $rad_user_group      = RadUserGroup::where('username',$user->username)->firstOrFail();
             $last_package_record = UserPackageRecord::where('user_id',hashids_decode($validated['user_id']))->orderBy('id','DESC')->first();
 
-            
+
 
             $user_qt_expired     = $user->qt_expired;
             $activity_log        = "change packaged-($user->username)";

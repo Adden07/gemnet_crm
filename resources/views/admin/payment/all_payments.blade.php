@@ -33,11 +33,13 @@
                         </select>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="">Added By</label>
-                        <select class="form-control" name="added_by" id="added_by">
-                            <option value="">Select Added By</option>
-                            <option value="person" @if(request()->has('added_by') && request()->get('added_by') == 'person') selected @endif>Person</option>
-                            <option value="system" @if(request()->has('added_by') && request()->get('added_by') == 'system') selected @endif>System</option>
+                        <label for="">Mode</label>
+                        <select class="form-control" name="type" id="type">
+                            <option value="">Select mode</option>
+                            <option value="all" @if(request()->has('type') && request()->get('type') == 'all') selected @endif>All</option>
+                            <option value="cash" @if(request()->has('type') && request()->get('type') == 'cash') selected @endif>Cash</option>
+                            <option value="online" @if(request()->has('type') && request()->get('type') == 'online') selected @endif>Online</option>
+                            <option value="cheque" @if(request()->has('type') && request()->get('type') == 'cheque') selected @endif>Cheque</option>
                         </select>
                     </div>
                     <div class="form-group col-md-3">
@@ -75,7 +77,7 @@
                     <tr>
                         <th width="20">S.No</th>
                         <th>Date</th>
-                        <th>Receiver Name</th>
+                        <th>Username</th>
                         <th>Added By</th>
                         <th>Mode</th>
                         <th>Amount</th>
@@ -124,7 +126,8 @@
                                     d.added_by        = $('#added_by').val(),
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
-                                    d.search          = $('input[type="search"]').val()
+                                    d.search          = $('input[type="search"]').val(),
+                                    d.type            = $('#type').val()
                         },
                     },
                     drawCallback: function () {
@@ -151,7 +154,7 @@
                 });
 
 
-       $('#username,#from_date,#to_date,#added_by').change(function(){
+       $('#username,#from_date,#to_date,#added_by,#type').change(function(){
             table.draw();
        });
     });
