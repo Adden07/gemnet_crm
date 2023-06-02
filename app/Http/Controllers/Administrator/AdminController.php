@@ -295,7 +295,8 @@ class AdminController extends Controller
 
         return response()->json([
             'success'   => 'User password Updated Successfully',
-            'redirect'    => route('admin.users.profile',['id'=>$validated['admin_id']])
+            'reload'    => true
+            // 'redirect'    => route('admin.users.profile',['id'=>$validated['admin_id']])
         ]);
     }
 
