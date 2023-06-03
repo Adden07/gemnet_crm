@@ -111,13 +111,14 @@ class PackageController extends Controller
                         'error' => 'User balance is less than the package price and OTC price'
                     ];    
                 }
+
                 if($user->credit_limit > ($package->price+$mrc_total)){//
                     if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
                         return [
                             'error' => 'User credit limit is less than the package price'
                         ];
                     }
-                }else{
+                }elseif($user->credit_limit+$user->user_current_balance < ($package->price+$mrc_total)){
                     return [
                         'error' => 'User credit limit is less than the package price'
                     ];
