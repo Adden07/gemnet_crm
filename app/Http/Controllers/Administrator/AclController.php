@@ -22,31 +22,18 @@ class AclController extends Controller
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('name', function($data){
-                                    return @$data->admin->name;
+                                    $name =  @$data->admin->name.' ('.@$data->admin->username.')';
+                                    return $name;
                                 })
                                 ->addColumn('ip', function($data){
                                     return @$data->ip;
                                 })
                                 ->filter(function($query) use ($req){
-                                    // if(isset($req->search)){
-                                    //     $query->where(function($search_query) use ($req){
-                                    //         $search = $req->search;
-                                    //         $search_query->orWhere('created_at', 'LIKE', "%$search%")
-                                    //                     ->orWhere('type', 'LIKE', "%$search%")
-                                    //                     ->orWhere('amount', 'LIKE', "%$search%")
-                                    //                     ->orWhere('old_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhere('new_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhereHas('admin',function($q) use ($search){
-                                    //                         $q->whereLike(['name','username'], '%'.$search.'%');
-
-                                    //                     });      
-                                    //     });
-                                    // }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                // ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
+                                ->rawColumns(['name'])
                                 ->make(true);
         }
     }
