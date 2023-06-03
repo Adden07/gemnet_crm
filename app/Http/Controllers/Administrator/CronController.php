@@ -216,7 +216,7 @@ class CronController extends Controller
                         }
                     }
 
-                    if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
+                    // if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
                         $user->renew_by                 = 1;
                         $user->renew_date               = date('Y-m-d H:i:s');
                         $user->last_expiration_date     = $user->current_expiration_date;
@@ -249,7 +249,7 @@ class CronController extends Controller
                         $instance->logProcess($user->id, 2, null, 1);
                         CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null, $package->name);
                         $rec['success'] += 1;
-                    }
+//                    }
                 });
             }catch(Exception $e){
                 // $this->logProcess($this->user_id, 1, null, 0);

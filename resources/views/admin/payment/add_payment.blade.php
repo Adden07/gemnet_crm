@@ -260,7 +260,15 @@
 
         if(user_id != ''){
             getAjaxRequests(route, '', 'GET', function(resp){//run ajax 
+            if(resp.status == 'expired' && resp.renew_status == 1){
+                $('#auto_renew').removeClass('is-invalid');
+                $('#auto_renew').addClass('is-valid');
+            }else{
+                $('#auto_renew').removeClass('is-valid');
+                $('#auto_renew').addClass('is-invalid');
+            }
             $('#available_balance').val(resp.user);//put the value in input
+            
         });
         }
     });

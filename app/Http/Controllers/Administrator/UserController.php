@@ -38,6 +38,7 @@ use App\Models\PkgQueue;
 use App\Models\Remark;
 use App\Models\Remarks;
 use App\Models\RemarkType;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {   
@@ -2092,8 +2093,32 @@ class UserController extends Controller
 
     public function getUserCurrentBalance($id){
         $user = User::findOrFail(hashids_decode($id));
+
+        $package                = Package::findOrFail($user->package);
+        $site_setting           = Cache::get('edit_setting');
+        $renew_status           = 0;
+        //calculate the tax value
+        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+
+
+        if($user->user_current_balance < (intval($package->price+$mrc_total)) && $user->credit_limit == 0){
+            $renew_status = 0;
+        }elseif(($user->credit_limit > (intval($package->price+$mrc_total))) || $user->credit_limit < (intval($package->price+$mrc_total))){
+            if((abs($user->credit_limit-abs($user->user_current_balance))) < (intval($package->price+$mrc_total))){
+                $renew_status = 0;
+            }else{
+                $renew_status = 1;
+            }
+        }else{
+            $renew_status = 1;
+        }
+        
         return response()->json([
-            'user'  => $user->user_current_balance
+            'user'         => $user->user_current_balance,
+            'status'      => $user->status,
+            'renew_status'=> $renew_status
         ]);
     }
 
