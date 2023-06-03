@@ -11,7 +11,7 @@
 
                 </ol>
             </div>
-            <h4 class="page-title">Admins</h4>
+            <h4 class="page-title">SMS Types</h4>
         </div>
     </div>
 </div>
@@ -44,7 +44,7 @@
                         <input type="text" class="form-control" placeholder="Enter sms type" value="{{ @$edit_sms->message }}" name="message" id="message">
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="">Stauts</label>
+                        <label for="">Status</label>
                         <select class="form-control"name="status" id="">
                             <option value="1" @if(@$edit_sms->status) selected @endif>Active</option>
                             <option value="0" @if(@!$edit_sms->status) selected @endif>Deactive</option>
