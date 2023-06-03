@@ -630,6 +630,7 @@
                         <thead>
                             <th>S.No</th>
                             <th>Name</th>
+                            <th>Username</th>
                             <th>IP</th>
                             <th>Action</th>
                         </thead>
@@ -1029,6 +1030,7 @@
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'name', name:'admin.name', orderable:false, searchable:true},  
+                        {data:'username', name:'username', orderable:false, searchable:true},  
                         {data:'ip', name:'admin_acls.ip', orderable:false, searchable:true}, 
                         {data:'action', name:'aciton', orderable:false, searchable:false},   
                     ],

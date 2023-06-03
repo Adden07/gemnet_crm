@@ -376,7 +376,7 @@ class CommonHelpers
         }
 
         $sms_status = self::sendSms($mobile_no, $sms->message, $sms_type);
-        dd($sms_status);
+
         if($sms_status == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
             return true;

@@ -22,8 +22,11 @@ class AclController extends Controller
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('name', function($data){
-                                    $name =  @$data->admin->name.' ('.@$data->admin->username.')';
+                                    $name =  @$data->admin->name;
                                     return $name;
+                                })
+                                ->addColumn('username', function($data){
+                                    return @$data->admin->username;
                                 })
                                 ->addColumn('ip', function($data){
                                     return @$data->ip;
