@@ -367,7 +367,8 @@ class CronController extends Controller
         $users = User::whereBetween('current_expiration_date', [now(), now()->addDays(3)])->get(['id', 'username', 'mobile', 'current_expiration_date', 'c_package']);
         $site_setting           = Cache::get('edit_setting');
         $count                  = 0;
-        foreach($users->chunk(30) AS $chunk){
+
+        foreach($users->chunk(100) AS $chunk){
             foreach($chunk AS $user){
                 $package                = Package::findOrFail($user->c_package);
                 //calculate the tax value
@@ -376,7 +377,7 @@ class CronController extends Controller
                 $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
                 
                 
-                if($user->user_current_balance < ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
+                if(intval($user->user_current_balance+abs($user->credit_limit)) < ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
                     if(CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date != null)){
                         ++$count;
                     }
