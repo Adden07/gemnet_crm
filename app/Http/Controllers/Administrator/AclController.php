@@ -22,10 +22,10 @@ class AclController extends Controller
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('name', function($data){
-                                    return $data->admin->name;
+                                    return @$data->admin->name;
                                 })
                                 ->addColumn('ip', function($data){
-                                    return $data->ip;
+                                    return @$data->ip;
                                 })
                                 ->filter(function($query) use ($req){
                                     // if(isset($req->search)){
