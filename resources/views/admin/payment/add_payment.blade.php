@@ -279,6 +279,9 @@
             if(resp.status == 'expired' && resp.renew_status == 1){
                 $('#auto_renew').removeClass('is-invalid');
                 $('#auto_renew').addClass('is-valid');
+            }else if(resp.status == 'active'){
+                $('#auto_renew').removeClass('is-valid');
+                $('#auto_renew').removeClass('is-invalid');
             }else{
                 $('#auto_renew').removeClass('is-valid');
                 $('#auto_renew').addClass('is-invalid');
