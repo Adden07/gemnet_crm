@@ -191,7 +191,7 @@ class CronController extends Controller
         foreach($auto_renew_users AS $user){
             try{
                 DB::transaction(function() use (&$user, &$rec){
-                    $package                = Package::findOrFail($user->c_package);
+                    $package                = Package::findOrFail($user->package);
                     $site_setting           = Cache::get('edit_setting');
                     
                     //calculate the tax value
@@ -249,7 +249,7 @@ class CronController extends Controller
                         
                         //update log process table
                         $instance->logProcess($user->id, 2, null, 1);
-                        CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile);
+                        CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null, $package->name);
                         $rec['success'] += 1;
                     }
                 });
