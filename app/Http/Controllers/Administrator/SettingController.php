@@ -15,7 +15,7 @@ use App\Models\Admin;
 class SettingController extends Controller
 {
     public function index(){
-
+        
         if((\CommonHelpers::rights(true,'enabled-settings'))){
             return redirect()->route('admin.home');
         }

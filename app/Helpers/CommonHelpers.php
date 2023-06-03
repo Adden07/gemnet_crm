@@ -306,6 +306,7 @@ class CommonHelpers
         // dd($setting);
         // dd($setting->is_sms);
         if($setting->is_sms == 1 && $sms->status == 1){
+
             $params = [
                 'id'    => config('sms.sms_api_id'),
                 'pass'  => config('sms.sms_api_pass'),
@@ -317,16 +318,17 @@ class CommonHelpers
             ];
             $url  = config('sms.sms_api_url');
             $url  = $url.'?'.http_build_query($params);
-            // $response = Http::post($url);
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $response = curl_exec($ch); //This is the result from Outreach
-            curl_close($ch);
-            
+            $response = Http::post($url);
+            // dd($message);
+            // $ch = curl_init($url);
+            // curl_setopt($ch, CURLOPT_POST, true);
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // $response = curl_exec($ch); //This is the result from Outreach
+            // curl_close($ch);
             $res = json_decode($response)->corpsms[0]->type;
-            
+            // dd(json_decode($response));
+            // dd($mobile_no);
             if($res == 'Success'){
                 return 'Success';
             }else{
@@ -350,7 +352,7 @@ class CommonHelpers
     }
 
     public static function sendSmsAndSaveLog($user_id=null, $username, $sms_type=null, $mobile_no=null, $amount=null, $package=null, $payment_type=null, $date=null){
-        
+
         $sms = Sms::where('type',$sms_type)->first();
 
         if(strpos($sms->message, '$username') !== false){//check if $username exists in string
@@ -374,7 +376,7 @@ class CommonHelpers
         }
 
         $sms_status = self::sendSms($mobile_no, $sms->message, $sms_type);
-        
+        dd($sms_status);
         if($sms_status == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
             return true;
