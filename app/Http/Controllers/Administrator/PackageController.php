@@ -492,6 +492,8 @@ class PackageController extends Controller
                 $user->c_package = $package->id;
             }else{
                 $user->c_package = $package->id;
+                $user->package   = $package->id;
+
             }
             $user->last_pkg_chg_time = date('Y-m-d H:i:s');
             $user->save();
@@ -1016,6 +1018,7 @@ class PackageController extends Controller
         if($user->status == 'registered'){
             $otc = $package->otc;
         }
+
         return response()->json([
             'new_expiration_date'   => $new_expiration_date,
             'package_price'         => round($package->price+$mrc_total),
