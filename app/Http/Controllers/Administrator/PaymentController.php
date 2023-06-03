@@ -215,10 +215,10 @@ class PaymentController extends Controller
                 $user->increment('user_current_balance', $req->amount);//update user balance
                 $user->save();
 
-                if($req->auto_renew == 1 && $user->status != 'registered'){
+                if($req->auto_renew == 1 && $user->status == 'expired'){
                     $package = Package::where('id', $user->c_package)->first();
                     CronController::autoRenew($user->id);
-                    CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null,$package->name, null);
+                    // CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null,$package->name, null);
                     CommonHelpers::activity_logs("Renew Package - $user->username");//add the activity log 
                 }
 
