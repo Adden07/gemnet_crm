@@ -379,10 +379,7 @@
                                                 @endforeach --}}
                                                 @if(isset($user_packages))<!--when user is subdealer-->
                                                     @foreach($user_packages AS $package)
-                                                        @if(!in_array($package->package_id,$ids))
-                                                            {{-- <option value="{{ $package->hashid }}" @if($user_details->c_package == $package->id) selected @endif>{{ $package->package->name }}</option> --}}
-                                                            {{-- <option value="{{ hashids_encode($package->package->id) }}" @if(@$user_package_id->package_id == $package->id) selected @endif>{{ $package->package->name }}</option> --}}
-                                                            
+                                                        @if(!in_array($package->package_id,$ids))                                                            
                                                             <option value="{{ hashids_encode($package->package->id) }}" @if($user_details->c_package == $package->package->id) selected @endif>{{ $package->package->name }}</option>
                                                         @endif    
                                                     @endforeach
@@ -1514,13 +1511,16 @@
 
     //edit package
     $('#edit_package').click(function(){
-        if("{{ auth()->user()->user_type == 'admin' }}"){
-            $('#primary_package').addClass('d-none');
-            $('#primary_package_ddl').removeClass('d-none');
-        }else{
-            $('#current_package').addClass('d-none');
-            $('#current_package_ddl').removeClass('d-none');
-        }
+        // if("{{ auth()->user()->user_type == 'admin' }}"){
+        //     $('#primary_package').addClass('d-none');
+        //     $('#primary_package_ddl').removeClass('d-none');
+        // }else{
+        //     $('#current_package').addClass('d-none');
+        //     $('#current_package_ddl').removeClass('d-none');
+        // }
+        $('#primary_package').addClass('d-none');
+        $('#primary_package_ddl').removeClass('d-none');
+        
         $('#update_package').removeClass('d-none');//display update button
         $('#cancel_button').removeClass('d-none');//disaply cancel button
         $('#edit_package').addClass('d-none');//hiden edit button
@@ -1559,6 +1559,7 @@
         var current_package = "{{ @$user_details->current_package->name }}";
         // var new_package     = $('#current_package_ddl').find(':selected').text();
         var new_package     = $('#primary_package_ddl').find(':selected').text();
+
         var nopopup         = false;
         var btn_txt         = 'yes, confirm it!';
         var data_msg        = '';
