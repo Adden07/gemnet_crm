@@ -48,7 +48,7 @@ class PackageController extends Controller
             'status'     => ['required', 'in:registered,active,expired'],
             'package_id' => [Rule::requiredIf($req->renew_type == 'queue')],
             'user_id'    => ['required'],
-            'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_month'],
+            'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_year,promo'],
             // 'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
             'otc'        => [Rule::requiredIf(empty($req->renew_type)), 'in:1,0'], 
             'renew_type' => [Rule::requiredIf(empty(!$req->renew_type)), 'in:immediate,queue'] 
