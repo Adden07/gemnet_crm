@@ -262,17 +262,19 @@
         setTimeout(() => {
             getUserPackageAndBalanceDetails();
         }, 1000);
+        // getUserPackageAndBalanceDetails();
+
     });
 
     function getUserPackageAndBalanceDetails(){
 
         var user_id = $('#receiver_id').find(':selected').val();
         var route   = "{{ route('admin.users.get_user_current_balance', ':id') }}";
-        var amount  = $('#amount').val();
+        var amount  = ($('#amount').val() != '') ? $('#amount').val() : 0;
 
         route       = route.replace(':id', user_id);
         
-        if(user_id != '' && amount != ''){
+        if(user_id != ''){
             getAjaxRequests(route, {amount:amount}, 'GET', function(resp){//run ajax 
             if(resp.status == 'expired' && resp.renew_status == 1){
                 $('#auto_renew').removeClass('is-invalid');

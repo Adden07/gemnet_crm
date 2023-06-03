@@ -2098,6 +2098,7 @@ class UserController extends Controller
         $package                = Package::findOrFail($user->package);
         $site_setting           = Cache::get('edit_setting');
         $renew_status           = 0;
+        $user_actual_balance    = $user->user_current_balance;
         //calculate the tax value
         $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
         $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
@@ -2117,7 +2118,8 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'user'         => $user->user_current_balance,
+            'user'         => $user_actual_balance,
+            // 'balance'      => $user_actual_balance,
             'status'      => $user->status,
             'renew_status'=> $renew_status
         ]);
