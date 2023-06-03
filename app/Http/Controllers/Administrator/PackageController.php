@@ -452,11 +452,11 @@ class PackageController extends Controller
         $diff              = $t1 - $t2;
         $hours             = $diff / (60 * 60);
         
-        if($hours <= 24 && $user->last_pkg_chg_time != NULL && auth()->user()->user_type != 'admin'){
-            return response()->json([
-                'error' => 'You Cannot Change Package Again in Last 24 Hours'
-            ]);
-        }
+        // if($hours <= 24 && $user->last_pkg_chg_time != NULL && auth()->user()->user_type != 'admin'){
+        //     return response()->json([
+        //         'error' => 'You Cannot Change Package Again in Last 24 Hours'
+        //     ]);
+        // }
 
         DB::transaction(function() use ($validated){
             
