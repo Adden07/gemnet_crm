@@ -113,7 +113,7 @@
     </li>
 
     <li class="nav-item" role="presentation">
-        <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >invoices</a>
+        <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >Invoices/Payments</a>
     </li>
     @if(auth()->user()->user_type == 'admin' && $user_details->status != 'registered')
         <li class="nav-item" role="presentation">
@@ -828,24 +828,25 @@
                     <table class="table">
                         <thead>
                             <th>S.No</th>
-                            <th>Online Date</th>
+                            <th>DateTime</th>
+
                             <th>Amount</th>
                             <th>New Balance</th>
                             <th>Old Balance</th>
                             <th>Type</th>
-                            <th>DateTime</th>
-
+                            <th>Online Date</th>
                         </thead>
                         <tbody>
                             @foreach($user_details->payments As $payment)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ (!is_null($payment->online_date)) ? date('d-M-Y', strtotime($payment->online_date)) : '' }}</td>
+                                    <td>{{ date('d-M-Y H:i:s', strtotime($payment->created_at)) }}</td>
                                     <td>{{ number_format($payment->amount) }}</td>
                                     <td>{{ number_format($payment->old_balance) }}</td>
                                     <td>{{ number_format($payment->new_balance) }}</td>
                                     <td>{{ $payment->type }}</td>
-                                    <td>{{ date('d-M-Y H:i:s', strtotime($payment->created_at)) }}</td>
+                                    <td>{{ (!is_null($payment->online_date)) ? date('d-M-Y', strtotime($payment->online_date)) : '' }}</td>
+
                                 </tr>
                                 {{-- <tr>
                                     <td>{{ $loop->iteration }}</td>
