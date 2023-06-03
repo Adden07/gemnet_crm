@@ -101,7 +101,7 @@ class PackageController extends Controller
         //     }
         // }
         if($user->paid == 1){
-            if($user->user_current_balance < ($package->price+$mrc_total)){
+            if($user->user_current_balance < (intval($package->price+$mrc_total))){
                 $err =  [
                     'error' => 'User balance is less than the package price'
                 ];
@@ -112,19 +112,20 @@ class PackageController extends Controller
                     ];    
                 }
 
-                if($user->credit_limit > ($package->price+$mrc_total)){//
-                    if(($user->credit_limit-abs($user->user_current_balance)) < ($package->price+$mrc_total)){
+                if($user->credit_limit > (intval($package->price+$mrc_total))){//
+                    if(($user->credit_limit-abs($user->user_current_balance)) < (intval($package->price+$mrc_total))){
                         return [
                             'error' => 'User credit limit is less than the package price'
                         ];
                     }
-                }elseif($user->credit_limit+$user->user_current_balance < ($package->price+$mrc_total)){
+                }elseif($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
                     return [
                         'error' => 'User credit limit is less than the package price'
                     ];
                 }
             }
         }
+        // dd('done');
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
         //     if($user->user_current_balance < ($package->price+$package->otc)){
         //         return [
