@@ -65,7 +65,7 @@ class PackageController extends Controller
         $user       = User::findOrFail(hashids_decode($validated['user_id']));
 
         if(isset($validated['renew_type']) && $validated['renew_type'] == 'immediate'){
-            $validated['package_id'] =hashids_encode( $user->package);
+            $validated['package_id'] =$validated['package_id'];
         }
         // dd(hashids_decode($validated['package_id']));
         $package    = Package::findOrFail(hashids_decode($validated['package_id']));
