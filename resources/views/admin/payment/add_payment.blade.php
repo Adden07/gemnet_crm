@@ -107,7 +107,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="auto_renew_col">
                         <label for="">Auto Renew If Expired</label>
                         <select class="form-control" name="auto_renew" id="auto_renew">
                             <option value="1">Yes</option>
@@ -277,12 +277,17 @@
         if(user_id != ''){
             getAjaxRequests(route, {amount:amount}, 'GET', function(resp){//run ajax 
             if(resp.status == 'expired' && resp.renew_status == 1){
+                $('#auto_renew_col').removeClass('d-none');
                 $('#auto_renew').removeClass('is-invalid');
                 $('#auto_renew').addClass('is-valid');
             }else if(resp.status == 'active'){
+                $('#auto_renew_col').removeClass('d-none');
                 $('#auto_renew').removeClass('is-valid');
                 $('#auto_renew').removeClass('is-invalid');
+            }else if(resp.status == 'registered'){
+                $('#auto_renew_col').addClass('d-none');
             }else{
+                $('#auto_renew_col').removeClass('d-none');
                 $('#auto_renew').removeClass('is-valid');
                 $('#auto_renew').addClass('is-invalid');
             }

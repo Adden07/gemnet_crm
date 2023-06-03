@@ -2094,34 +2094,36 @@ class UserController extends Controller
     public function getUserCurrentBalance($id, Request $req){
 
         $user = User::findOrFail(hashids_decode($id));
-
-        $package                = Package::findOrFail($user->package);
-        $site_setting           = Cache::get('edit_setting');
-        $renew_status           = 0;
         $user_actual_balance    = $user->user_current_balance;
-        //calculate the tax value
-        $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
-        $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
-        $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-        $user->user_current_balance += intval($req->amount);
-        
-        if($user->user_current_balance < (intval($package->price+$mrc_total)) && $user->credit_limit == 0){
-            $renew_status = 0;
-        }elseif(($user->credit_limit > (intval($package->price+$mrc_total))) || $user->credit_limit < (intval($package->price+$mrc_total))){
-            if((abs($user->credit_limit-abs($user->user_current_balance))) < (intval($package->price+$mrc_total))){
+        $renew_status           = 0;
+
+        if($user->status != 'registered'){
+            $package                = Package::findOrFail($user->package);
+            $site_setting           = Cache::get('edit_setting');
+            //calculate the tax value
+            $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
+            $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
+            $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
+            $user->user_current_balance += intval($req->amount);
+            
+            if($user->user_current_balance < (intval($package->price+$mrc_total)) && $user->credit_limit == 0){
                 $renew_status = 0;
+            }elseif(($user->credit_limit > (intval($package->price+$mrc_total))) || $user->credit_limit < (intval($package->price+$mrc_total))){
+                if((abs($user->credit_limit-abs($user->user_current_balance))) < (intval($package->price+$mrc_total))){
+                    $renew_status = 0;
+                }else{
+                    $renew_status = 1;
+                }
             }else{
                 $renew_status = 1;
             }
-        }else{
-            $renew_status = 1;
         }
 
         return response()->json([
             'user'         => $user_actual_balance,
             // 'balance'      => $user_actual_balance,
             'status'      => $user->status,
-            'renew_status'=> $renew_status
+            'renew_status'=> $renew_status,
         ]);
     }
 
