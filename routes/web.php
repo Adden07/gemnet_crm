@@ -71,6 +71,9 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/','SettingController@index')->name('index');
         Route::post('/store','SettingController@store')->name('store');
         Route::post('/mode','SettingController@mode')->name('mode');
+        Route::get('/edit_acl/{id}', 'SettingController@editAcl')->name('edit_acl');
+        Route::get('/delete_acl/{id}', 'SettingController@deleteAcl')->name('delete_acl');
+
     });
 
     // //areas routes
@@ -267,6 +270,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
     Route::prefix('acl')->name('acls.')->group(function(){
         Route::get('/', 'AclController@index')->name('index');
         Route::post('/store', 'AclController@store')->name('store');
+        // Route::get('/edit/{id}', 'AclController@edit')->name('edit');
     });
 
     //migrations

@@ -602,21 +602,22 @@
                         <div class="row">
                             <div class="form-group col-md-5">
                                 <label for="">Users</label>
-                                <select name="admin_id" id="admin_id" class="form-control">
+                                <select name="admin_id" id="" class="form-control select2">
                                     <option value="">Select Admin</option>
                                     @foreach($admins AS $admin)
-                                        <option value="{{ $admin->hashid }}">{{ $admin->name }} ({{ $admin->username }})</option>
+                                        <option value="{{ $admin->hashid }}" @if(@$edit_acl->admin_id == $admin->id) selected @endif>{{ $admin->name }} ({{ $admin->username }})</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group col-md-5">
                                 <label for="">IP</label>
                                 {{-- <input type="text" class="form-control" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$"> --}}
-                                <input type="text" class="form-control" name="ip" id="ip">
+                                <input type="text" class="form-control" value="{{ @$edit_acl->ip }}" name="ip" id="ip">
 
                             </div>
                             <div class="col-md-1">
-                                <input type="submit" class="form-control btn-primary mt-3" value="Add">
+                                <input type="hidden" name="admin_acl_id" value="{{ @$edit_acl->hashid }}">
+                                <input type="submit" class="form-control btn-primary mt-3" value="{{ (isset($edit_acl) ? 'Update' : 'Add') }}">
                             </div>
                         </div>
 
@@ -630,6 +631,7 @@
                             <th>S.No</th>
                             <th>Name</th>
                             <th>IP</th>
+                            <th>Action</th>
                         </thead>
                     </table>
                 </div>
@@ -1027,7 +1029,8 @@
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'name', name:'admin.name', orderable:false, searchable:true},  
-                        {data:'ip', name:'admin_acls.ip', orderable:false, searchable:true},  
+                        {data:'ip', name:'admin_acls.ip', orderable:false, searchable:true}, 
+                        {data:'action', name:'aciton', orderable:false, searchable:false},   
                     ],
                 });
         });

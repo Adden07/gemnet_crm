@@ -11,6 +11,7 @@ use App\Models\City;
 use App\Models\Setting;
 use App\Models\Area;
 use App\Models\Admin;
+use App\Models\AdminAcl;
 
 class SettingController extends Controller
 {
@@ -25,7 +26,6 @@ class SettingController extends Controller
             'cities'        => City::get(),
             'areas'         => Area::with(['city'])->where('type','area')->get(),
             'subareas'      => Area::with(['city','area'])->where('type','sub_area')->latest()->get(),
-            // 'edit_setting'  => Setting::where('admin_id',auth()->user()->id)->first(),
             'admins'        => Admin::where('id', '!=', auth()->user()->id)->where('user_type', '!=', 'superadmin')->get(),
         );
 
@@ -140,6 +140,30 @@ class SettingController extends Controller
         return response()->json([
             'success'   => 'Maintenance  Mode Updated Successfully',
             'reload'    => TRUE
+        ]);
+    }
+
+    public function editAcl($id){
+        if((\CommonHelpers::rights(true,'enabled-settings'))){
+            return redirect()->route('admin.home');
+        }
+        
+        $data = array(
+            'title'         => 'Settings',
+            'cities'        => City::get(),
+            'areas'         => Area::with(['city'])->where('type','area')->get(),
+            'subareas'      => Area::with(['city','area'])->where('type','sub_area')->latest()->get(),
+            'admins'        => Admin::where('id', '!=', auth()->user()->id)->where('user_type', '!=', 'superadmin')->get(),
+            'edit_acl'      => AdminAcl::findOrFail(hashids_decode($id)),
+        );    
+        return view('admin.setting.index')->with($data);
+    }
+
+    public function deleteAcl($id){
+        AdminAcl::destroy(hashids_decode($id));
+        return response()->json([
+            'success'   => 'Admin acl deleted successfully',
+            'reload'    => true
         ]);
     }
 }
