@@ -2091,7 +2091,8 @@ class UserController extends Controller
         return view('admin.user.update_users_expiration_task_history')->with($data);
     }
 
-    public function getUserCurrentBalance($id){
+    public function getUserCurrentBalance($id, Request $req){
+
         $user = User::findOrFail(hashids_decode($id));
 
         $package                = Package::findOrFail($user->package);
@@ -2101,8 +2102,8 @@ class UserController extends Controller
         $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0)   ? ($package->price * $site_setting->mrc_sales_tax)/100: 0;
         $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0) ? (($package->price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-
-
+        $user->user_current_balance += intval($req->amount);
+        
         if($user->user_current_balance < (intval($package->price+$mrc_total)) && $user->credit_limit == 0){
             $renew_status = 0;
         }elseif(($user->credit_limit > (intval($package->price+$mrc_total))) || $user->credit_limit < (intval($package->price+$mrc_total))){
@@ -2114,7 +2115,7 @@ class UserController extends Controller
         }else{
             $renew_status = 1;
         }
-        
+
         return response()->json([
             'user'         => $user->user_current_balance,
             'status'      => $user->status,

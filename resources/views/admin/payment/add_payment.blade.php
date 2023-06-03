@@ -32,6 +32,12 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-6" id="payment_col">
+                        <div class="form-group">
+                            <label for="">Payment Amount</label>
+                            <input type="number" class="form-control" placeholder="Payment Amount" value="{{ @$edit_transaction->amount }}" name="amount" id="amount">
+                        </div>
+                    </div>
                     <div class="col-md-6">
                         <label for="">Users</label>
                         <select class="form-control select2" name="receiver_id" id="receiver_id">
@@ -46,12 +52,7 @@
                             <label for="">Franchises</label>
                         </div>
                     </div>
-                    <div class="col-md-6" id="payment_col">
-                        <div class="form-group">
-                            <label for="">Payment Amount</label>
-                            <input type="number" class="form-control" placeholder="Payment Amount" value="{{ @$edit_transaction->amount }}" name="amount" id="amount">
-                        </div>
-                    </div>
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Available Balance</label>
@@ -254,12 +255,25 @@
         }
     });
     $('#receiver_id').change(function(){//when there is change is user id get the user current balance
-        var user_id = $(this).val();
-        var route   = "{{ route('admin.users.get_user_current_balance', ':id') }}";
-        route       = route.replace(':id', user_id)
+        getUserPackageAndBalanceDetails();
+    });
 
-        if(user_id != ''){
-            getAjaxRequests(route, '', 'GET', function(resp){//run ajax 
+    $('#amount').on('keyup', function() {
+        setTimeout(() => {
+            getUserPackageAndBalanceDetails();
+        }, 1000);
+    });
+
+    function getUserPackageAndBalanceDetails(){
+
+        var user_id = $('#receiver_id').find(':selected').val();
+        var route   = "{{ route('admin.users.get_user_current_balance', ':id') }}";
+        var amount  = $('#amount').val();
+
+        route       = route.replace(':id', user_id);
+        
+        if(user_id != '' && amount != ''){
+            getAjaxRequests(route, {amount:amount}, 'GET', function(resp){//run ajax 
             if(resp.status == 'expired' && resp.renew_status == 1){
                 $('#auto_renew').removeClass('is-invalid');
                 $('#auto_renew').addClass('is-valid');
@@ -270,7 +284,7 @@
             $('#available_balance').val(resp.user);//put the value in input
             
         });
-        }
-    });
+    }
+    }
 </script>
 @endsection
