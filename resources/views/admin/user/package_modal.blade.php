@@ -24,8 +24,8 @@
     </div>
 @endif
 
-@if(!empty($user->current_expiration_date))
-    <div id="queue_package" class="d-none">
+{{-- @if(!empty($user->current_expiration_date)) --}}
+    <div id="queue_package" class="">
         <div class="form-group mt-2">
             <label for="">Package type</label>
             <select class="form-control" name="month_type" id="month_type">
@@ -43,7 +43,7 @@
             @endforeach
         </select>
     </div>
-@endif
+{{-- @endif --}}
 
 @if($user->status != 'registered')
     <div class="">
