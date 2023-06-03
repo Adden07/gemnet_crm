@@ -7,7 +7,7 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active"><a href="{{ route('admin.admins.index') }}"></a>SMS</li>
-                    <li class="breadcrumb-item active"> All Sms</li>
+                    <li class="breadcrumb-item active"> SMS Types</li>
 
                 </ol>
             </div>
@@ -61,10 +61,10 @@
     <div class="col-lg-12">
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title">All SMS List</h4>
+                <h4 class="header-title">SMS Type List</h4>
                 {{-- <a href="{{ route('admin.staffs.add') }}" class="btn btn-sm btn-primary">Add Staff</a> --}}
             </div>
-            <p class="sub-header">Following is the list of all the SMS.</p>
+            <p class="sub-header">Following is the list of all the SMS types.</p>
             <table class="table dt_table table-bordered w-100 nowrap" id="laravel_datatable">
                 <thead>
                     <tr>

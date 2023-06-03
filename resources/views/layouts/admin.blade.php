@@ -359,7 +359,7 @@
                                 <ul class="nav-second-level" aria-expanded="false">
                                     @can('all-sms')
                                     <li>
-                                        <a href="{{ route('admin.sms.index') }}">All SMS</a>
+                                        <a href="{{ route('admin.sms.index') }}">SMS Types</a>
                                     </li>
                                     @endcan
                                     @can('manual-sms')
