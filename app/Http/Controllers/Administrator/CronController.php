@@ -378,7 +378,7 @@ class CronController extends Controller
                 
                 
                 if(intval($user->user_current_balance+abs($user->credit_limit)) < (intval($package->price+$mrc_total))){//if user balance is greater then the pkg_price+mrc
-                    if(CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date != null)){
+                    if(CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_near_expiry', $user->mobile,null,null,null,$user->current_expiration_date) != null){
                         ++$count;
                     }
                 }
