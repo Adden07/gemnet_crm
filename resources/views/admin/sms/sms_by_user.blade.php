@@ -21,7 +21,17 @@
             <form action="{{ route('admin.sms.send_sms_by_user') }}" method="POST" class="ajaxForm">
                 @csrf
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="">Type</label>
+                        <select class="form-control" name="type" id="type">
+                            <option value="individual">Individual</option>
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="expired">Expired</option>
+                            <option value="terminated">Terminated</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 individual_user">
                         <label for="">Users</label>
                         <select name="user_id" id="user_id" class="form-control select2">
                             <option value="">Select user</option>
@@ -30,7 +40,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4 individual_user">
                         <label for="">Mobile No</label>
                         <input type="text" class="form-control" placeholder="920000000000" readonly maxlength="12" id="mobile_no" name="mobile_no" required>
                     </div>
@@ -97,6 +107,13 @@
     $('#user_id').change(function(){
         var mobile = $('#user_id :selected').data('mobile')
         $('#mobile_no').val(mobile)
+    });
+    $('#type').change(function(){
+        if($(this).val() != 'individual'){
+            $('.individual_user').addClass('d-none');
+        }else{
+            $('.individual_user').removeClass('d-none');
+        }
     });
 </script>
 @endsection

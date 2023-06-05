@@ -74,7 +74,7 @@
                     <li class="breadcrumb-item active">Profile </li>
                 </ol>
             </div>
-            <h4 class="page-title">Profile-{{ $user_details->username }} -- 
+            <h4 class="page-title">Profile-{{ $user_details->username }} -- Customer ID {{ $user_details->c_id }} -- 
                 Balance 
                 @if($user_details->user_current_balance < 0)
                     <span class="text-danger">{{ number_format($user_details->user_current_balance, 2) }}</span>

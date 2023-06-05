@@ -9,6 +9,7 @@ use App\Models\SmsLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class SmsController extends Controller
 {
@@ -127,32 +128,51 @@ class SmsController extends Controller
     }
 
     public function sendSmsByUser(Request $req){
- 
+
         $rules = [
-            'user_id'   => ['required', 'string', 'max:100'],
-            'mobile_no'    => ['required', 'numeric', 'digits:12,12'],
-            'message'   => ['required', 'string', 'max:1000']
+            'user_id'   => [Rule::requiredIf($req->type == 'individual'), 'string', 'max:100', 'nullable'],
+            'mobile_no' => [Rule::requiredIf($req->type == 'individual'), 'numeric', 'digits:12,12', 'nullable'],
+            'message'   => ['required', 'string', 'max:1000'],
+            'type'      => ['required', 'in:individual,all,active,expired,terminated']
         ];
         $validator = Validator::make($req->all(), $rules);
         $msg       = [];
-
+        
         if($validator->fails()){
             return ['errors'=>$validator->errors()];
         }
         $validated = $validator->validated();
 
-        if(CommonHelpers::sendSms($validated['mobile_no'], $validated['message']) == 'Success'){//send sms and check status
-            CommonHelpers::smsLog($validated['user_id'],null,$validated['mobile_no'],$validated['message'],1,1);//success log
-            $msg =  [
-                'success' => 'Sms sent successfully',
-                'reload'  => true                
-            ];
-        }else{
-            CommonHelpers::smsLog($validated['user_id'],null,$validated['mobile_no'],$validated['message'],0,1);//failed log
-            $msg =  [
-                'error' => 'Failed to send sms',
+        if($validated['type'] == 'individual'){//send message to individual user
+            if(CommonHelpers::sendSms($validated['mobile_no'], $validated['message']) == 'Success'){//send sms and check status
+                CommonHelpers::smsLog($validated['user_id'],null,$validated['mobile_no'],$validated['message'],1,1);//success log
+                $msg =  [
+                    'success' => 'Sms sent successfully',
+                    'reload'  => true                
+                ];
+            }else{
+                CommonHelpers::smsLog($validated['user_id'],null,$validated['mobile_no'],$validated['message'],0,1);//failed log
+                $msg =  [
+                    'error' => 'Failed to send sms',
+                ];
+            }
+        }else{//send message to multiple users based on their status
+            $users = User::when($validated['type'] != 'all', function($query) use ($validated){
+                            $query->where('status', $validated['status']);
+                        })->get(['id', 'status', 'mobile']);
+            $counter=0;
+            foreach($users AS $user){
+                if(CommonHelpers::sendSms($user->mobile, $validated['message']) == 'Success'){//send sms and check status
+                    CommonHelpers::smsLog(hashids_encode($user->id),null,$user->mobile,$validated['message'],1,1);//success log
+                    ++$counter;
+                }
+            }
+            $msg =[
+                'success'   => "SMS sent to $counter users",
+                'reload'    => true
             ];
         }
+
         return response()->json($msg);
     }
 }
