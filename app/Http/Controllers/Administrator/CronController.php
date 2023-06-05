@@ -90,7 +90,7 @@ class CronController extends Controller
         
         $qt_over            = array();
         $kicked_users_count = 0;
-        
+
         // dd($users[0]->current_package->default_package->id);
         foreach($users AS $key=>$user){
             if(isset($user->current_package->default_package->id)){
@@ -108,6 +108,7 @@ class CronController extends Controller
                 $u->save();
                 //update rad user group
                 RadUserGroup::where('username',$user->username)->update(['groupname'=>$user->current_package->default_package->groupname]);
+                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'qouta_over', $user->mobile, null,null );
                 if(CommonHelpers::kick_user_from_router(hashids_encode($user->id))){
                     $kicked_users_count += 1;
                 }
@@ -118,6 +119,16 @@ class CronController extends Controller
             QtOver::insert($qt_over);
         }
         return count($qt_over)." users updated successfully and $kicked_users_count users kicked";
+    }
+
+    public function qtLow(){
+        $users = User::whereRaw('(qt_total*10)/100 < qt_used')->where('status', 'active')->get();
+        $count = 0;
+        foreach($users AS $user){
+            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'low_qouta', $user->mobile, null,null );
+            ++$count;
+        }
+        dd("$count users qouta is less then the 10%");
     }
 
     public function queue(){
