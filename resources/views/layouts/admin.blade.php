@@ -301,6 +301,9 @@
                                 <li>
                                     <a href="{{ route('admin.users.queue_user') }}">Queue User</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.users.qouta_over') }}">Qouta Over</a>
+                                </li>
                             </ul>
                         </li>
                     @endcan

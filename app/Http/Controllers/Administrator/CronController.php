@@ -180,7 +180,8 @@ class CronController extends Controller
                                 $query->where('id', $user_id)->where('status', 'expired');
                             }, function($query){
                                 $query->whereDate('current_expiration_date', now())->where('autorenew', 1);
-                            })->orderBy('id', 'desc')->get();
+                            })->where('autorenew',1)->orderBy('id', 'desc')->get();
+        
         $rec = array(
             'success'   => 0,
             'failed'    => 0,

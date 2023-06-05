@@ -191,6 +191,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         //queue users
         Route::get('/queu', 'UserController@queueUsers')->name('queue_user');
         Route::get('/immediate-queue/{id}', 'UserController@immediateQueue')->name('immediate_queue');
+        //qt over tab
+        Route::get('/qouta-over', 'UserController@qoutaOver')->name('qouta_over');
     });
 
     //package routes

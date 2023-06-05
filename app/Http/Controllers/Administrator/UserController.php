@@ -35,6 +35,7 @@ use App\Imports\UpdateUserExpirationImport;
 use App\Imports\UpdateUserImport;
 use App\Models\FileLog;
 use App\Models\PkgQueue;
+use App\Models\QtOver;
 use App\Models\Remark;
 use App\Models\Remarks;
 use App\Models\RemarkType;
@@ -2258,5 +2259,42 @@ class UserController extends Controller
             'success'   => 'Package queued successfully',
             'reload'    => true
         ]);
+    }
+
+    public function qoutaOver(Request $req){
+        if($req->ajax()){
+            return DataTables::of(QtOver::with(['user', 'package', 'defaultPackage']))
+                                ->addIndexColumn()
+                                ->addColumn('date', function($data){
+                                    return date('d-M-Y H:i:s', strtotime($data->created_at));
+                                })
+                                ->addColumn('name',function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->user->hashid])." target='_blank'>{$data->user->name}-({$data->user->username})</a>";
+                                })
+                                ->addColumn('package', function($data){
+                                    return $data->package->name;
+                                })
+                                ->addColumn('default_package', function($data){
+                                    return $data->defaultPackage->name;
+                                })
+                                ->filter(function($query) use ($req){
+                                        if(isset($req->user_id)){//get user wise
+                                            $query->where('user_id', hashids_decode($req->user_id));
+                                        }
+                                        if(isset($req->from_date) && isset($req->to_date)){//get date wise
+                                            $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                        }
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                })
+                                ->rawColumns(['name', 'date'])
+                                ->toJson();
+        }
+        $data = array(
+            'title' => 'Qouta Over',
+            'users' => QtOver::with(['user'])->get(),
+        );
+        return view('admin.user.qouta_over')->with($data);
     }
 }
