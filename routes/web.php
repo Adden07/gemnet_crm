@@ -256,6 +256,11 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::prefix('transactions')->name('transactions.')->group(function(){
             Route::get('/','TransactionController@index')->name('index');
         });
+        //ledger
+        Route::prefix('ledger')->name('ledgers.')->group(function(){
+            Route::get('/', 'LedgerController@index')->name('index');
+            Route::get('/user-ledger', 'LedgerController@userLedger')->name('user_ledgers');
+        });
     });
 
     //profile routes

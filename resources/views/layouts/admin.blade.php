@@ -349,6 +349,9 @@
                                         <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Taxation</a>
                                     </li>
                                 @endcan
+                                <li>
+                                    <a href="{{ route('admin.accounts.ledgers.index') }}">Ledger</a>
+                                </li>
                             </ul>
                         </li>
                         @endcan
