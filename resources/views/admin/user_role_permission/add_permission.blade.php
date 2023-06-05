@@ -559,6 +559,56 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group" >
+                            <label for="Rights">User Profile Permisssion</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enable</th>
+                                        <th>Disable</th>
+                                        <th>Change Password</th>
+                                        <th>Kick User</th>
+                                        <th>Remove Mac</th>
+                                        <th>Invoice</th>
+                                        <th>Documnets Browse</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enable-user" @if(isset($update)){{ @(in_array('enable-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
+                                            
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="disable-user" @if(isset($update)){{ @(in_array('disable-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="change-user-password" @if(isset($update)){{ @(in_array('change-user-password',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+                                            
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="kick-user" @if(isset($update)){{ @(in_array('kick-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+
+                                            
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="remove-mac" @if(isset($update)){{ @(in_array('remove-mac',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="user-invoice" @if(isset($update)){{ @(in_array('user-invoice',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+                                        
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="document-browse" @if(isset($update)){{ @(in_array('document-browse',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+                                          
+    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group" >
                             <label for="Rights">User Package</label>  

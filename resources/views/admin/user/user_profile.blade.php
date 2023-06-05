@@ -100,21 +100,24 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link active" id="personal_info_tab" data-toggle="tab" href="#personal_info" role="tab" aria-controls="personal_info" aria-selected="true" >Personal Info</a>
       </li>
-    <li class="nav-item" role="presentation">
-        <a class="nav-link" id="change_pass_tab" data-toggle="tab" href="#change_pass" role="tab" aria-controls="change_pass" aria-selected="true" >Change Password</a>
-    </li>
-
-    <li class="nav-item" role="presentation">
-        <a class="nav-link" id="doc_tab" data-toggle="tab" href="#document_tab" role="tab" aria-selected="true" >Documents</a>
-    </li>
-
+    @can('change-user-password')
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="change_pass_tab" data-toggle="tab" href="#change_pass" role="tab" aria-controls="change_pass" aria-selected="true" >Change Password</a>
+        </li>
+    @endcan
+    @can('document-browse')
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="doc_tab" data-toggle="tab" href="#document_tab" role="tab" aria-selected="true" >Documents</a>
+        </li>
+    @endcan
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="record_tab" data-toggle="tab" href="#record" role="tab" aria-selected="true" >Packages History</a>
     </li>
-
-    <li class="nav-item" role="presentation">
-        <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >Invoices/Payments</a>
-    </li>
+    @can('user-invoice')
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >Invoices/Payments</a>
+        </li>
+    @endcan
     @if(auth()->user()->user_type == 'admin' && $user_details->status != 'registered')
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="edit_expiration_tab" data-toggle="tab" href="#edit_expiration" role="tab" aria-selected="true" >Edit Expiration</a>
@@ -239,7 +242,10 @@
                             <div class="col-lg-12">
                                 {{-- @if(auth()->user()->id == $user_details->admin_id || auth()->user()->user_type == 'admin') --}}
                                     @if(@$user_details->user_status == 1)
-                                        <a href="#" class="btn btn-danger btn-sm float-right ml-2" data-btn-text="" data-msg="" onclick="ajaxRequest(this)" id="disable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>0]) }}">Disable</a>
+                                        @can('disable-user')
+                                            <a href="#" class="btn btn-danger btn-sm float-right ml-2" data-btn-text="" data-msg="" onclick="ajaxRequest(this)" id="disable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>0]) }}">Disable</a>
+                                        @endcan
+
                                         <a href="#" class="btn btn-info btn-sm float-right ml-2" id="user_password" data-pass="{{ $user_details->password }}">User Password</a>
                                         @can('change-user-package')
                                             <button class="btn btn-primary float-right mb-1 btn-sm" id="edit_package">Change Package</button>
@@ -255,20 +261,24 @@
                                         
                                         <button class="btn btn-danger float-right mb-1 btn-sm d-none" id="cancel_button">Cancel</button>
                                         <button class="btn btn-success float-right mb-1 mr-2 btn-sm d-none" id="update_package">Update Package</button>
+                                        @can('kick-user')
                                         <!--inly dispaly kick button when user is online-->
-                                        @if($user_details->last_logout_time == null)
-                                            <a href="#" class="btn btn-danger btn-sm float-right mr-2" id="kick_user" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.kick',['id'=>$user_details->hashid]) }}" title="kick user">
-                                                Kick User
-                                            </a>
-                                        @endif
+                                            @if($user_details->last_logout_time == null)
+                                                <a href="#" class="btn btn-danger btn-sm float-right mr-2" id="kick_user" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.kick',['id'=>$user_details->hashid]) }}" title="kick user">
+                                                    Kick User
+                                                </a>
+                                            @endif
+                                        @endcan
                                         <!--only display reset qouta button when qt_used not equal to zero and user is admin-->
                                         @if(auth()->user()->user_type == 'admin' && $user_details->qt_used != 0)
                                             <a href="#" class="btn btn-warning btn-sm float-right mr-2" id="reset_qouta" title="Reset Qouta" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.reset_qouta',['id'=>$user_details->hashid]) }}">Reset Qouta</a>
                                         @endif
-                                        <!--only display remove mac button when mac 0 and macaddress is null-->
-                                        @if((auth()->user()->user_type == 'admin') || ($user_details->macs > 0 && $user_details->macaddress != null))
-                                            <a href="#" class="btn btn-secondary btn-sm float-right mr-2" id="remove_mac" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.remove_mac',['id'=>$user_details->hashid]) }}">Remove Mac</a>
-                                        @endif
+                                        @can('remove-mac')
+                                            <!--only display remove mac button when mac 0 and macaddress is null-->
+                                            @if((auth()->user()->user_type == 'admin') || ($user_details->macs > 0 && $user_details->macaddress != null))
+                                                <a href="#" class="btn btn-secondary btn-sm float-right mr-2" id="remove_mac" onclick="ajaxRequest(this)" data-url="{{ route('admin.users.remove_mac',['id'=>$user_details->hashid]) }}">Remove Mac</a>
+                                            @endif
+                                        @endcan
                                         @can('renew-user')
                                             {{-- @if(auth()->user()->id == $user_details->admin_id) --}}
                                                 <a href="{{ route('admin.packages.add_user_package',['id'=>$user_details->hashid]) }}" class="btn btn-primary float-right add_package btn-sm mr-2" title="Renew Package" data-status="{{ $user_details->status }}">
@@ -282,7 +292,9 @@
                                         <a href="#" class="btn btn-danger btn-sm float-right mr-2" data-btn-text="" data-msg="" onclick="ajaxRequest(this)" id="disable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>0]) }}">Disable</a> --}}
                                     <!--when user is disabled by admin then only admin can enable the user-->
                                     @elseif((($user_details->user_status == 2 || $user_details->user_status == 0) && auth()->user()->user_type == 'admin') || $user_details->user_status == 0 )
+                                    @can('enable-user')
                                         <a href="#" class="btn btn-success btn-sm float-right mr-2" onclick="ajaxRequest(this)" id="enable_user" data-url="{{ route('admin.users.change_status',['id'=>$user_details->hashid,'status'=>1]) }}">Enable</a>
+                                    @endcan
                                     @endif
                                 {{-- @endif --}}
                                 {{-- <a href="{{ route('admin.users.edit',['id'=>$user_details->hashid]) }}" class="btn btn-primary float-right mb-3">Edit User</a> --}}
