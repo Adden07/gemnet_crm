@@ -118,10 +118,10 @@
                 {data:'default_package', name:'default_package'},
             ]
         });
+        $('#user_id, #from_date, #to_date').change(function(){
+            table.draw();
+        });
     });
 
-    $('#user_id, #from_date, #to_date').change(function(){
-        table.draw();
-    });
 </script>
 @endsection
