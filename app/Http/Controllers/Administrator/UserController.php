@@ -2268,6 +2268,9 @@ class UserController extends Controller
                                 ->addColumn('date', function($data){
                                     return date('d-M-Y H:i:s', strtotime($data->created_at));
                                 })
+                                ->addColumn('expiration', function($data){
+                                    return date('d-M-Y H:i:s', strtotime($data->user->current_expiration_date));
+                                })
                                 ->addColumn('name',function($data){
                                     return "<a href=".route('admin.users.profile',['id'=>$data->user->hashid])." target='_blank'>{$data->user->name}-({$data->user->username})</a>";
                                 })
