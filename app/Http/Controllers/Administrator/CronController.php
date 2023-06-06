@@ -122,7 +122,7 @@ class CronController extends Controller
     }
 
     public function qtLow(){
-        $users = User::whereRaw('(qt_total*10)/100 > qt_used')->where('status', 'active')->get();
+        $users = User::whereRaw('(qt_used * 100) / qt_total > 90 AND (qt_used * 100) / qt_total < 100')->where('status', 'active')->get();
         $count = 0;
         foreach($users AS $user){
             CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'low_qouta', $user->mobile, null,null );
