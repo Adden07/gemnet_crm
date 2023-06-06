@@ -27,7 +27,7 @@
                         $payment = 0;
                         $total   = 0;
                     @endphp
-                        @foreach($payments->concat($invoices)->sortBy('created_at') AS $key=>$data)
+                        {{-- @foreach($payments->concat($invoices)->sortBy('created_at') AS $key=>$data)
                             <tr>
                                 <td>
                                     {{ $loop->iteration }}
@@ -40,6 +40,26 @@
                                 @php $total += (isset($data->total)) ? -$data->total : $data->amount  @endphp
                                 <td>{{ 'Rs:'.$total }}</td>
                             </tr>
+                    @endforeach --}}
+                    @foreach($payments->concat($invoices)->sortBy('created_at') as $key => $data)
+                        <tr>
+                            <td>
+                                {{ $loop->iteration }}
+                            </td>
+                            <td>{{ date('d-M-Y H:i:s', strtotime($data->created_at)) }}</td>
+                            <td>@isset($data->amount) {{ 'RS:'.$data->amount }} @endisset</td>
+                            <td>{{ @$data->online_transaction }}</td>
+                            <td>@if(isset($data->amount)) {{ $data->type }} @endif</td>
+                            <td>@isset($data->total) {{ 'RS:'.$data->total }} @endisset</td>
+                            @php
+                                if (isset($data->total)) {
+                                    $total -= $data->total;
+                                } else {
+                                    $total += $data->amount;
+                                }
+                            @endphp
+                            <td>{{ 'Rs:'.$total }}</td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
