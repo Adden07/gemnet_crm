@@ -301,6 +301,12 @@
                                 <li>
                                     <a href="{{ route('admin.users.queue_user') }}">Queue User</a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('admin.users.qouta_over') }}">Qouta Over</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.users.qouta_low') }}">Qouta Low</a>
+                                </li>
                             </ul>
                         </li>
                     @endcan
@@ -378,7 +384,7 @@
                                 </ul>
                             </li>
                         @endcan
-                        <li>
+                        {{-- <li>
                             <a href="javascript: void(0);">
                                 <i class="fe-pocket"></i>
                                 <span> Users Qouta </span>
@@ -392,7 +398,7 @@
                                     <a href="{{ route('admin.users.qouta_low') }}">Qouta Low</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
                         {{-- <li>
                             <a href="{{ route('admin.customizes.index') }}">
                                 <i class="fe-airplay"></i>

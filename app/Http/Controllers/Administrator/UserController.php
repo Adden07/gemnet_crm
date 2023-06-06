@@ -2303,7 +2303,7 @@ class UserController extends Controller
 
     public function qoutaLow(Request $req){
         if($req->ajax()){
-            return DataTables::of(User::with(['packages'])->whereRaw('(qt_total*10)/100 < qt_used')->where('status', 'active'))
+            return DataTables::of(User::with(['packages'])->whereRaw('(qt_total*10)/100 > qt_used')->where('status', 'active'))
                                 ->addIndexColumn()
                                 ->addColumn('expiration', function($data){
                                     return date('d-M-Y H:i:s', strtotime($data->current_expiration_date));
