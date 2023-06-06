@@ -36,7 +36,7 @@ class InvoiceController extends Controller
                                     ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     },function($query){
-                                        $query->whereDate('created_at','    ');
+                                        $query->whereDate('created_at',date('Y-m-d'));
                                     })->when(isset($req->package_id),function($query) use ($req){//when package id is set
                                         $query->where('pkg_id',hashids_decode($req->package_id));
                                     })->when(isset($req->type),function($query) use ($req){//when type is iset
@@ -46,23 +46,23 @@ class InvoiceController extends Controller
                                     })->orderBy('admin_id','DESC')->orderBy('id','DESC')->paginate(1000)->withQueryString(),
                                     
             'invoices_total'  => Invoice::with(['package:id,name','user'=>function($query){
-                if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
-                    if(auth()->user()->user_type == 'sales_person'){
-                        $query->whereIn('sales_id', auth()->id());
-                    }elseif(auth()->user()->user_type == 'fe_id'){
-                        $query->whereIn('fe_id', auth()->id());
-                    }
-                }
-            }])
-                                    ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
-                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
-                                    },function($query){
-                                        $query->whereDay('created_at',date('Y-m-d'));
-                                    })->when(isset($req->package_id),function($query) use ($req){//when package id is set
-                                        $query->where('pkg_id',hashids_decode($req->package_id));
-                                    })->when(isset($req->type),function($query) use ($req){//when type is iset
-                                        $query->where('type',$req->type);
-                                    })->orderBy('admin_id','DESC')->orderBy('id','DESC')->get(),
+                                    if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){
+                                        if(auth()->user()->user_type == 'sales_person'){
+                                            $query->whereIn('sales_id', auth()->id());
+                                        }elseif(auth()->user()->user_type == 'fe_id'){
+                                            $query->whereIn('fe_id', auth()->id());
+                                        }
+                                    }
+                                }])
+                                ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
+                                    $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+                                },function($query){
+                                    $query->whereDate('created_at',date('Y-m-d'));
+                                })->when(isset($req->package_id),function($query) use ($req){//when package id is set
+                                    $query->where('pkg_id',hashids_decode($req->package_id));
+                                })->when(isset($req->type),function($query) use ($req){//when type is iset
+                                    $query->where('type',$req->type);
+                                })->orderBy('admin_id','DESC')->orderBy('id','DESC')->get(),
                                     
             'packages'    => Package::orderBy('id','DESC')->get(),
             // 'franchises'  => Admin::where('user_type','franchise')->latest()->get(),
