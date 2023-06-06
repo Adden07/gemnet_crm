@@ -260,6 +260,7 @@ class CronController extends Controller
                         //update log process table
                         $instance->logProcess($user->id, 2, null, 1);
                         CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'user_renew', $user->mobile, null, $package->name);
+                        @CommonHelpers::kick_user_from_router(hashids_encode($user->id));
                         $rec['success'] += 1;
 //                    }
                 });
