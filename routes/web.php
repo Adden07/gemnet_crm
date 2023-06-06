@@ -261,6 +261,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::prefix('ledger')->name('ledgers.')->group(function(){
             Route::get('/', 'LedgerController@index')->name('index');
             Route::get('/user-ledger', 'LedgerController@userLedger')->name('user_ledgers');
+            Route::get('/pdf', 'LedgerController@pdf')->name('pdf');
         });
     });
 

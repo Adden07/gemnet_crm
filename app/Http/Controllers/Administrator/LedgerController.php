@@ -7,7 +7,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use PDF;
 class LedgerController extends Controller
 {
     public function index(){
@@ -31,5 +31,14 @@ class LedgerController extends Controller
             'is_ledger' => true 
         );
         return view('admin.ledger.index')->with($data);
+    }
+
+    public function pdf(Request $req){
+        $data = array(
+            'payments'  => Payment::where('receiver_id', hashids_decode($req->pdf_user_id))->get(),
+            'invoices'  => Invoice::where('user_id', hashids_decode($req->pdf_user_id))->get(),
+        );
+        $pdf = PDF::loadView('admin.ledger.pdf', $data);
+        return $pdf->download('ledger.pdf');
     }
 }

@@ -46,8 +46,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <input type="submit" class="btn btn-primary mt-3">
+                        <button type="button" class="btn btn-danger mt-3" id="pdf">PDF</button>
                     </div>
                     
                 </div>
@@ -63,6 +64,8 @@
                         <th width="20">#</th>
                         <th>DateTime</th>
                         <th>Payment</th>
+                        <th>Online Transaction</th>
+                        <th>Type</th>
                         <th>Invoice</th>
                         <th>Total</th>
                 </thead>
@@ -79,31 +82,23 @@
                                     {{ $loop->iteration }}
                                 </td>
                                 <td>{{ date('d-M-Y H:i:s', strtotime($data->created_at)) }}</td>
-                                <td>{{ @$data->amount }}</td>
-                                <td>{{ @$data->total }}</td>
-
-                                {{-- @if($key == 0 && isset($data->total))
-                                    @php $invoice = -$data->total; $total =  @endphp
-                                @elseif($key == 0 && isset($data->payment))
-                                    @php $payment = $data->amount @endphp
-                                @elseif($key != 0 && isset($data->total))
-                                    @php $invoice @endphp 
-                                @endif
-                                  --}}
-                                {{-- @if(isset()) --}}
+                                <td>@isset($data->amount) {{ 'RS:'.$data->amount }} @endisset</td>
+                                <td>{{ @$data->online_transaction }}</td>
+                                <td>@if(isset($data->amount)) {{ $data->type }} @endif</td>
+                                <td>@isset($data->total) {{ 'RS:'.$data->total }} @endisset</td>
                                 @php $total += (isset($data->total)) ? -$data->total : $data->amount  @endphp
-                                <td>{{ $total }}</td>
+                                <td>{{ 'Rs:'.$total }}</td>
                             </tr>
                         @endforeach
-                        {{-- <tr>
-                            <td colspan=4>Total</td>
-                            <td>100000</td>
-                        </tr> --}}
                     @endif
                 </tbody>
             </table>
         </div>
     </div>
+    <form action="{{ route('admin.accounts.ledgers.pdf') }}" id="pdf_form">
+        @csrf
+        <input type="hidden" name="pdf_user_id" id="pdf_user_id">
+    </form>
 </div>
 
 @endsection
@@ -113,7 +108,13 @@
 <script>
     //if time is set then refresh the page
     $(document).ready(function(){
-        
+        $('#pdf').click(function(){
+            var user_id = $('#user_id').find(':selected').val();//get the selected user id
+            if(user_id != ''){//if user id not empty then put the user id in hidden field and submit the form
+                $('#pdf_user_id').val(user_id);
+                $('#pdf_form').submit();
+            }
+        });
     });
 
 </script>
