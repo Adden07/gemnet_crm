@@ -36,7 +36,7 @@ class InvoiceController extends Controller
                                     ->when(isset($req->from_date),function($query) use ($req){//when from and to date set
                                         $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
                                     },function($query){
-                                        $query->whereDate('created_at',date('Y-m-d'));
+                                        $query->whereDate('created_at','    ');
                                     })->when(isset($req->package_id),function($query) use ($req){//when package id is set
                                         $query->where('pkg_id',hashids_decode($req->package_id));
                                     })->when(isset($req->type),function($query) use ($req){//when type is iset

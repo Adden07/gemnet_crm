@@ -52,10 +52,11 @@
                     <tr>
                         <th width="20">S.No</th>
                         <th>DateTime</th>
-                        <th>Expiraiton</th>
                         <th>User</th>
                         <th>Package</th>
                         <th>Default Package</th>
+                        <th>Expiraiton</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -114,10 +115,11 @@
             columns : [
                 {data: 'DT_RowIndex', name:'DT_RowIndex'},
                 {data:'date', name:'date'},
-                {data:'expiration', name:'expiration'},
                 {data:'name', name:'name'},
                 {data:'package', name:'package'},
                 {data:'default_package', name:'default_package'},
+                {data:'expiration', name:'expiration'},
+
             ]
         });
         $('#user_id, #from_date, #to_date').change(function(){
