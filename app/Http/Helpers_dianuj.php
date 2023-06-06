@@ -176,4 +176,8 @@ if (!function_exists('convertNumberToWord')) {
         }
         return implode(' ', $words);
     }
+
+    function bytesToGb($total_bytes){
+        return number_format($total_bytes/pow(1024,3));
+    }
 }

@@ -2300,4 +2300,44 @@ class UserController extends Controller
         );
         return view('admin.user.qouta_over')->with($data);
     }
+
+    public function qoutaLow(Request $req){
+        if($req->ajax()){
+            return DataTables::of(User::with(['packages'])->whereRaw('(qt_total*10)/100 < qt_used')->where('status', 'active'))
+                                ->addIndexColumn()
+                                ->addColumn('expiration', function($data){
+                                    return date('d-M-Y H:i:s', strtotime($data->current_expiration_date));
+                                })
+                                ->addColumn('name',function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->hashid])." target='_blank'>{$data->name}-({$data->username})</a>";
+                                })
+                                ->addColumn('package', function($data){
+                                    return @$data->packages->name;
+                                })
+                                ->addColumn('qt_total', function($data){
+                                    return bytesToGb($data->qt_total).' GB';
+                                })
+                                ->addColumn('qt_used', function($data){
+                                    return bytesToGb($data->qt_used).' GB';
+                                })
+                                ->filter(function($query) use ($req){
+                                        if(isset($req->user_id)){//get user wise
+                                            $query->where('user_id', hashids_decode($req->user_id));
+                                        }
+                                        if(isset($req->from_date) && isset($req->to_date)){//get date wise
+                                            $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                        }
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                })
+                                ->rawColumns(['name', 'date'])
+                                ->toJson();
+        }
+        $data = array(
+            'title' => 'Qouta Over',
+            'users' => QtOver::with(['user'])->get(),
+        );        
+        return view('admin.user.qouta_low')->with($data);
+    }
 }

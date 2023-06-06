@@ -194,6 +194,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/immediate-queue/{id}', 'UserController@immediateQueue')->name('immediate_queue');
         //qt over tab
         Route::get('/qouta-over', 'UserController@qoutaOver')->name('qouta_over');
+        Route::get('/qouta-low', 'UserController@qoutaLow')->name('qouta_low');
     });
 
     //package routes
