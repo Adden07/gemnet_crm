@@ -28,6 +28,7 @@ class LedgerController extends Controller
             'payments'  => Payment::where('receiver_id', hashids_decode($req->user_id))->get(),
             'invoices'  => Invoice::where('user_id', hashids_decode($req->user_id))->get(),
             'users'     => User::latest()->get(),
+            'user_data' => User::findOrFail(hashids_decode($req->user_id)),
             'is_ledger' => true 
         );
         return view('admin.ledger.index')->with($data);
@@ -37,6 +38,7 @@ class LedgerController extends Controller
         $data = array(
             'payments'  => Payment::where('receiver_id', hashids_decode($req->pdf_user_id))->get(),
             'invoices'  => Invoice::where('user_id', hashids_decode($req->pdf_user_id))->get(),
+            'user_data' => User::findOrFail(hashids_decode($req->pdf_user_id)),
         );
         $pdf = PDF::loadView('admin.ledger.pdf', $data);
         return $pdf->download('ledger.pdf');

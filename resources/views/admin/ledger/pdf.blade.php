@@ -10,6 +10,7 @@
 <body>
     <div class="row">
         <div class="col-lg-12">
+            <h4>Username : {{ $user_data->username }} -- Name : {{ $user_data->name }} -- Current Package : {{ $user_data->packages->name }} -- Expiration : {{ date('d-M-Y', strtotime($user_data->current_expiration_date)) }}</h4>
             <table class="table table-bordered" id="online_users">
                 <thead>
                     <tr>
