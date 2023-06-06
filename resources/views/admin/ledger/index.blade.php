@@ -90,6 +90,9 @@
                                     @php $invoice @endphp 
                                 @endif
                                   --}}
+                                {{-- @if(isset()) --}}
+                                @php $total += (isset($data->total)) ? -$data->total : $data->amount  @endphp
+                                <td>{{ $total }}</td>
                             </tr>
                         @endforeach
                         {{-- <tr>
