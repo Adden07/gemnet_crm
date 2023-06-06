@@ -41,6 +41,6 @@ class LedgerController extends Controller
             'user_data' => User::findOrFail(hashids_decode($req->pdf_user_id)),
         );
         $pdf = PDF::loadView('admin.ledger.pdf', $data);
-        return $pdf->download('ledger.pdf');
+        return $pdf->download("{$data['user_data']->username}.pdf");
     }
 }
