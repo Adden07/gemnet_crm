@@ -27,8 +27,8 @@
                         <label for="">Users</label>
                         <select class="form-control select2"name="user_id" id="user_id">
                             <option value="">Select User</option>
-                            @foreach($users As $qt_over_user)
-                                <option value="{{ $qt_over_user->user->hashid }}">{{ $qt_over_user->user->name }}--({{ $qt_over_user->user->username }})</option>
+                            @foreach($users As $user)
+                                <option value="{{ $user->hashid }}">{{ $user->name }}--({{ $user->username }})</option>
                             @endforeach
                         </select>
                     </div>

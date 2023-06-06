@@ -2322,10 +2322,10 @@ class UserController extends Controller
                                 })
                                 ->filter(function($query) use ($req){
                                         if(isset($req->user_id)){//get user wise
-                                            $query->where('user_id', hashids_decode($req->user_id));
+                                            $query->where('id', hashids_decode($req->user_id));
                                         }
                                         if(isset($req->from_date) && isset($req->to_date)){//get date wise
-                                            $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                            $query->whereBetween('current_expiration_date', [$req->from_date, $req->to_date]);
                                         }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
@@ -2336,7 +2336,7 @@ class UserController extends Controller
         }
         $data = array(
             'title' => 'Qouta Over',
-            'users' => QtOver::with(['user'])->get(),
+            'users' => User::get(),
         );        
         return view('admin.user.qouta_low')->with($data);
     }
