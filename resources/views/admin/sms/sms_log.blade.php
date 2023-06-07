@@ -68,6 +68,7 @@
                         <th>Mobile No</th>
                         <th>SMS</th>
                         <th>Manual Status</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,6 +120,8 @@
                         {data:'mobile_no', name:'mobile_no', orderable:true, searchable:false},  
                         {data:'sms', name:'sms', orderable:true, searchable:false},
                         {data:'is_manual', name:'is_manual', orderable:true, searchable:false},  
+                        {data:'status', name:'status', orderable:true, searchable:false},  
+
   
                     ],
                 });

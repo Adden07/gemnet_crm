@@ -207,9 +207,17 @@ class SmsController extends Controller
                                     if($data->is_manual){
                                         $is_manual = '<span class="badge badge-success">yes</span>';
                                     }else{
-                                        $is_manual = '<span class="badge badge-info">yes</span>';
+                                        $is_manual = '<span class="badge badge-info">No</span>';
                                     }
                                     return $is_manual;
+                                })
+                                ->addColumn('status', function($data){
+                                    if($data->status){
+                                        $status = '<span class="badge badge-success">Success</span>';
+                                    }else{
+                                        $status = '<span class="badge badge-danger">Failed</span>';
+                                    }
+                                    return $status;
                                 })
                                 ->filter(function($query) use ($req){
                                     if(isset($req->user_id) && $req->user_id != 'all'){
@@ -248,7 +256,7 @@ class SmsController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['username', 'sms', 'is_manual'])
+                                ->rawColumns(['username', 'sms', 'is_manual', 'status'])
                                 ->make(true);
 
         }
