@@ -252,11 +252,12 @@ class SmsController extends Controller
                                 ->make(true);
 
         }
+        $sms = SmsLog::groupBy(['user_id'])->get(['user_id', 'sms_type']);
 
-        $data = array(
+        $data = array(  
             'title'     => 'Payments',
-            'users'     => User::latest()->get(),
-            'sms_types' =>  Cache::get('sms_cache')->pluck('type'),
+            'users'     => User::whereIn('id', $sms->pluck('user_id')->toArray())->get(),
+            'sms_types' =>  $sms->pluck('sms_type')->unique(),
         );
         return view('admin.sms.sms_log')->with($data);
     }
