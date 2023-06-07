@@ -195,6 +195,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         //qt over tab
         Route::get('/qouta-over', 'UserController@qoutaOver')->name('qouta_over');
         Route::get('/qouta-low', 'UserController@qoutaLow')->name('qouta_low');
+        Route::get('/get-user-profile/{id}', 'UserController@getUserProfile')->name('get_user_profile');
     });
 
     //package routes
@@ -333,6 +334,8 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         //sms by user routes
         Route::get('/sms-by-users', 'smsByUser')->name('sms_by_user');
         Route::post('/send-sms-by-user', 'sendSmsByUser')->name('send_sms_by_user');
+        //sms log page
+        Route::get('/log-page', 'logPage')->name('log_page');
     });
 
     Route::prefix('remarks')->controller(RemarkController::class)->name('remarks.')->group(function(){

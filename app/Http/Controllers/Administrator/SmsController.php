@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use DataTables;
+use Illuminate\Support\Facades\Cache;
 
 class SmsController extends Controller
 {
@@ -174,5 +176,88 @@ class SmsController extends Controller
         }
 
         return response()->json($msg);
+    }
+
+    public function logPage(Request $req){
+        if(CommonHelpers::rights('enabled-finance','view-payments')){
+            return redirect()->route('admin.home');
+        }
+        // $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();
+        
+        if($req->ajax()){
+
+            return DataTables::of(SmsLog::with(['user']))
+                                ->addIndexColumn()
+                                ->addColumn('date', function($data){
+                                    return date('d-M-Y', strtotime($data->created_at));
+                                })
+                                ->addColumn('username', function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->user_id)])." target='_blank'>{$data->user->username}</a>";
+                                })
+                                ->addColumn('sms_type', function($data){
+                                    return $data->sms_type;
+                                })
+                                ->addColumn('mobile_no', function($data){
+                                    return $data->mobile_no;
+                                })
+                                ->addColumn('sms', function($data){
+                                    return wordwrap($data->sms, 30, "<br />\n");
+                                })
+                                ->addColumn('is_manual', function($data){
+                                    if($data->is_manual){
+                                        $is_manual = '<span class="badge badge-success">yes</span>';
+                                    }else{
+                                        $is_manual = '<span class="badge badge-info">yes</span>';
+                                    }
+                                    return $is_manual;
+                                })
+                                ->filter(function($query) use ($req){
+                                    if(isset($req->user_id) && $req->user_id != 'all'){
+                                        $query->where('user_id',hashids_decode($req->receiver_id));
+                                    }
+
+                                    if(isset($req->from_date) && isset($req->to_date)){
+                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+                                    }
+
+                                    if(isset($req->sms_type) && $req->sms_type != 'all'){
+                                        $query->where('sms_type', $req->type);
+                                    }
+
+                                    // if(isset($req->search)){
+                                    //     $query->where(function($search_query) use ($req){
+                                    //         $search = $req->search;
+                                    //         $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                    //                     ->orWhere('type', 'LIKE', "%$search%")
+                                    //                     ->orWhere('amount', 'LIKE', "%$search%")
+                                    //                     ->orWhere('old_balance', 'LIKE', "%$search%")
+                                    //                     ->orWhere('new_balance', 'LIKE', "%$search%")
+                                    //                     ->orWhereHas('receiver',function($q) use ($search){
+                                    //                             $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                    //                         })
+                                    //                     ->orWhereHas('admin',function($q) use ($search){
+                                    //                         $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                    //                     });      
+                                    //     });
+                                    // }
+
+                                    
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                    })
+                                ->rawColumns(['username', 'sms', 'is_manual'])
+                                ->make(true);
+
+        }
+
+        $data = array(
+            'title'     => 'Payments',
+            'users'     => User::latest()->get(),
+            'sms_types' =>  Cache::get('sms_cache')->pluck('type'),
+        );
+        return view('admin.sms.sms_log')->with($data);
     }
 }

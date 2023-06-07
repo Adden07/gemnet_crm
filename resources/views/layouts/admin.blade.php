@@ -381,6 +381,9 @@
                                         <a href="{{ route('admin.sms.sms_by_user') }}">SMS By User</a>
                                     </li>
                                     @endcan
+                                    <li>
+                                        <a href="{{ route('admin.sms.log_page') }}">SMS Log</a>
+                                    </li>
                                 </ul>
                             </li>
                         @endcan

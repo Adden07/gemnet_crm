@@ -125,6 +125,7 @@
             </form>
         </div>
     </div>
+    <div class="col-lg-12" id="user_profile_col"></div>
 </div>
 <div class="modal fade bd-example-modal-lg" id="details_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 </div>
@@ -255,6 +256,7 @@
         }
     });
     $('#receiver_id').change(function(){//when there is change is user id get the user current balance
+        getUserProfile();
         getUserPackageAndBalanceDetails();
     });
 
@@ -293,8 +295,18 @@
             }
             $('#available_balance').val(resp.user);//put the value in input
             
-        });
+            });
+        }
     }
+
+    function getUserProfile(){
+        var user_id = $('#receiver_id').find(':selected').val();
+        var route   = "{{ route('admin.users.get_user_profile', ':id') }}";
+        route       = route.replace(':id', user_id);
+
+        getAjaxRequests(route,'', 'GET', function(resp){
+            $('#user_profile_col').html(resp.html);
+        });
     }
 </script>
 @endsection

@@ -2345,4 +2345,11 @@ class UserController extends Controller
         );        
         return view('admin.user.qouta_low')->with($data);
     }
+
+    public function getUserProfile($id){
+
+        return response()->json([
+            'html'  => view('admin.user.get_user_profile', ['user_details'=>User::findOrFail(hashids_decode($id))])->render()
+        ]);
+    }
 }
