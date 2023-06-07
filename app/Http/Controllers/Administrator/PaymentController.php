@@ -92,9 +92,17 @@ class PaymentController extends Controller
                                     return number_format($data->new_balance);
                                 })
                                 ->addColumn('action', function($data){
-                                    $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
+                                    $html = '';
+                                    if(auth()->user()->user_type != 'admin' && $data->created_at == now()){
+                                        $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
                                     <i class='icon-printer'></i>
                                    </a>";
+                                    }elseif(auth()->user()->user_type == 'admin'){
+                                        $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
+                                        <i class='icon-printer'></i>
+                                    </a>";
+                                    }
+                                    
 
                                     $html .= "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
                                             <span class='btn-label'><i class='icon-trash'></i>
