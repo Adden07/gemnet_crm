@@ -16,6 +16,7 @@ use App\Models\User;
 use DB;
 use DataTables;
 use Exception;
+use Pdf;
 
 class PaymentController extends Controller
 {
@@ -91,10 +92,15 @@ class PaymentController extends Controller
                                     return number_format($data->new_balance);
                                 })
                                 ->addColumn('action', function($data){
-                                $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
-                                        <span class='btn-label'><i class='icon-trash'></i>
-                                        </span>Delete
-                                    </button>";
+                                    $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
+                                    <i class='icon-printer'></i>
+                                   </a>";
+
+                                    $html .= "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                            <span class='btn-label'><i class='icon-trash'></i>
+                                            </span>Delete
+                                        </button>";
+
                                 return $html;
                                 })
                                 ->filter(function($query) use ($req){
@@ -464,5 +470,11 @@ class PaymentController extends Controller
             'type'              => 1,
             'created_at'        =>now()
         ];
+    }
+
+    public function receiptPdf($id){
+        // $pdf = PDF::loadView('admin.payment.receipt_pdf', ['data'=>Payment::with(['receiver'])->findOrFail(hashids_decode($id))]);
+        // return $pdf->download('receipt.pdf');
+        return view('admin.payment.receipt_pdf', ['data'=>Payment::with(['receiver'])->findOrFail(hashids_decode($id))]);
     }
 }

@@ -252,6 +252,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::get('/delete/{id}', 'PaymentController@delete')->name('delete');
             Route::get('/approve-payments', 'PaymentController@approvePayments')->name('approve_payments');
             Route::get('/approve-payment/{id}', 'PaymentController@approvePayment')->name('approve_payment');
+            Route::get('/receipt-pdf/{id}', 'PaymentController@receiptPdf')->name('receipt_pdf');
 
         });
 
