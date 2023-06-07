@@ -179,7 +179,7 @@ class SmsController extends Controller
     }
 
     public function logPage(Request $req){
-        if(CommonHelpers::rights('enabled-finance','view-payments')){
+        if(CommonHelpers::rights('enabled-finance','sms-logs')){
             return redirect()->route('admin.home');
         }
         // $admin_ids = Admin::where('user_type','admin')->get()->pluck('id')->toArray();

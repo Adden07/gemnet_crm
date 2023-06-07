@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use PDF;
+
 class LedgerController extends Controller
 {
     public function index(){
+        
+        if(CommonHelpers::rights('enabled-finance','ledger')){
+            return redirect()->route('admin.home');
+        }
+
         $data = array(
             'title' => 'Ledger',
             'users' => User::latest()->get(),

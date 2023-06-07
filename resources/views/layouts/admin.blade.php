@@ -298,15 +298,21 @@
                                 <li>
                                     <a href="{{ route('admin.users.all_user_remarks') }}">Remarks</a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('admin.users.queue_user') }}">Queue User</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.users.qouta_over') }}">Qouta Over</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.users.qouta_low') }}">Qouta Low</a>
-                                </li>
+                                @can('queue-user')
+                                    <li>
+                                        <a href="{{ route('admin.users.queue_user') }}">Queue User</a>
+                                    </li>
+                                @endcan
+                                @can('quota-user')
+                                    <li>
+                                        <a href="{{ route('admin.users.qouta_over') }}">Qouta Over</a>
+                                    </li>
+                                @endcan
+                                @can('quota-low')
+                                    <li>
+                                        <a href="{{ route('admin.users.qouta_low') }}">Qouta Low</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                     @endcan
@@ -352,9 +358,11 @@
                                         <a href="{{ route('admin.accounts.invoices.invoice_tax') }}">Taxation</a>
                                     </li>
                                 @endcan
-                                <li>
-                                    <a href="{{ route('admin.accounts.ledgers.index') }}">Ledger</a>
-                                </li>
+                                @can('ledger')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.ledgers.index') }}">Ledger</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                         @endcan
@@ -381,9 +389,11 @@
                                         <a href="{{ route('admin.sms.sms_by_user') }}">SMS By User</a>
                                     </li>
                                     @endcan
+                                    @can('sms-logs')
                                     <li>
                                         <a href="{{ route('admin.sms.log_page') }}">SMS Logs</a>
                                     </li>
+                                    @endcan
                                 </ul>
                             </li>
                         @endcan

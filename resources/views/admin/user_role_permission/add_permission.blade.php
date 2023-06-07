@@ -195,6 +195,7 @@
                                         <th>Approve Payments</th>
                                         <th>Transactions</th>
                                         <th>Taxation</th>
+                                        <th>Ledger</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -226,6 +227,9 @@
 
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="taxation" @if(isset($update)){{ @(in_array('taxation',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                                                 @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="ledger" @if(isset($update)){{ @(in_array('ledger',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
                     
                                         </tr>
                                 </tbody>
@@ -463,6 +467,7 @@
                                         <th>All SMS</th>
                                         <th>Manual SMS</th>
                                         <th>SMS By User</th>
+                                        <th>SMS Logs</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -477,7 +482,10 @@
                                             @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
 
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="sms-by-user" @if(isset($update)){{ @(in_array('sms-by-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
-                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>        
+                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td> 
+                                            
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="sms-logs" @if(isset($update)){{ @(in_array('sms-logs',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-sms',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td> 
                                     </tr>
                                 </tbody>
                             </table>
@@ -501,11 +509,6 @@
                                         <th>Renew</th>
                                         <th>Online</th>
                                         <th>Offline</th>
-                                        <th>Login Fails</th>
-                                        <th>Mac vendor</th>
-                                        <th>Login Detail</th>
-                                        <th>Search</th>
-                                        <th>Credit Limit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -537,6 +540,33 @@
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="offline-users" @if(isset($update)){{ @(in_array('offline-users',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                                     @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>
                                             
+    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group" >
+                            <label for="Rights">Users</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Login Fails</th>
+                                        <th>Mac vendor</th>
+                                        <th>Login Detail</th>
+                                        <th>Search</th>
+                                        <th>Credit Limit</th>
+                                        <th>Queue User</th>
+                                        <th>Quota User</th>
+                                        <th>Quota Low</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                            
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="login-fail-users" @if(isset($update)){{ @(in_array('login-fail-users',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
                                             
@@ -550,8 +580,17 @@
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
                                             
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="user-credit-limit" @if(isset($update)){{ @(in_array('user-credit-limit',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
-                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
-    
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+                                                
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="queue-user" @if(isset($update)){{ @(in_array('queue-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> 
+                                                
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="quota-user" @if(isset($update)){{ @(in_array('quota-user',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> 
+
+                                            <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="quota-low" @if(isset($update)){{ @(in_array('quota-low',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> 
+
                                     </tr>
                                 </tbody>
                             </table>

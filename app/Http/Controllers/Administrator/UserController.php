@@ -2218,6 +2218,9 @@ class UserController extends Controller
     }
 
     public function queueUsers(Request $req){
+        if(CommonHelpers::rights('enabled-user','queue-user')){
+            return redirect()->route('admin.home');
+        }
         if($req->ajax()){
             return DataTables::of(PkgQueue::with(['user', 'package']))
                                 ->addIndexColumn()
@@ -2267,6 +2270,11 @@ class UserController extends Controller
     }
 
     public function qoutaOver(Request $req){
+        
+        if(CommonHelpers::rights('enabled-user','quota-user')){
+            return redirect()->route('admin.home');
+        }
+
         if($req->ajax()){
             return DataTables::of(QtOver::with(['user', 'package', 'defaultPackage']))
                                 ->addIndexColumn()
@@ -2307,6 +2315,11 @@ class UserController extends Controller
     }
 
     public function qoutaLow(Request $req){
+        
+        if(CommonHelpers::rights('enabled-user','quota-low')){
+            return redirect()->route('admin.home');
+        }
+
         if($req->ajax()){
             return DataTables::of(User::with(['packages']) ->whereRaw('(qt_used * 100) / qt_total > 90 AND (qt_used * 100) / qt_total < 100')->where('status', 'active'))
                                 ->addIndexColumn()
