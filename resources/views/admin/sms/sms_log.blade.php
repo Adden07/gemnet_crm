@@ -104,13 +104,11 @@
                     ajax:{
                         url : "{{ route('admin.sms.log_page') }}",
                         data:function(d){
-                                    d.receiver_id        = $('#receiver_id').val(),
-                                    d.admin_id        = $('#admin_id').val(),
-                                    d.added_by        = $('#added_by').val(),
+                                    d.user_id         = $('#user_id').val(),
+                                    d.sms_type        = $('#sms_type').val(),
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
-                                    d.search          = $('input[type="search"]').val(),
-                                    d.type            = $('#type').val()
+                                    d.search          = $('input[type="search"]').val()
                         },
                     },                    
                     columns : [

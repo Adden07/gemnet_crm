@@ -213,7 +213,7 @@ class SmsController extends Controller
                                 })
                                 ->filter(function($query) use ($req){
                                     if(isset($req->user_id) && $req->user_id != 'all'){
-                                        $query->where('user_id',hashids_decode($req->receiver_id));
+                                        $query->where('user_id',hashids_decode($req->user_id));
                                     }
 
                                     if(isset($req->from_date) && isset($req->to_date)){
