@@ -26,9 +26,8 @@
                     <div class="form-group col-md-3">
                         <label for="">Username</label>
                         <select class="form-control select2" name="username" id="receiver_id">
-                            <option value="">Select Username</option>
+                            <option value="all">All</option>
                             @foreach($receivers as $user)
-                                <option value="all">All</option>
                                 <option value="{{ $user->hashid }}" @if(request()->has('username') && request()->get('username') == $user->hashid) selected @endif>{{ $user->username }}</option>
                             @endforeach
                         </select>

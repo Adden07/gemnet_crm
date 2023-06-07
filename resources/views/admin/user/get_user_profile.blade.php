@@ -105,6 +105,14 @@
                                     @endif
                                 </td>
                             </tr>
+                            {{-- @if($user_details->status != 'registered')
+                                <tr>
+                                    <th>Required Amount</th>
+                                    <td>
+                                        {{ $user_details->packages->price }}   
+                                    </td>
+                                </tr>
+                            @endif --}}
                         </table>
                     </div>
 
@@ -114,8 +122,8 @@
                         </div>
                         <table class="table  table-hover">
                             <tr>
-                                <th>Name By</th>
-                                <td>{{ $user_details->username }}</td>
+                                <th>Name</th>
+                                <td>{{ $user_details->name }}</td>
                             </tr>
                             <tr>
                                 <th>NIC</th>

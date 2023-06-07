@@ -221,7 +221,7 @@ class SmsController extends Controller
                                     }
 
                                     if(isset($req->sms_type) && $req->sms_type != 'all'){
-                                        $query->where('sms_type', $req->type);
+                                        $query->where('sms_type', $req->sms_type);
                                     }
 
                                     // if(isset($req->search)){
