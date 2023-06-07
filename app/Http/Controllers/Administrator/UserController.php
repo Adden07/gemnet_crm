@@ -562,10 +562,10 @@ class UserController extends Controller
                                                 $query->select('id','paid');
                                             }])
                                             ->where('user_id',hashids_decode($id))
-                                            ->when(auth()->user()->user_type != 'admin',function($query){
-                                                $query->where('admin_id',auth()->user()->id);
-                                            })
-                                            ->latest()->limit(50)->get(),
+                                            // ->when(auth()->user()->user_type != 'admin',function($query){
+                                            //     $query->where('admin_id',auth()->user()->id);
+                                            // })
+                                            ->latest()->get(),
                 'packages'      =>      Package::get(),
                 'areas'         =>      Area::latest()->get(),
                 'remarks'       => RemarkType::latest()->get(),
