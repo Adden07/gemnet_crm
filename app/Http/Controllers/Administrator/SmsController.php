@@ -189,7 +189,7 @@ class SmsController extends Controller
             return DataTables::of(SmsLog::with(['user']))
                                 ->addIndexColumn()
                                 ->addColumn('date', function($data){
-                                    return date('d-M-Y', strtotime($data->created_at));
+                                    return date('d-M-Y H:i:s', strtotime($data->created_at));
                                 })
                                 ->addColumn('username', function($data){
                                     return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->user_id)])." target='_blank'>{$data->user->username}</a>";
