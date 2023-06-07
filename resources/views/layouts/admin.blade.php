@@ -382,7 +382,7 @@
                                     </li>
                                     @endcan
                                     <li>
-                                        <a href="{{ route('admin.sms.log_page') }}">SMS Log</a>
+                                        <a href="{{ route('admin.sms.log_page') }}">SMS Logs</a>
                                     </li>
                                 </ul>
                             </li>

@@ -6,11 +6,11 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Finance</li>
-                    <li class="breadcrumb-item active">Payments</li>
+                    <li class="breadcrumb-item active">Sms</li>
+                    <li class="breadcrumb-item active">SMS Logs</li>
                 </ol>
             </div>
-            <h4 class="page-title">Payments</h4>
+            <h4 class="page-title">SMS Logs</h4>
         </div>
     </div>
 </div>
