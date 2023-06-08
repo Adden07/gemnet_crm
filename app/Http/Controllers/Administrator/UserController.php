@@ -86,7 +86,7 @@ class UserController extends Controller
                                     return wordwrap($data->name,10,"<br>\n");
                                 })
                                 ->addColumn('username',function($data){
-                                    return "<a href=".route('admin.users.profile',['id'=>$data->hashid, 'remark_id'=>null])." target='_blank'>$data->username</a>";
+                                    return "<a href=".route('admin.users.profile',[$data->hashid,null])." target='_blank'>$data->username</a>";
                                 })
                                 ->addColumn('mobile',function($data){
                                     return $data->mobile;
