@@ -149,7 +149,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
         Route::get('/details/{id}','UserController@details')->name('detail');
         Route::get('/remove-attachments','UserController@removeAttachment')->name('remove_attachment');
         Route::get('/subareas/{area_id}','UserController@subareas')->name('subareas');
-        Route::get('/profile/{id}/{remark_id?}','UserController@profile')->name('profile');
+        Route::get('/profile','UserController@profile')->name('profile');
         Route::post('/update-password','UserController@updatePassword')->name('update_password');
         Route::post('/update-documents','UserController@updateDocument')->name('update_document');
         Route::post('/update-info','UserController@updateInfo')->name('update_info');

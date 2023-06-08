@@ -86,7 +86,7 @@ class UserController extends Controller
                                     return wordwrap($data->name,10,"<br>\n");
                                 })
                                 ->addColumn('username',function($data){
-                                    return "<a href=".route('admin.users.profile',[$data->hashid,null,null])." target='_blank'>$data->username</a>";
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->hashid])." target='_blank'>$data->username</a>";
                                 })
                                 ->addColumn('mobile',function($data){
                                     return $data->mobile;
@@ -544,12 +544,12 @@ class UserController extends Controller
         abort(404);
     }
     //dispaly user profile
-    public function profile($id, $remark_id=null, Request $req=null){
+    public function profile(Request $req){
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
-    
-        if(isset($id) && !empty($id)){
+        // dd($req->all());
+        if(isset($req->id) && !empty($req->id)){
             $data = array(
                 'title' => 'User Profile',
                                 'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin', 'queue.package', 'payments'=>function($query) use ($req){
@@ -558,8 +558,8 @@ class UserController extends Controller
                                     },function($query){
                                         $query->whereBetween('created_at', [now()->subMonths(11), now()]);
                                     });
-                                }])->findORFail(hashids_decode($id)),
-                'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
+                                }])->findORFail(hashids_decode($req->id)),
+                'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($req->id))->latest()->get(),
                 'cities'        => City::get(),
                 'user_invoices' => Invoice::select(['id', 'invoice_id', 'created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price', 'total'])
                                             ->with(['package'=>function($query){
@@ -567,7 +567,7 @@ class UserController extends Controller
                                             },'user'=>function($query){
                                                 $query->select('id','paid');
                                             }])
-                                            ->where('user_id',hashids_decode($id))
+                                            ->where('user_id',hashids_decode($req->id))
                                            ->when(isset($req->from_date, $req->to_date), function($query) use ($req){
                                                 $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
                                             },function($query){
@@ -581,12 +581,12 @@ class UserController extends Controller
                 'areas'         =>      Area::latest()->get(),
                 'remarks'       => RemarkType::latest()->get(),
             );
-            if($remark_id != null){
-                $data['edit_remark'] = Remarks::findOrFail(hashids_decode($remark_id));
+            if($req->remark_id != null){
+                $data['edit_remark'] = Remarks::findOrFail(hashids_decode($req->remark_id));
             }
             // dd($data['user_details']->remark);
             //update user last profile visit column
-            User::where('id',hashids_decode($id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
+            User::where('id',hashids_decode($req->id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
             
             return view('admin.user.user_profile')->with($data);
         }

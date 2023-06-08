@@ -810,6 +810,9 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
+                <h3 class="text-center">Displaying Last 12 months Results by Default</h3>
+            </div>
+            <div class="col-lg-12">
                 <div class="card-box">
                     <table class="table">
                         <thead>
