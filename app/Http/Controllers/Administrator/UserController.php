@@ -544,7 +544,7 @@ class UserController extends Controller
         abort(404);
     }
     //dispaly user profile
-    public function profile($id, $remark_id=null, Request $req){
+    public function profile($id, $remark_id=null, Request $req=null){
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
