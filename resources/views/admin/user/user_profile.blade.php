@@ -790,7 +790,7 @@
     <div class="tab-pane fade" id="invoices" role="tabpanel">
         <div class="row">
             <div class="col-md-12 card-box">
-                <form action="{{ route('admin.users.profile', ['id'=>$user_details->hashid, 'remark_id'=>null]) }}" method="GET">
+                <form action="{{ route('admin.users.profile') }}" method="GET">
                     @csrf
                     <div class="row">
                         <div class="col-md-4">
@@ -802,6 +802,7 @@
                             <input type="date" class="form-control" name="to_date" id="to_date" value="{{ (request()->has('to_date')) ? request()->get('to_date') : '' }}" required>
                         </div>
                         <div class="col-md-1">
+                            <input type="hidden" name="id" value="{{ $user_detail->hashid }}">
                             <input type="submit" class="btn btn-primary mt-3" value="search">
                         </div>
                     </div>
