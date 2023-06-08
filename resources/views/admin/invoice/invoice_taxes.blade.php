@@ -7,11 +7,11 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active"><a href="{{ route('admin.admins.index') }}"></a>Finance</li>
-                    <li class="breadcrumb-item active">Taxation</li>
+                    <li class="breadcrumb-item active">Invoice Taxes</li>
 
                 </ol>
             </div>
-            <h4 class="page-title">Taxed Invoice Export</h4>
+            <h4 class="page-title">Invoice Taxes</h4>
         </div>
     </div>
 </div>

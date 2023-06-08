@@ -303,7 +303,7 @@ class CommonHelpers
         
         $setting = Cache::get('edit_setting');
         $sms     = Cache::get('sms_cache')->where('type', $sms_type)->first();
-;
+
         // dd($setting);
         // dd($setting->is_sms);
         if($setting->is_sms == 1 && (@$sms->status == 1 || $sms_type == 'manual')){
