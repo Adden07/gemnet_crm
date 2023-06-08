@@ -209,8 +209,9 @@ class InvoiceController extends Controller
         }
         $data = array(
             'title' => 'Invoice tax',
-            'months' => Invoice::where('tax_paid', 0)->whereMonth('created_at', '!=', date('m'))->groupBy('created_at')->get(),
+            'months' => Invoice::where('tax_paid', 0)->whereMonth('created_at', '!=', date('m'))->groupBy(\DB::raw('MONTH(created_at)'))->get(),
         );
+        // dd($data['months']);
         return view('admin.invoice.invoice_tax')->with($data);
     }
 
