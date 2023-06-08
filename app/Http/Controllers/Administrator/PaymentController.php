@@ -102,7 +102,7 @@ class PaymentController extends Controller
                                 //         <i class='icon-printer'></i>
                                 //     </a>";
                                 //     }
-                                if(auth()->user()->can('print-payments')){
+                                if(auth()->user()->can('print-payments') && $data->type == 'cash'){
                                     $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
                                                 <i class='icon-printer'></i>
                                             </a>";
