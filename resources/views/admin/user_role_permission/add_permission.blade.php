@@ -191,6 +191,7 @@
                                         <th>View Payments</th>
                                         <th>Add Payments</th>
                                         <th>Delete Payments</th>
+                                        <th>Print Payments</th>
                                         <th>View Approve Payments</th>
                                         <th>Approve Payments</th>
                                         <th>Transactions</th>
@@ -215,6 +216,9 @@
                                         
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-payments" @if(isset($update)){{ @(in_array('delete-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                                 @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="print-payments" @if(isset($update)){{ @(in_array('print-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
 
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-approve-payments" @if(isset($update)){{ @(in_array('view-approve-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                                     @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
