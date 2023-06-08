@@ -363,6 +363,9 @@
                                         <a href="{{ route('admin.accounts.ledgers.index') }}">Ledger</a>
                                     </li>
                                 @endcan
+                                <li>
+                                    <a href="{{ route('admin.accounts.invoices.invoice_taxes') }}">Invoice Taxes</a>
+                                </li>
                             </ul>
                         </li>
                         @endcan

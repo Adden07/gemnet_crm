@@ -241,6 +241,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::post('/export-invoice-tax', 'InvoiceController@exportInvoiceTax')->name('export_invoice_tax');
             Route::get('/get-invoice/{id}', 'InvoiceController@getInvoice')->name('get_invoice');
             Route::get('/generate-pdf/{id}', 'InvoiceController@generatePdf')->name('generate_pdf');
+            Route::get('/invoice-taxes', 'InvoiceController@invoiceTaxes')->name('invoice_taxes');
         });
         //payments routes
         Route::prefix('payments')->name('payments.')->group(function(){
