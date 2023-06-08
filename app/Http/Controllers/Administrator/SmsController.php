@@ -192,7 +192,7 @@ class SmsController extends Controller
                                     return date('d-M-Y H:i:s', strtotime($data->created_at));
                                 })
                                 ->addColumn('username', function($data){
-                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->user_id)])." target='_blank'>{$data->user->username}</a>";
+                                    return "<a href=".route('admin.users.profile',[hashids_encode($data->user_id),null])." target='_blank'>".@$data->user->username."</a>";
                                 })
                                 ->addColumn('sms_type', function($data){
                                     return $data->sms_type;
@@ -205,9 +205,9 @@ class SmsController extends Controller
                                 })
                                 ->addColumn('is_manual', function($data){
                                     if($data->is_manual){
-                                        $is_manual = '<span class="badge badge-success">yes</span>';
+                                        $is_manual = '<span class="badge badge-success">Manual</span>';
                                     }else{
-                                        $is_manual = '<span class="badge badge-info">No</span>';
+                                        $is_manual = '<span class="badge badge-info">Auto</span>';
                                     }
                                     return $is_manual;
                                 })

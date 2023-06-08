@@ -544,15 +544,21 @@ class UserController extends Controller
         abort(404);
     }
     //dispaly user profile
-    public function profile($id, $remark_id=null){
+    public function profile($id, $remark_id=null, Request $req){
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
-
+    
         if(isset($id) && !empty($id)){
             $data = array(
                 'title' => 'User Profile',
-                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin', 'queue.package', 'payments'])->findORFail(hashids_decode($id)),
+                                'user_details'  => User::with(['user_package_record','user_package_record.package', 'admin','city','area','subarea','primary_package','current_package','lastPackage', 'activation', 'renew','remark.admin', 'queue.package', 'payments'=>function($query) use ($req){
+                                    $query->when(isset($req->from_date, $req->to_date), function($query) use ($req){
+                                        $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                    },function($query){
+                                        $query->whereBetween('created_at', [now()->subMonths(11), now()]);
+                                    });
+                                }])->findORFail(hashids_decode($id)),
                 'user_records'  => UserPackageRecord::with(['package','admin','user','last_package'])->where('user_id',hashids_decode($id))->latest()->get(),
                 'cities'        => City::get(),
                 'user_invoices' => Invoice::select(['id', 'invoice_id', 'created_at','current_exp_date','new_exp_date','pkg_id','user_id','paid', 'pkg_price', 'total'])
@@ -562,6 +568,11 @@ class UserController extends Controller
                                                 $query->select('id','paid');
                                             }])
                                             ->where('user_id',hashids_decode($id))
+                                           ->when(isset($req->from_date, $req->to_date), function($query) use ($req){
+                                                $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                            },function($query){
+                                                $query->whereBetween('created_at', [now()->subMonths(11), now()]);
+                                            }) 
                                             // ->when(auth()->user()->user_type != 'admin',function($query){
                                             //     $query->where('admin_id',auth()->user()->id);
                                             // })

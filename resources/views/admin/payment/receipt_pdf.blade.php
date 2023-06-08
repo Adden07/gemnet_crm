@@ -22,7 +22,7 @@
         </p>
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
-                <td>Date {{ date('d/m/Y H:i:s') }}</td>
+                <td>Date {{ date('d/m/Y H:i:s', strtotime($data->created_at)) }}</td>
             </tr>
             <tr>
                 <td>Receiver  ID: {{ $data->admin->username }}</td>

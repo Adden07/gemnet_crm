@@ -67,7 +67,7 @@
                         <th>SMS Type</th>
                         <th>Mobile No</th>
                         <th>SMS</th>
-                        <th>Manual Status</th>
+                        <th>Sent By</th>
                         <th>Status</th>
                     </tr>
                 </thead>

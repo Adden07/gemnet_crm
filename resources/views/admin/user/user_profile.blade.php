@@ -789,6 +789,26 @@
 
     <div class="tab-pane fade" id="invoices" role="tabpanel">
         <div class="row">
+            <div class="col-md-12 card-box">
+                <form action="{{ route('admin.users.profile', ['id'=>$user_details->hashid, 'remark_id'=>null]) }}" method="GET">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="">From Date</label>
+                            <input type="date" class="form-control" name="from_date" id="from_date" value="{{ (request()->has('from_date')) ? request()->get('from_date') : '' }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">To Date</label>
+                            <input type="date" class="form-control" name="to_date" id="to_date" value="{{ (request()->has('to_date')) ? request()->get('to_date') : '' }}" required>
+                        </div>
+                        <div class="col-md-1">
+                            <input type="submit" class="btn btn-primary mt-3" value="search">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-lg-12">
                 <div class="card-box">
                     <table class="table">
