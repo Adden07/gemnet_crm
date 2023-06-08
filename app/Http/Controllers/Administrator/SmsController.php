@@ -102,7 +102,7 @@ class SmsController extends Controller
         }
         $validated = $validator->validated();
         
-        if(CommonHelpers::sendSms($validated['mobile_no'], $validated['message']) == 'Success'){//send sms and check status
+        if(CommonHelpers::sendSms($validated['mobile_no'], $validated['message'], 'manual') == 'Success'){//send sms and check status
             CommonHelpers::smsLog(null,null,$validated['mobile_no'],$validated['message'],1,1);//success log
             $msg =  [
                 'success' => 'Sms sent successfully',
