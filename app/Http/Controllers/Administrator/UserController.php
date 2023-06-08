@@ -1671,9 +1671,9 @@ class UserController extends Controller
         $rad_check->value = date('d M Y 12:00',strtotime($req->expiration_date));;
         $rad_check->save();
         
-        if($user->status == 'expired' && $user->last_logout_time == null){
+        // if($user->status == 'expired' && $user->last_logout_time == null){
             CommonHelpers::kick_user_from_router($user_id);//kick user
-        }
+        //}
 
 
         return response()->json([
