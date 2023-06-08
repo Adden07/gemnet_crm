@@ -802,7 +802,7 @@
                             <input type="date" class="form-control" name="to_date" id="to_date" value="{{ (request()->has('to_date')) ? request()->get('to_date') : '' }}" required>
                         </div>
                         <div class="col-md-1">
-                            <input type="hidden" name="id" value="{{ $user_detail->hashid }}">
+                            <input type="hidden" name="id" value="{{ $user_details->hashid }}">
                             <input type="submit" class="btn btn-primary mt-3" value="search">
                         </div>
                     </div>
