@@ -35,8 +35,8 @@ class InvoiceTaxFbrExport implements FromCollection,WithHeadings, WithMapping
             'Hyderabad',
             $invoice->user->user_type,
             $invoice->user->business_name,
-            $invoice->pkg_price,
-            $invoice->sales_tax,
+            $invoice->pkg_price+$invoice->sales_tax,
+            $invoice->adv_inc_tax,
         ];
     }
 }
