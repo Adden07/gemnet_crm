@@ -25,7 +25,7 @@
                 <td>Date {{ date('d/m/Y H:i:s') }}</td>
             </tr>
             <tr>
-                <td>Receiver  ID: {{ auth()->user()->username }}</td>
+                <td>Receiver  ID: {{ $data->admin->username }}</td>
             </tr>
             <tr>
                 <td colspan="2">RCPT# GES/REC2305-0013</td>
