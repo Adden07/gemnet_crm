@@ -19,8 +19,8 @@ class InvoiceTaxExport implements FromCollection, WithHeadings, WithMapping
         $this->date = $date;
     }
     public function collection()
-    {   
-        return Invoice::with(['user'])->where('tax_paid', 0)->where('created_at', $this->date)->get();
+    {      
+        return Invoice::with(['user'])->where('tax_paid', 0)->whereYear('created_at', date('Y',strtotime($this->date)))->whereMonth('created_at', date('m',strtotime($this->date)))->get();
     }
 
     public function headings(): array
