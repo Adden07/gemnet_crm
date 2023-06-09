@@ -325,6 +325,8 @@
                                                     <span class="badge badge-danger">Expired</span>-<span class="badge badge-success">Online</span>
                                                 @elseif($user_details->status == 'expired' && $user_details->last_logout_time != null)
                                                     <span class="badge badge-danger">Expired</span>-<span class="badge badge-danger">Offline</span>
+                                                @elseif($user_details->status == 'terminated')
+                                                    <span class="badge badge-danger">Terminated</span>
                                                 @else
                                                     <span class="badge badge-danger">Expired</span>
                                                 @endif

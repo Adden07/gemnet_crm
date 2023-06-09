@@ -80,8 +80,8 @@
                 <h4 class="header-title">All Payments List</h4>
             </div> --}}
             {{-- <p class="sub-header">Following is the list of all the Payments.</p> --}}
-            <p class="font-weight-bold text-center" style="font-size:17px">Current Page Total : <span id="total"></span></p>
-            <p class="font-weight-bold text-center" style="font-size:17px">Total : <span>{{ number_format($total_payments) }}</span></p>
+            <p class="font-weight-bold text-center" style="font-size:17px">Total From Current Displayed Entries : <span id="total"></span></p>
+            {{-- <p class="font-weight-bold text-center" style="font-size:17px">Total : <span>{{ number_format($total_payments) }}</span></p> --}}
 
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
@@ -129,7 +129,7 @@
                     serverSide: true,
                     "order": [[ 0, "desc" ]],
                     "pageLength": 300,
-                    "lengthMenu": [300,500,1000,1500],
+                    "lengthMenu": [300,500,1000,1500,2500,5000],
                     "dom": '<"top"ifl<"clear">>rt<"bottom"ip<"clear">>',
 
                     ajax:{

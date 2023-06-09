@@ -21,7 +21,7 @@ class SmsController extends Controller
             return redirect()->route('admin.home');
         }
         $data = array(
-            'title'     => 'SMS',
+            'title'     => 'SMS Types',
             'messages'  => Sms::latest()->get(),
         );
         return view('admin.sms.index')->with($data);
@@ -267,7 +267,7 @@ class SmsController extends Controller
         $sms = SmsLog::groupBy(['user_id'])->get(['user_id', 'sms_type']);
 
         $data = array(  
-            'title'     => 'Payments',
+            'title'     => 'SMS Logs',
             'users'     => User::whereIn('id', $sms->pluck('user_id')->toArray())->get(),
             'sms_types' =>  $sms->pluck('sms_type')->unique(),
         );

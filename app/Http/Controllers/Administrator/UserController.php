@@ -359,6 +359,7 @@ class UserController extends Controller
             $activity   = "updated-user";
         }else{
             $user              = new User;
+            $user->c_id         = User::latest()->first()->c_id+1;
             $msg               = 'user Added Successfully';
             $activity          = "added-user";
         }
@@ -2184,7 +2185,7 @@ class UserController extends Controller
                                         return $query->admin->username;
                                      })
                                      ->addColumn('user',function($query){
-                                        return @$query->user->username;
+                                        return "<a href=".route('admin.users.profile',['id'=>$query->user->hashid])." target='_blank'>{$query->user->username}</a>";
                                      })
                                      ->addColumn('remark_type',function($query){
                                         return $query->remark_type;
@@ -2223,6 +2224,7 @@ class UserController extends Controller
                                             });
                                         }
                                     })
+                                    ->rawcolumns(['user'])
                                      ->make(true);
         }
 
@@ -2369,7 +2371,7 @@ class UserController extends Controller
                                 ->toJson();
         }
         $data = array(
-            'title' => 'Qouta Over',
+            'title' => 'Qouta Low',
             'users' => User::get(),
         );        
         return view('admin.user.qouta_low')->with($data);

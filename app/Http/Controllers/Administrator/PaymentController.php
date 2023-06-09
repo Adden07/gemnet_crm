@@ -170,7 +170,7 @@ class PaymentController extends Controller
             'admins'        => Admin::where('user_type','!=','superadmin')->get(),
             'receivers'     => User::whereIn('id', $receiver_id)->get(['id', 'name', 'username']),
             'admins'        => Admin::whereIn('id', $admin_id)->get(['id', 'name', 'username']), 
-            'total_payments'=> Payment::sum('amount'),
+            // 'total_payments'=> Payment::sum('amount'),
         );
         return view('admin.payment.all_payments')->with($data);
     }

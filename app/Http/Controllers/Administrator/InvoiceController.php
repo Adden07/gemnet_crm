@@ -208,7 +208,7 @@ class InvoiceController extends Controller
             return redirect()->route('admin.home');
         }
         $data = array(
-            'title' => 'Invoice tax',
+            'title' => 'Taxation',
             'months' => Invoice::where('tax_paid', 0)->whereMonth('created_at', '!=', date('m'))->groupBy(\DB::raw('MONTH(created_at)'))->get(),
         );
         // dd($data['months']);
@@ -243,16 +243,16 @@ class InvoiceController extends Controller
         $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
 
         $pdf = PDF::loadView('admin.invoice.get_invoice', $data);
-        // dd($pdf);
-        return $pdf->download('invoice.pdf');
+        $file_name = $data['invoice']->user->username.'-'.$data['invoice']->invoice_id.'.pdf';
+        return $pdf->download($file_name);
     }
 
     public function invoiceTaxes(Request $req){
-        if(\CommonHelpers::rights('enabled-finance','taxation')){
+        if(\CommonHelpers::rights('enabled-finance','taxes-summary')){
             return redirect()->route('admin.home');
         }
         $data = array(
-            'title' => 'Invoice tax',
+            'title' => 'Taxes Summary',
             'months' => Invoice::select('created_at')->groupBy(\DB::raw('MONTH(created_at), YEAR(created_at)'))->get(),
         );
 
@@ -260,8 +260,6 @@ class InvoiceController extends Controller
             $data['invoices'] = Invoice::whereYear('created_at', date('Y',strtotime($req->date)))->whereMonth('created_at', date('m',strtotime($req->date)))->get();
         }
         
-           
-
         return view('admin.invoice.invoice_taxes')->with($data);
     }
 }
