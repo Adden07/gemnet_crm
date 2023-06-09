@@ -1054,6 +1054,7 @@ class UserController extends Controller
 
     //display all mac vendor users
     public function macVendorUsers(Request $req){
+
         if(CommonHelpers::rights('enabled-user','mac-vendor-users')){
             return redirect()->route('admin.home');
         }
@@ -1079,13 +1080,14 @@ class UserController extends Controller
                                     return @$data->macaddress;
                                 })
                                 ->addColumn('sales_person',function($data){
-                                    if($data->admin->user_type == 'franchise'){
-                                        return "<a href=".route('admin.franchises.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
-                                    }elseif($data->admin->user_type == 'dealer'){
-                                        return "<a href=".route('admin.dealers.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
-                                    }elseif($data->admin->user_type == 'sub_dealer'){
-                                        return "<a href=".route('admin.sub_dealers.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
-                                    }
+                                    // if($data->admin->user_type == 'franchise'){
+                                    //     return "<a href=".route('admin.franchises.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
+                                    // }elseif($data->admin->user_type == 'dealer'){
+                                    //     return "<a href=".route('admin.dealers.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
+                                    // }elseif($data->admin->user_type == 'sub_dealer'){
+                                    //     return "<a href=".route('admin.sub_dealers.profile',['id'=>hashids_encode($data->admin->id)])." target='_blank'>{$data->admin->username}</a>";
+                                    // }
+                                    return '';
                                     
                                 })
                                 ->addColumn('mac_vendor',function($data){
