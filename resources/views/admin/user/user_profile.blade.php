@@ -873,7 +873,7 @@
                             <th>Online Date</th>
                         </thead>
                         <tbody>
-                            @foreach($user_details->payments As $payment)
+                            @foreach($user_details->payments->sortDesc() As $payment)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ date('d-M-Y H:i:s', strtotime($payment->created_at)) }}</td>
