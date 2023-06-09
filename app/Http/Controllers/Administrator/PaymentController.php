@@ -126,7 +126,7 @@ class PaymentController extends Controller
 
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
-                                            $search = $req->search;
+                                            $search = $req->search['value'];
                                             $search_query->orWhere('created_at', 'LIKE', "%$search%")
                                                         ->orWhere('type', 'LIKE', "%$search%")
                                                         ->orWhere('amount', 'LIKE', "%$search%")
