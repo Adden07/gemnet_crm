@@ -93,15 +93,7 @@ class PaymentController extends Controller
                                 })
                                 ->addColumn('action', function($data){
                                      $html = '';
-                                //     if(auth()->user()->user_type != 'admin' && $data->created_at == now()){
-                                //         $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
-                                //     <i class='icon-printer'></i>
-                                //    </a>";
-                                //     }elseif(auth()->user()->user_type == 'admin'){
-                                //         $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
-                                //         <i class='icon-printer'></i>
-                                //     </a>";
-                                //     }
+
                                 if(auth()->user()->can('print-payments') && $data->type == 'cash'){
                                     $html = " <a href=".route('admin.accounts.payments.receipt_pdf', ['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light mr-2' title='print' target='_blank'>
                                                 <i class='icon-printer'></i>
@@ -452,6 +444,25 @@ class PaymentController extends Controller
                                 ->filter(function($query) use ($req){
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
+                                    }
+                                    
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search['value'];
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('type', 'LIKE', "%$search%")
+                                                        ->orWhere('amount', 'LIKE', "%$search%")
+                                                        ->orWhere('old_balance', 'LIKE', "%$search%")
+                                                        ->orWhere('new_balance', 'LIKE', "%$search%")
+                                                        ->orWhereHas('receiver',function($q) use ($search){
+                                                                $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                                            })
+                                                        ->orWhereHas('admin',function($q) use ($search){
+                                                            $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                                        });      
+                                        });
                                     }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){

@@ -140,7 +140,7 @@
                                     d.added_by        = $('#added_by').val(),
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
-                                    d.search          = $('input[type="search"]').val(),
+                                    // d.search          = $('input[type="search"]').val(),
                                     d.type            = $('#type').val()
                         },
                     },
@@ -154,8 +154,8 @@
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
-                        {data:'reciever_name', name:'receiver.name',orderable:false,searchable:true},
-                        {data:'added_by', name:'admin.name',orderable:false,searchable:true},
+                        {data:'reciever_name', name:'receiver.name',orderable:true,searchable:true},
+                        {data:'added_by', name:'admin.name',orderable:true,searchable:true},
                         {data:'type', name:'payments.type',orderable:true,searchable:true},
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
