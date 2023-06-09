@@ -830,7 +830,8 @@
                             @foreach($user_invoices As $invoice)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $invoice->invoice_id }}</td>
+                                    
+                                    <td><a href="{{ route('admin.accounts.invoices.get_invoice', ['id'=>$invoice->hashid]) }}" target="_blank">{{ $invoice->invoice_id }}</a></td>
                                     <td>{{ date('d-M-Y H:i:s',strtotime($invoice->created_at)) }}</td>
                                     <td>{{  $invoice->package->name}}</td>
                                     <td>

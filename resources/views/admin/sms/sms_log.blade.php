@@ -50,6 +50,14 @@
                         <label for="">To Date</label>
                         <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
                     </div>
+                    <div class="form-group col-md-3">
+                        <label for="">Sent By</label>
+                        <select class="form-control" name="sent_by" id="sent_by">
+                            <option value="all">All</option>
+                            <option value="1">Manual</option>
+                            <option value="0">Auto</option>
+                        </select>
+                    </div>
                 </div>
             </form>
         </div>
@@ -109,7 +117,8 @@
                                     d.sms_type        = $('#sms_type').val(),
                                     d.from_date       = $('#from_date').val(),
                                     d.to_date         = $('#to_date').val(),
-                                    d.search          = $('input[type="search"]').val()
+                                    d.search          = $('input[type="search"]').val(),
+                                    d.sent_by         = $('#sent_by').val()
                         },
                     },                    
                     columns : [
@@ -127,7 +136,7 @@
                 });
 
 
-            $('#user_id,#sms_type,#from_date,#to_date').change(function(){
+            $('#user_id,#sms_type,#from_date,#to_date,#sent_by').change(function(){
                     table.draw();
             });
     });

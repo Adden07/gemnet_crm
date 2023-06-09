@@ -71,7 +71,7 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::selectRaw('id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance')
+            $data = User::selectRaw('id,c_id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance')
                         ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer', function($query){
                             if(auth()->user()->user_type == 'sales_person'){
                                 $query->where('sales_id', auth()->id());
@@ -82,6 +82,9 @@ class UserController extends Controller
 
             return DataTables::of($data)
                                 ->addIndexColumn()
+                                ->addColumn('customer_id', function($data){
+                                    return @$data->c_id;
+                                })
                                 ->addColumn('name',function($data){
                                     return wordwrap($data->name,10,"<br>\n");
                                 })
@@ -114,6 +117,8 @@ class UserController extends Controller
                                             $status = '<span class="badge badge-success">Active</span>-<span class="badge badge-danger">Offline</span>';
                                         }elseif($data->status == 'expired' && $data->last_logout_time == null){
                                             $status = '<span class="badge badge-danger">Expired</span>-<span class="badge badge-success">Online</span>';
+                                        }elseif($data->status == 'terminated'){
+                                            $status = '<span class="badge badge-danger">Terminated</span>';
                                         }else{
                                             $status = '<span class="badge badge-danger">Expired</span>';
                                         }

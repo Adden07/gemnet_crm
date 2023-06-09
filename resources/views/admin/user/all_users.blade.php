@@ -118,6 +118,7 @@
                 <thead>
                     <tr>
                         <th width="20">S.No</th>
+                        <th>Customer ID</th>
                         <th>Name</th>
                         <th>Username</th>
                         <th>Mobile</th>
@@ -190,6 +191,7 @@
                     
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
+                        {data:'customer_id', name:'customer_id', orderable:true},  
                         {data:'name', name:'users.name', orderable:true},  
                         {data:'username', name:'users.username'},
                         {data:'mobile', name:'users.mobile'},

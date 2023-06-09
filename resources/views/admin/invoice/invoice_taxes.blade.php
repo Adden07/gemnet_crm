@@ -7,11 +7,11 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active"><a href="{{ route('admin.admins.index') }}"></a>Finance</li>
-                    <li class="breadcrumb-item active">Invoice Taxes</li>
+                    <li class="breadcrumb-item active">Taxes Summary</li>
 
                 </ol>
             </div>
-            <h4 class="page-title">Invoice Taxes</h4>
+            <h4 class="page-title">Taxes Summary</h4>
         </div>
     </div>
 </div>
@@ -26,7 +26,7 @@
                         <label for="">Month</label>
                         <select class="form-control" name="date" id="date" required>
                             <option value="">Select month</option>
-                            @foreach($months AS $month)
+                            @foreach($months->sortDesc() AS $month)
                                 <option value="{{ $month->created_at }}">{{ date('F-y', strtotime($month->created_at)) }}</option>
                             @endforeach
                         </select>

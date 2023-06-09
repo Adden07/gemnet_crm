@@ -80,7 +80,9 @@
                 <h4 class="header-title">All Payments List</h4>
             </div> --}}
             {{-- <p class="sub-header">Following is the list of all the Payments.</p> --}}
-            <p class="font-weight-bold text-center" style="font-size:17px">Total : <span id="total"></span></p>
+            <p class="font-weight-bold text-center" style="font-size:17px">Current Page Total : <span id="total"></span></p>
+            <p class="font-weight-bold text-center" style="font-size:17px">Total : <span>{{ number_format($total_payments) }}</span></p>
+
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
                     <tr>

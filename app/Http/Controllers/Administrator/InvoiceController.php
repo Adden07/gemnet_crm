@@ -39,7 +39,7 @@ class InvoiceController extends Controller
                                         $query->whereDate('created_at',date('Y-m-d'));
                                     })->when(isset($req->package_id),function($query) use ($req){//when package id is set
                                         $query->where('pkg_id',hashids_decode($req->package_id));
-                                    })->when(isset($req->type),function($query) use ($req){//when type is iset
+                                    })->when(isset($req->type) && $req->type != 'all',function($query) use ($req){//when type is iset
                                         $query->where('type',$req->type);
                                     })->when(auth()->user()->user_type != 'admin',function($query){
                                         // $query->whereIn('admin_id',\CommonHelpers::getChildIds());
@@ -60,7 +60,7 @@ class InvoiceController extends Controller
                                     $query->whereDate('created_at',date('Y-m-d'));
                                 })->when(isset($req->package_id),function($query) use ($req){//when package id is set
                                     $query->where('pkg_id',hashids_decode($req->package_id));
-                                })->when(isset($req->type),function($query) use ($req){//when type is iset
+                                })->when(isset($req->type) && $req->type != 'all',function($query) use ($req){//when type is iset
                                     $query->where('type',$req->type);
                                 })->orderBy('admin_id','DESC')->orderBy('id','DESC')->get(),
                                     
@@ -243,7 +243,7 @@ class InvoiceController extends Controller
         $data['past_invoices']  = Invoice::where('user_id', $data['invoice']->user_id)->whereBetween('created_at',[$startDate,$endDate])->get();
 
         $pdf = PDF::loadView('admin.invoice.get_invoice', $data);
-        dd($pdf);
+        // dd($pdf);
         return $pdf->download('invoice.pdf');
     }
 

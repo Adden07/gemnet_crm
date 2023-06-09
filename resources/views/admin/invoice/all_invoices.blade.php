@@ -116,9 +116,13 @@
                     <div class="form-group col-md-3">
                         <label for="">Status</label>
                         <select class="form-control" name="type" id="type">
-                            <option value="">Select Status</option>
-                            <option value="renew" {{ (request()->has('type') && request()->get('type') == 'renew') ? 'selected' : '' }}>Renew</option>
-                            <option value="new" {{ (request()->has('type') && request()->get('type') == 'new') ? 'selected' : '' }}>New</option>
+                            <option value="all">All</option>
+                            <option value="0" {{ (request()->has('type') && request()->get('type') == 0) ? 'selected' : '' }}>Activation</option>
+                            <option value="1" {{ (request()->has('type') && request()->get('type') == 1) ? 'selected' : '' }}>Renew</option>
+                            <option value="2" {{ (request()->has('type') && request()->get('type') == 2) ? 'selected' : '' }}>OTC</option>
+                            <option value="3" {{ (request()->has('type') && request()->get('type') == 3) ? 'selected' : '' }}>pgrade</option>
+
+
                         </select>
                     </div>
                 </div>

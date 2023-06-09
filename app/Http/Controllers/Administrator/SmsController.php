@@ -232,6 +232,10 @@ class SmsController extends Controller
                                         $query->where('sms_type', $req->sms_type);
                                     }
 
+                                    if(isset($req->sent_by) && $req->sent_by != 'all'){
+                                        $query->where('is_manual', $req->sent_by);
+                                    }
+
                                     // if(isset($req->search)){
                                     //     $query->where(function($search_query) use ($req){
                                     //         $search = $req->search;

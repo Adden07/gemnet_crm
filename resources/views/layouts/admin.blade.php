@@ -364,7 +364,7 @@
                                     </li>
                                 @endcan
                                 <li>
-                                    <a href="{{ route('admin.accounts.invoices.invoice_taxes') }}">Invoice Taxes</a>
+                                    <a href="{{ route('admin.accounts.invoices.invoice_taxes') }}">Taxes Summary</a>
                                 </li>
                             </ul>
                         </li>
