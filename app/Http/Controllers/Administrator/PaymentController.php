@@ -61,7 +61,7 @@ class PaymentController extends Controller
                                 })
                                 ->addColumn('reciever_name',function($data){
                                     
-                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";
+                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode(@$data->receiver->id)])." target='_blank'>".@$data->receiver->username."</a>";
 
                                 })
                                 ->addColumn('added_by',function($data){
