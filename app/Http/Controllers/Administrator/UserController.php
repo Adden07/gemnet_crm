@@ -2357,12 +2357,25 @@ class UserController extends Controller
                                     return bytesToGb($data->qt_used).' GB';
                                 })
                                 ->filter(function($query) use ($req){
-                                        if(isset($req->user_id)){//get user wise
-                                            $query->where('id', hashids_decode($req->user_id));
-                                        }
-                                        if(isset($req->from_date) && isset($req->to_date)){//get date wise
-                                            $query->whereBetween('current_expiration_date', [$req->from_date, $req->to_date]);
-                                        }
+                                    if(isset($req->user_id)){//get user wise
+                                        $query->where('id', hashids_decode($req->user_id));
+                                    }
+                                    if(isset($req->from_date) && isset($req->to_date)){//get date wise
+                                        $query->whereBetween('current_expiration_date', [$req->from_date, $req->to_date]);
+                                    }
+
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search['value'];
+                                            $search_query->orWhere('current_expiration_date', 'LIKE', "%$search%")
+                                                    ->orWhere('username', 'LIKE', "%$search%")
+                                                    ->orWhere('name', 'LIKE', "%$search%")
+                                                    ->orWhereHas('packages',function($q) use ($search){
+                                                        $q->whereLike(['name'], '%'.$search.'%');
+                                                    });
+
+                                        });
+                                    }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
