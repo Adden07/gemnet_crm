@@ -715,11 +715,12 @@ class PackageController extends Controller
     public function getPackagePriceWithTax($package_price, $days){
         $package_price       = $package_price*$days;
         $site_setting        = Cache::get('edit_setting');
+
         //calculate the tax value
         $mrc_sales_tax          = ($site_setting->mrc_sales_tax   != 0 )   ? ($package_price * $site_setting->mrc_sales_tax)/100: 0;
         $mrc_adv_inc_tax        = ($site_setting->mrc_adv_inc_tax != 0 ) ? (($package_price+$mrc_sales_tax) * $site_setting->mrc_adv_inc_tax)/100: 0;
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
-        
+
         return [
             'package_price'  => (int) round($package_price+$mrc_total),
             'mrc_sales_tax'  => $mrc_sales_tax,
@@ -1037,16 +1038,17 @@ class PackageController extends Controller
         $current_date    = date_create(date('Y-m-d 12:00:00'));
         $exp_date        = date_create($user->current_expiration_date);
         $remaining_days  = date_diff($current_date,$exp_date)->format("%a");
+
         ($remaining_days == 31) ? $remaining_days = 30 : ''; //if remaining days are equal to 31 then make it 30 days
         
         $get_current_pkg_per_day_price = (int) $this->getPacakgePerDayPrice($user_invoice->total, $remaining_days);//get per day price of existig package
-        $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package
-        
+        $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package      
         $new_package_price_tax_arr     =  $this->getPackagePriceWithTax($get_new_pkg_per_day_price, $remaining_days);
-        $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price']+$new_package_price_tax_arr['mrc_total'];//get total price of new package with tax
+        $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price'];//get total price of new package with tax
         $get_current_pkg_price         = (int) $get_current_pkg_per_day_price*$remaining_days;//get curren
         $pkg_price_to_deduct           = (int) $get_new_pkg_price_with_tax-$get_current_pkg_price;
         // $new_pkg_price_without_tax     = (int) $new_package_price_tax_arr['package_price']-$get_current_pkg_price;
+
         return response()->json([
             'upgrade_package_price' => $pkg_price_to_deduct,
         ]);
