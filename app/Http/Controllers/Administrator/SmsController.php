@@ -192,7 +192,7 @@ class SmsController extends Controller
                                     return date('d-M-Y H:i:s', strtotime($data->created_at));
                                 })
                                 ->addColumn('username', function($data){
-                                    return "<a href=".route('admin.users.profile',[hashids_encode($data->user_id),null])." target='_blank'>".@$data->user->username."</a>";
+                                    return "<a href=".route('admin.users.profile',['id'=>@$data->user->hashid])." target='_blank'>".@$data->user->username."</a>";
                                 })
                                 ->addColumn('sms_type', function($data){
                                     return $data->sms_type;
