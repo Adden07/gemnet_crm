@@ -547,7 +547,7 @@ class PackageController extends Controller
             // }
 
             $data['packages'] = Package::get();
-            $data['user_current_package'] = $data['packages']->where('id', $data['user']->c_package)->first();
+            $data['user_current_package'] = $data['packages']->where('id', $data['user']->package)->first();
             
             if($data['user_current_package']->duration ==1){
                 $data['packages'] = $data['packages']->where('price', '>', $data['user_current_package']->price)->where('duration',1);
@@ -626,12 +626,11 @@ class PackageController extends Controller
             $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package
          
             $new_package_price_tax_arr     =  $this->getPackagePriceWithTax($get_new_pkg_per_day_price, $remaining_days);
-            $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price']+$new_package_price_tax_arr['mrc_total'];//get total price of new package with tax
+            $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price'];//get total price of new package with tax
             $get_current_pkg_price         = (int) $get_current_pkg_per_day_price*$remaining_days;//get curren
             $pkg_price_to_deduct           = (int) $get_new_pkg_price_with_tax-$get_current_pkg_price;
             $new_pkg_price_without_tax     = (int) $new_package_price_tax_arr['package_price']-$get_current_pkg_price;
             
-
             if($user->paid == 1){
                 if($user->user_current_balance < $pkg_price_to_deduct && $user->credit_limit == 0){
                     throw new Exception("Package could be upgrade because of insufficent balance");
