@@ -42,7 +42,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-
+        
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -50,7 +50,7 @@ class PackageController extends Controller
             'user_id'    => ['required'],
             'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_year,promo'],
             // 'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
-            'otc'        => [Rule::requiredIf(empty($req->renew_type)), 'in:1,0'], 
+            'otc'        => ['nullable', 'in:1,0'], 
             'renew_type' => [Rule::requiredIf(empty(!$req->renew_type)), 'in:immediate,queue'] 
         ];
 
@@ -81,15 +81,13 @@ class PackageController extends Controller
         $mrc_total              = $mrc_sales_tax+$mrc_adv_inc_tax;
         $otc_total              = $otc_sales_tax+$otc_adv_inc_tax;
 
-        if(isset($validated['calendar']) && !empty($validated['calendar'])){
-            $date    = $validated['calendar'];
-        }else{
-            // $date    = Carbon::now()->addMonth()->format('d-M-Y 12:00');//get date of 1 month from today date 
-            $date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
-        }
-        
-
-
+        // if(isset($validated['calendar']) && !empty($validated['calendar'])){
+        //     $date    = $validated['calendar'];
+        // }else{
+        //     // $date    = Carbon::now()->addMonth()->format('d-M-Y 12:00');//get date of 1 month from today date 
+        //     $date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
+        // }
+        $date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
         //when renew the package then check package exists or not
         // if(auth()->user()->user_type != 'admin'){//if user is not admin
         //     if($validated['status'] == 'active'){//if its renew
@@ -125,6 +123,7 @@ class PackageController extends Controller
                 }
             }
         }
+
         // dd('done');
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
         //     if($user->user_current_balance < ($package->price+$package->otc)){
@@ -162,22 +161,23 @@ class PackageController extends Controller
                 $GLOBALS['msg'] = 'Package Renewed Successfully';
                 
                 //if status is expired then calculate the new date from today's date
-                if($validated['status'] == 'expired'){
+                //if($validated['status'] == 'expired'){
                     //if month type is month and status is expired then get the current date otherwise get the calendar date for expiry
-                    if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
-                        $date = date('Y-m-d 12:00');
-                    }else{
-                        $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
-                    }
-                }else{//if status is not expired then calculate the date from the db date
+                    // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
+                    //     $date = date('Y-m-d 12:00');
+                    // }else{
+                    //     $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
+                    // }
+                //}else{//if status is not expired then calculate the date from the db date
                     //if month type is month and status is expired then get the current date otherwise get the calendat date for expiry
                     // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
                     //     $date = $user->current_expiration_date;
                     // }else{
                     //     $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
                     // }
-                    $date = $user->current_expiration_date;
-                }
+                    //$date = $user->current_expiration_date;
+                //}
+
                 //create expiry date 
                 // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){//expir
                 //     $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
@@ -189,8 +189,9 @@ class PackageController extends Controller
                 //     $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
                 // }
                 $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
+                // $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
                 $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
+                    // dd($new_exp_date);
 
                 $user->renew_by             = auth()->user()->id;
                 $user->renew_date           = date('Y-m-d H:i:s');
@@ -198,7 +199,7 @@ class PackageController extends Controller
                 $user->last_package         = $last_package;
                 $package_status             =1;
                 
-                if($validated['renew_type'] != 'queue'){
+                if(!isset($validated['renew_type']) && @$validated['renew_type'] != 'queue'){
                     $user->status                   = 'active';
                     $user->qt_total                 = $package->volume;
                     $user->qt_used                  = 0;

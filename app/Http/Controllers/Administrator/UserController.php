@@ -448,9 +448,7 @@ class UserController extends Controller
     //check unique value of specified columna
     public function checkUnique(Request $req){
         if(isset($req->column) && isset($req->value) && !empty($req->column) && !empty($req->value)){
-            $user = User::when($req->column == 'username' && auth()->user()->user_type != 'admin',function($query) use ($req){
-                $query->where('username',auth()->user()->username.'-'.$req->value);
-            })->when($req->column == 'username' && auth()->user()->user_type == 'admin',function($query) use ($req){
+            $user = User::when($req->column == 'username',function($query) use ($req){
                 $query->where('username',$req->value);
             })->when($req->column == 'mobile',function($query) use ($req){
                 // $query->where($req->column,$req->value);
@@ -1697,10 +1695,8 @@ class UserController extends Controller
         $rad_check->value = date('d M Y 12:00',strtotime($req->expiration_date));;
         $rad_check->save();
         
-        // if($user->status == 'expired' && $user->last_logout_time == null){
-            CommonHelpers::kick_user_from_router($user_id);//kick user
-        //}
-
+        CommonHelpers::kick_user_from_router($user_id);//kick user
+        CommonHelpers::activity_logs("Old expiration  $user->last_expiration_date new expiration $user->current_expiration_date");
 
         return response()->json([
             'success'   => 'User expiration updated successfully',

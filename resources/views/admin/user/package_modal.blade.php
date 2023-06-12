@@ -14,7 +14,7 @@
     </span>
 </div>
 
-@if(!empty($user->current_expiration_date))
+@if($user->status == 'expired')
     <div class="">
         <label class="col-form-label">Apply As</label>
         <select class="form-control" name="renew_type" id="renew_type">
@@ -75,31 +75,17 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         $full_month = true;
     }
 @endphp --}}
-@if(empty($user->current_expiration_date))
-    <div class="form-group mt-2">
+{{-- @if(empty($user->current_expiration_date)) --}}
+    {{-- <div class="form-group mt-2">
         <label for="">Package type</label>
         <select class="form-control" name="month_type" id="month_type">
             <option value="monthly">Monthly</option>
             <option value="half_year">Half year</option>
             <option value="full_year">Full Year</option>
             <option value="promo">Promo</option>
-
-            {{-- @can('monthly')
-                <option value="monthly">Monthly</option>
-            @endcan --}}
-            {{-- @if($half_month == true) --}}
-            {{-- @can('half-month')
-                <option value="half_month">Half Month</option>
-            @endcan     --}}
-            {{-- @endif
-            @if($full_month == true) --}}
-            {{-- @can('full-month')
-                <option value="full_month">Full Month</option>
-            @endcan     --}}
-            {{-- @endif --}}
         </select>
-    </div>
-@endif
+    </div> --}}
+{{-- @endif --}}
 <div class="form-group d-none" id="calendar_form">
     <label for="">Calendar</label>
     <input type="date" class="form-control" name="calendar" id="calendar" min="">
@@ -117,17 +103,17 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         }
     @endphp
 
-    @if($user->status == 'expired' || $user->status == 'registered' || $current_date > $exp) 
+    {{-- @if($user->status == 'expired' || $user->status == 'registered' || $current_date > $exp) 
         <label for="package">Packages:</label>
         <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
             <option value="">Select Package</option>
-            @if(isset($user_packages))<!--when user is subdealer-->
+            @if(isset($user_packages))
                 @foreach($user_packages AS $s_package)
                     @if(!in_array($s_package->package_id,$ids))
                         <option value="{{ hashids_encode($s_package->package->id) }}" @if(@$user_package_id->package_id == $s_package->id) selected @endif>{{ $s_package->package->name }}</option>
                     @endif    
                 @endforeach
-            @else<!--when user is not subdealer-->
+            @else
                 @foreach($packages AS $package)
                     <option value="{{ $package->hashid }}" @if(@$user_package_id->package_id == $package->id) selected @endif>{{ $package->name }}</option>
                 @endforeach
@@ -138,8 +124,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         <span class="badge badge-info ml-3" id="renew_package_name">
             {{ @$user->packages->name }}
         </span>
-        {{-- <input type="hidden" name="package_id" value="{{ hashids_encode($user->package) }}"> --}}
-    @endif
+    @endif --}}
 </div>
 
 @if(empty($user->current_expiration_date))
@@ -162,11 +147,13 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     <div class="">
         <label>New Expiration:</label>
         <span class="badge badge-info" style="margin-left:27px" id="new_expiration">
-            @if($user->status == 'expired')
+            {{-- @if($user->status == 'expired')
                 {{ @Carbon\Carbon::parse(date('Y-m-d 12:00'))->addMonth()->format('d-M-Y 12:00') }}
             @elseif($user->status == 'active')
                 {{ @Carbon\Carbon::parse(@$user->current_expiration_date)->addMonth()->format('d-M-Y 12:00') }}
-            @endif
+            @endif --}}
+            {{ @Carbon\Carbon::parse(@$user->current_expiration_date)->addMonth()->format('d-M-Y 12:00') }}
+
         </span>
     </div>
     <input type="hidden" name="expiration_date"  value="{{ @$user->current_expiration_date }}">
