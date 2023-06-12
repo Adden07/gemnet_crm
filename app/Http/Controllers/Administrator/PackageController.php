@@ -696,7 +696,9 @@ class PackageController extends Controller
                 $user_package_record->save();
             }
             
-            
+            $rad_user_group = RadUserGroup::where('username',$user->username)->first();
+            $rad_user_group->groupname = $package->groupname;
+            $rad_user_group->save();
 
             if(is_null($user->last_logout_time || $user_qt_expired == 1)){//when user is online or qt_expired is 1 then kick user
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user
