@@ -952,7 +952,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ date('d-M-Y H:i:s', strtotime($remark->created_at)) }}</td>
-                                            <td>{{ $remark->admin->name }} ({{ $remark->admin->user_type }})</td>
+                                            <td>{{ @$remark->admin->name }} ({{ @$remark->admin->user_type }})</td>
                                             <td>{{ $remark->remark_type }}</td>
                                             <td>{{ $remark->text }}</td>
                                             <td>
