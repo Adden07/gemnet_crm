@@ -90,17 +90,28 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
 </div> --}}
 {{-- <input type="hidden" name="expiration_date"  value="{{ @$user->current_expiration_date }}"> --}}
 @else
-<div class="">
+{{-- <div class="">
     <label>Expiration Date:</label>
     <span class="badge badge-info ml-1" id="new_expiration">
         {{ Carbon\Carbon::now()->addMonth()->format('d-M-y 12.00') }}
     </span>
-</div>
+</div> --}}
+
 @endif
-<div class="">
+{{-- <div class="">
     <label>Expiration Date:</label>
     <span class="badge badge-info ml-1" id="new_expiration">
         {{ Carbon\Carbon::now()->addMonth()->format('d-M-y 12.00') }}
+    </span>
+</div> --}}
+<div class="">
+    <label>New Expiration:</label>
+    <span class="badge badge-info" style="margin-left:27px" id="new_expiration">
+        @if($user->status == 'expired')
+            {{ @Carbon\Carbon::parse(date('Y-m-d 12:00'))->addMonth()->format('d-M-Y 12:00') }}
+        @elseif($user->status == 'active')
+            {{ @Carbon\Carbon::parse(@$user->current_expiration_date)->addMonth()->format('d-M-Y 12:00') }}
+        @endif
     </span>
 </div>
 <div class="">

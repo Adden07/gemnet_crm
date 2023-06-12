@@ -1282,13 +1282,19 @@ class UserController extends Controller
     }
 
     public function remarks(Request $req){
-        
-        $validate = $req->validate([
-            'remark'   => ['required', 'max:250'],
-            'user_id'  => ['required'],
-            'remark_id'=> ['nullable'],
+
+        $rules = [
+            'remark'        => ['required', 'max:250'],
+            'user_id'       => ['required'],
+            'remark_id'     => ['nullable'],
             'remark_type'   => ['required', 'string', 'max:50']
-        ]);
+        ];
+
+        $validate = Validator::make($req->all(), $rules);
+
+        if($validate->fails()){
+            return ['errors'=>$validate->errors()];
+        }
 
         if(auth()->user()->user_type != 'admin' && is_null($req->remark_id)){//admin users can remarks twice a day except admin
             if(Remarks::where('admin_id',auth()->id())->where('user_id', hashids_decode($req->user_id))->whereDate('created_at',now())->count() >= 2){

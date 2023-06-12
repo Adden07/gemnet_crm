@@ -612,7 +612,7 @@ class PackageController extends Controller
             $site_setting        = Cache::get('edit_setting');
             $user_invoice        = Invoice::where('user_id', $user->id)->whereIn('type', [0,1])->latest()->first();
 
-            
+
 
             
             $transaction_id  = rand(1111111111,9999999999);
@@ -620,17 +620,16 @@ class PackageController extends Controller
             $exp_date        = date_create($user->current_expiration_date);
             $remaining_days  = date_diff($current_date,$exp_date)->format("%a");
             ($remaining_days == 31) ? $remaining_days = 30 : ''; //if remaining days are equal to 31 then make it 30 days
-            
-            $get_current_pkg_per_day_price = (int) $this->getPacakgePerDayPrice($user_invoice->total, $remaining_days);//get per day price of existig package
 
+            $get_current_pkg_per_day_price = (int) $this->getPacakgePerDayPrice($user_invoice->total, $remaining_days);//get per day price of existig package
             $get_new_pkg_per_day_price     = (int) $this->getPacakgePerDayPrice($package->price, $remaining_days);//get per day price of new selected package
-         
+           
             $new_package_price_tax_arr     =  $this->getPackagePriceWithTax($get_new_pkg_per_day_price, $remaining_days);
             $get_new_pkg_price_with_tax    = (int) $new_package_price_tax_arr['package_price'];//get total price of new package with tax
             $get_current_pkg_price         = (int) $get_current_pkg_per_day_price*$remaining_days;//get curren
             $pkg_price_to_deduct           = (int) $get_new_pkg_price_with_tax-$get_current_pkg_price;
             $new_pkg_price_without_tax     = (int) $new_package_price_tax_arr['package_price']-$get_current_pkg_price;
-            
+
             if($user->paid == 1){
                 if($user->user_current_balance < $pkg_price_to_deduct && $user->credit_limit == 0){
                     throw new Exception("Package could be upgrade because of insufficent balance");
@@ -708,7 +707,7 @@ class PackageController extends Controller
     }
 
     public function getPacakgePerDayPrice($package_price, $days){
-        return (int) round($package_price/$days);
+        return (int) round(($package_price/30));
     }
 
     public function getPackagePriceWithTax($package_price, $days){
