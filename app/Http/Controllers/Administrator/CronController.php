@@ -83,14 +83,14 @@ class CronController extends Controller
         
         $users = User::with(['current_package.default_package'])
                     ->whereRaw('qt_used > qt_total')
-                    // ->where('qt_enabled', 1)
-                    // ->where('qt_expired', 0)
-                    // ->where('status', 'active')
+                    ->where('qt_enabled', 1)
+                    ->where('qt_expired', 0)
+                    ->where('status', 'active')
                     ->get();//get those users whose qt_used are greater than qt_total
         
         $qt_over            = array();
         $kicked_users_count = 0;
-        dd($users);
+        // dd($users);
         foreach($users AS $key=>$user){
             if(isset($user->current_package->default_package->id)){
                 $qt_over[$key] = array(
