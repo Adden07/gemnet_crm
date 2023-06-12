@@ -243,7 +243,8 @@ class UserController extends Controller
                                                         'user_status',
                                                         'last_logout_time',
                                                         'current_expiration_date',
-                                                        'mobile'
+                                                        'mobile',
+                                                        'c_id'
                                                     ], 
                                             $search);
                                             // ->orWhereHas('admin', function($q) use ($search) {

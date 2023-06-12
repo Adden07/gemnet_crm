@@ -191,7 +191,7 @@
                     
                     columns : [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
-                        {data:'customer_id', name:'customer_id', orderable:true},  
+                        {data:'customer_id', name:'customer_id', orderable:true, searchable:false},  
                         {data:'name', name:'users.name', orderable:true},  
                         {data:'username', name:'users.username'},
                         {data:'mobile', name:'users.mobile'},

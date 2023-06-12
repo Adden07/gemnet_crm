@@ -554,6 +554,10 @@
                                 </div>
                                 <table class="table  table-hover">
                                     <tr>
+                                        <th>Registeration Date</th>
+                                        <td>{{ date('d-M-Y', strtotime($user_details->created_at)) }}</td>
+                                    </tr>
+                                    <tr>
                                         <th>Activation By</th>
                                         <td>{{ $user_details->activation->username }}</td>
                                     </tr>
