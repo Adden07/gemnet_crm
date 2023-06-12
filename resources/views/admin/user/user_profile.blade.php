@@ -555,7 +555,7 @@
                                 <table class="table  table-hover">
                                     <tr>
                                         <th>Registeration Date</th>
-                                        <td>{{ date('d-M-Y', strtotime($user_details->created_at)) }}</td>
+                                        <td>{{ date('d-M-Y H:i:s', strtotime($user_details->created_at)) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Activation By</th>
