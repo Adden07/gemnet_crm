@@ -14,6 +14,7 @@
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
@@ -36,8 +37,13 @@
     </div>
 </div>
 <div class="row">
+    
     <div class="col-lg-12">
         <div class="card-box">
+            <form action="">
+                <input type="hidden" name="ids[]">
+                <input type="submit" class="btn btn-primary d-none" id="checkbox_submit">
+            </form>
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
                     <tr>
@@ -158,5 +164,27 @@
     $('#username').select2({
         placeholder: 'Select Receiver'
     });
+
+    function getCheckbox(){
+          // Array to store the values of selected checkboxes
+        var selectedCheckboxes = [];
+        // Iterate over each checked checkbox
+        $('input[name="checkbox[]"]:checked').each(function() {
+            // Get the value of the checkbox (e.g., data ID)
+            var value = $(this).val();
+            // Push the value to the selectedCheckboxes array
+            selectedCheckboxes.push(value);
+        });
+        
+        // Display the selected checkboxes (for demonstration purposes)
+        if(selectedCheckboxes.length > 0){
+            $('#checkbox_submit').removeClass('d-none');
+            $('input[name="ids"]').val(selectedCheckboxes);
+        }
+        $('#checkbox_submit').addClass('d-none');
+
+        // Perform further actions with the selected checkboxes
+  
+    }
 </script>
 @endsection

@@ -360,6 +360,9 @@ class PaymentController extends Controller
 
             return DataTables::of($data)
                                 ->addIndexColumn()
+                                // ->addColumn('DT_RowIndex', function ($data) {
+                                //     return '<input type="checkbox" name="checkbox[]" value="' . $data->id . '" onclick="getCheckbox()" class="id_checkbox">';
+                                // })
                                 ->addColumn('date',function($data){
                                     $date = '';
                                     if(date('l',strtotime($data->created_at)) == 'Saturday')
@@ -444,6 +447,8 @@ class PaymentController extends Controller
                                 ->filter(function($query) use ($req){
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
+                                    }else{
+                                        $query->where('status', 1);
                                     }
                                     
                                     if(isset($req->search)){
@@ -466,9 +471,9 @@ class PaymentController extends Controller
                                     }
                                 })
                                 ->orderColumn('DT_RowIndex', function($q, $o){
-                                    $q->orderBy('created_at', $o);
-                                    })
-                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image'])
+                                    $q->orderBy('created_at', 'asc');
+                                })
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'DT_RowIndex'])
                                 ->make(true);
         }
         $data = array(
