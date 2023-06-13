@@ -360,9 +360,13 @@ class PaymentController extends Controller
 
             return DataTables::of($data)
                                 ->addIndexColumn()
-                                // ->addColumn('DT_RowIndex', function ($data) {
-                                //     return '<input type="checkbox" name="checkbox[]" value="' . $data->id . '" onclick="getCheckbox()" class="id_checkbox">';
-                                // })
+                                ->addColumn('checkbox', function ($data) {
+                                    $html = '';
+                                    if($data->status == 0){
+                                        $html = '<input type="checkbox" name="checkbox[]" value="' . $data->hashid . '" onclick="getCheckbox()" class="id_checkbox">';
+                                    }
+                                    return $html;
+                                })
                                 ->addColumn('date',function($data){
                                     $date = '';
                                     if(date('l',strtotime($data->created_at)) == 'Saturday')
@@ -448,7 +452,7 @@ class PaymentController extends Controller
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
                                     }else{
-                                        $query->where('status', 1);
+                                        $query->where('status', 0);
                                     }
                                     
                                     if(isset($req->search)){
@@ -473,7 +477,7 @@ class PaymentController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', 'asc');
                                 })
-                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'DT_RowIndex'])
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'checkbox'])
                                 ->make(true);
         }
         $data = array(
@@ -482,8 +486,15 @@ class PaymentController extends Controller
         return view('admin.payment.approve_payments')->with($data);
     }
 
-    public function approvePayment($id){
-        Payment::where('id', hashids_decode($id))->update(['status'=>1, 'approved_by_id'=>auth()->id(), 'approved_date'=>date('Y-m-d H:i:s')]);
+    public function approvePayment(Request $req){
+        if(isset($req->ids)){
+            $arr = explode(',', $req->ids[0]);
+            $arr = array_map('hashids_decode', $arr);
+        }else{
+            $arr[] = hashids_decode($req->id);
+        }
+
+        Payment::whereIn('id', $arr)->update(['status'=>1, 'approved_by_id'=>auth()->id(), 'approved_date'=>date('Y-m-d H:i:s')]);
         return response()->json([
             'success'   => 'Payment approved successfully',
             'reload'    => true 

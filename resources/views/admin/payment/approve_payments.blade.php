@@ -40,13 +40,15 @@
     
     <div class="col-lg-12">
         <div class="card-box">
-            <form action="">
-                <input type="hidden" name="ids[]">
-                <input type="submit" class="btn btn-primary d-none" id="checkbox_submit">
+            <form action="{{ route('admin.accounts.payments.approve_payment') }}" class="ajaxForm">
+                @csrf
+                <input type="hidden" name="ids[]" id="ids">
+                <input type="submit" class="btn btn-primary d-none" id="checkbox_submit" name="submit" value="Approve">
             </form>
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
                     <tr>
+                        <th><i class='fa fa-check'></i></th>
                         <th width="20">S.No</th>
                         <th>Date</th>
                         <th>Transaction <br />Date</th>
@@ -110,6 +112,7 @@
                     },	
                     
                     columns : [
+                        {data: 'checkbox', name: 'checkbox',orderable:false,searchable:false},
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
                         {data:'online_date', name:'payments.online_date', orderable:true, searchable:true},  
@@ -171,20 +174,19 @@
         // Iterate over each checked checkbox
         $('input[name="checkbox[]"]:checked').each(function() {
             // Get the value of the checkbox (e.g., data ID)
-            var value = $(this).val();
+            var value = $(this).val();-
             // Push the value to the selectedCheckboxes array
             selectedCheckboxes.push(value);
         });
         
         // Display the selected checkboxes (for demonstration purposes)
         if(selectedCheckboxes.length > 0){
-            $('#checkbox_submit').removeClass('d-none');
-            $('input[name="ids"]').val(selectedCheckboxes);
-        }
-        $('#checkbox_submit').addClass('d-none');
+            $('input[name="submit"]').removeClass('d-none');
+        }else{
+            $('#checkbox_submit').addClass('d-none');
+        }  
+        $('#ids').val(selectedCheckboxes);
 
-        // Perform further actions with the selected checkboxes
-  
     }
 </script>
 @endsection
