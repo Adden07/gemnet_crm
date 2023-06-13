@@ -40,7 +40,7 @@
     
     <div class="col-lg-12">
         <div class="card-box">
-            <form action="{{ route('admin.accounts.payments.approve_payment') }}" class="ajaxForm">
+            <form action="{{ route('admin.accounts.payments.approve_payment') }}" class="ajaxForm" method="POST">
                 @csrf
                 <input type="hidden" name="ids[]" id="ids">
                 <input type="submit" class="btn btn-primary d-none" id="checkbox_submit" name="submit" value="Approve">
@@ -48,7 +48,7 @@
             <table class="table table-bordered w-100 nowrap" id="payment_table">
                 <thead>
                     <tr>
-                        <th><i class='fa fa-check'></i></th>
+                        <th><input type="checkbox" id="check_all"> <i class='fa fa-check'></i></th>
                         <th width="20">S.No</th>
                         <th>Date</th>
                         <th>Transaction <br />Date</th>
@@ -186,7 +186,15 @@
             $('#checkbox_submit').addClass('d-none');
         }  
         $('#ids').val(selectedCheckboxes);
-
     }
+    $('#check_all').click(function(){
+       if($(this).prop('checked')){
+            $('input[name="checkbox[]"]').prop('checked', true)
+       }else{
+            $('input[name="checkbox[]"]').prop('checked', false)
+       }
+       getCheckbox();
+
+    });
 </script>
 @endsection
