@@ -101,6 +101,10 @@
                 <td>{{ number_format($invoices->sum('pkg_price')) }}</td>
             </tr>
             <tr>
+                <th>Total Taxes</th>
+                <td>{{ number_format($invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
+            </tr>
+            <tr>
                 <th>Total Revenue (With Taxes)</th>
                 <td>{{ number_format($invoices->sum('pkg_price')+$invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
             </tr>
