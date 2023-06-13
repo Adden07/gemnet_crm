@@ -451,8 +451,6 @@ class PaymentController extends Controller
                                 ->filter(function($query) use ($req){
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
-                                    }else{
-                                        $query->where('status', 0);
                                     }
                                     
                                     if(isset($req->search)){

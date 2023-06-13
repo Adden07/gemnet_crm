@@ -28,7 +28,7 @@
                             <select class="form-control" name="payement_status" id="payement_status">
                                 <option value="">All</option>
                                 <option value="1">Approved</option>
-                                <option value="0">Unapproved</option>
+                                <option value="0" selected>Unapproved</option>
                             </select>
                         </div>
                     </div>
