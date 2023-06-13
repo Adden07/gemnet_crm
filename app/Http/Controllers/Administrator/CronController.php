@@ -216,7 +216,7 @@ class CronController extends Controller
                     $user_new_balance       = $user_current_balance-($package->price+$mrc_sales_tax+$mrc_adv_inc_tax);
                     $current_exp_date       = $user->current_expiration_date;
                     // $this->user_id       = $user->id;//set the value to private variable to later access in catch
-
+                   
                     if($user->user_current_balance < (intval($package->price+$mrc_total)) && $user->credit_limit == 0){
                         $rec['failed_of_balance'] += 1;
                         return;

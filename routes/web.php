@@ -266,6 +266,12 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::get('/user-ledger', 'LedgerController@userLedger')->name('user_ledgers');
             Route::get('/pdf', 'LedgerController@pdf')->name('pdf');
         });
+        //credit note
+        Route::prefix('credit-note')->name('credit_notes.')->group(function(){
+            Route::get('/', 'CreditNoteController@index')->name('index');
+            Route::post('/store', 'CreditNoteController@store')->name('store');
+            Route::get('/get-user-invoices/{id}', 'CreditNoteController@getUserInvoices')->name('get_user_invoices');
+        });
     });
 
     //profile routes
