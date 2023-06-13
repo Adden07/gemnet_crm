@@ -199,7 +199,9 @@ class PackageController extends Controller
                 $user->last_package         = $last_package;
                 $package_status             =1;
                 
-                if(isset($validated['renew_type']) && @$validated['renew_type'] != 'queue'){
+                if(isset($validated['renew_type']) && @$validated['renew_type'] == 'queue'){
+                    $user->user_current_balance     = $user_new_balance;
+                }else{
                     $user->status                   = 'active';
                     $user->qt_total                 = $package->volume;
                     $user->qt_used                  = 0;
@@ -208,8 +210,6 @@ class PackageController extends Controller
                     $user->c_package                = $package->id;
                     $user->current_expiration_date  = $new_exp_date;
                     $user->qt_expired               = 0;
-                    $user->user_current_balance     = $user_new_balance;
-                }else{
                     $user->user_current_balance     = $user_new_balance;
                 }
             }else{//means user is registered
