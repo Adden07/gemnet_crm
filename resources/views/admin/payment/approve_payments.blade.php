@@ -23,13 +23,21 @@
             </div>
                 <form action="">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="">Status</label>
                             <select class="form-control" name="payement_status" id="payement_status">
                                 <option value="">All</option>
                                 <option value="1">Approved</option>
                                 <option value="0" selected>Unapproved</option>
                             </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">From Date</label>
+                            <input type="date" class="form-control" id="from_date">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">To Date</label>
+                            <input type="date" class="form-control" id="to_date">
                         </div>
                     </div>
                 </form>
@@ -101,7 +109,9 @@
                     ajax:{
                         url : "{{ route('admin.accounts.payments.approve_payments') }}",
                         data:function(d){
-                            d.status= $('#payement_status').val()
+                            d.status    = $('#payement_status').val(),
+                            d.from_date = $('#from_date').val(),
+                            d.to_date   = $('#to_date').val()
                         },
                     },
                     drawCallback: function () {
@@ -133,7 +143,7 @@
                 });
 
 
-       $('#payement_status').change(function(){
+       $('#payement_status, #from_date, #to_date').change(function(){
             table.draw();
        });
     });

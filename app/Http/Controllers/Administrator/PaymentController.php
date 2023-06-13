@@ -452,6 +452,9 @@ class PaymentController extends Controller
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
                                     }
+                                    if(isset($req->from_date) && isset($req->to_date)){
+                                        $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                    }
                                     
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
