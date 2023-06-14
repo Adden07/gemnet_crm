@@ -185,7 +185,7 @@ class CronController extends Controller
     }
 
     public static function autoRenew($user_id=null){//auto renew users if user_id is give then only auto renew the specified user
-
+        
         $auto_renew_users = User::when($user_id != null, function($query) use ($user_id){
                                 $query->where('id', $user_id)->where('status', 'expired');
                             }, function($query){
@@ -198,7 +198,7 @@ class CronController extends Controller
             'total'     => $auto_renew_users->count(),
             'failed_of_balance' => 0
         );
-
+        // dd($auto_renew_users);
         foreach($auto_renew_users AS $user){
             try{
                 DB::transaction(function() use (&$user, &$rec){
@@ -226,7 +226,7 @@ class CronController extends Controller
                             return;
                         }
                     }
-
+                    // dd($user->username);
                     // if($user->user_current_balance > ($package->price+$mrc_total)){//if user balance is greater then the pkg_price+mrc
                         $user->renew_by                 = 1;
                         $user->renew_date               = date('Y-m-d H:i:s');
