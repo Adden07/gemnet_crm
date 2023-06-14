@@ -45,7 +45,7 @@ class CreditNoteController extends Controller
                                         $html .= "<a href=".route('admin.accounts.credit_notes.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
                                         <i class='icon-pencil'></i>
                                        </a>";
-                                       $html .= " <button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                       $html .= " <button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.credit_notes.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
                                                <span class='btn-label'><i class='icon-trash'></i>
                                                </span>Delete
                                            </button>";
@@ -148,5 +148,17 @@ class CreditNoteController extends Controller
         $data['invoices'] = Invoice::where('user_id', $data['edit_credit_note']->user_id)->get();
 
         return view('admin.credit_note.index')->with($data);
+    }
+
+    public function delete($id){
+        $credit_note = CreditNote::findOrFail(hashids_decode($id));
+        $user        = User::findOrFail($credit_note->user_id)->decrement('user_current_balance',$credit_note->amount);
+        $credit_note->transaction()->delete();
+        $credit_note->delete();
+
+        return response()->json([
+            'success'   => 'Credit note deleted successfully',
+            'reload'    => true
+        ]);
     }
 }

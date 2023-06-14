@@ -272,6 +272,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::post('/store', 'CreditNoteController@store')->name('store');
             Route::get('/get-user-invoices/{id}', 'CreditNoteController@getUserInvoices')->name('get_user_invoices');
             Route::get('/edit/{id}', 'CreditNoteController@edit')->name('edit');
+            Route::get('/delete/{id}', 'CreditNoteController@delete')->name('delete');
         });
     });
 
