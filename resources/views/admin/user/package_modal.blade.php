@@ -22,6 +22,8 @@
         <option value="queue">Queue</option>
         </select>
     </div>
+@else 
+    <input type="hidden" name="renew_type" value="immediate">
 @endif
 
 {{-- @if(!empty($user->current_expiration_date)) --}}
