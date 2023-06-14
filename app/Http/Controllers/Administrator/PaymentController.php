@@ -189,7 +189,7 @@ class PaymentController extends Controller
 
     //update and store payment
     public function store(Request $req){
-        
+
         $rules = [
             'type'                  => ['required', 'in:cash,online,cheque'],
             'receiver_id'           => ['required','string', 'max:100'],
@@ -203,6 +203,7 @@ class PaymentController extends Controller
             'transaction_image'     => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
             'payment_id'            => ['nullable', 'string', 'max:100'],
             'auto_renew'            => ['required', 'in:1,0'],
+            'redirect'              => ['nullable']
         ];
         
         $validator = Validator::make($req->all(),$rules);
@@ -243,6 +244,13 @@ class PaymentController extends Controller
                 'error' => "Transaction failed some errors occured",
             ];
             CommonHelpers::activity_logs("failed payment - $user->username");//add the activity log
+        }
+
+        if($req->redirect){
+            $msg = [
+                'success'   => 'Payment added successfully',
+                'reload'    => true
+            ];
         }
         return response()->json($msg);
 

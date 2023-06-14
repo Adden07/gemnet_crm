@@ -118,6 +118,11 @@
             <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >Invoices/Payments</a>
         </li>
     @endcan
+    @can('add-payments')
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="payments_tab" data-toggle="tab" href="#payments" role="tab" aria-selected="true" >Add Payment</a>
+        </li>
+    @endcan
     @if(auth()->user()->user_type == 'admin' && $user_details->status != 'registered')
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="edit_expiration_tab" data-toggle="tab" href="#edit_expiration" role="tab" aria-selected="true" >Edit Expiration</a>
@@ -908,7 +913,110 @@
             </div>
         </div>
     </div>
-
+    <div class="tab-pane fade" id="payments" role="tabpanel">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="{{ route('admin.accounts.payments.store') }}" method="POST" id="form" class="ajaxForm">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group @if(auth()->user()->user_type == 'dealer') d-none @endif">
+                                            <label for="">Payment Type</label>
+                                            <select class="form-control" name="type" id="type">
+                                                <option value="">Select Type</option>
+                                                <option value="cash">Cash</option>
+                                                <option value="online">Online</option>
+                                                <option value="cheque">Cheque</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="payment_col">
+                                        <div class="form-group">
+                                            <label for="">Payment Amount</label>
+                                            <input type="number" class="form-control" placeholder="Payment Amount" value="{{ @$edit_transaction->amount }}" name="amount" id="amount">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="">Users</label>
+                                        <select class="form-control" name="receiver_id" id="receiver_id">
+                                            <option value="{{ $user_details->hashid }}" selected>{{ $user_details->username }}</option>
+                                        </select>
+                                    </div>
+                
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Available Balance</label>
+                                            <input type="number" class="form-control" placeholder="0" value="{{ $user_details->user_current_balance }}" name="amount" id="available_balance" disabled style="background-color: #EBF4E6">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-none online" id="online_transaction_col">
+                                        <div class="form-group">
+                                            <label for="">Online Transaciton ID</label>
+                                            <input type="number" class="form-control" placeholder="0" value="" name="online_transaction" id="online_transaction">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-none online" id="online_transaction_col">
+                                        <div class="form-group">
+                                            <label for="">Online Date</label>
+                                            <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-none cheque" id="">
+                                        <div class="form-group">
+                                            <label for="">Cheque No</label>
+                                            <input type="number" class="form-control" placeholder="0" value="" name="cheque_no" id="cheque_no">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-none cheque" id="">
+                                        <div class="form-group">
+                                            <label for="">Cheque Date</label>
+                                            <input type="date" class="form-control" placeholder="0" value="" name="cheque_date" id="cheque_date">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6 image d-none" id="transaction_image_col">
+                                        <label for="logo">Transaction/Recipt photo</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" name="transaction_image"  id="transaction_image" onchange="showPreview('preview_nic_front')">
+                                                <label class="custom-file-label profile_img_label" for="logo">Choose Transaction/Receipt photo</label>
+                                            </div>
+                                            <div class="nic_front_err w-100"></div>
+                                            <div class="position-relative mt-3">
+                                                <img id="preview_nic_front" src="@if(@file_exists($edit_user->nic_front)) {{ asset($edit_user->nic_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) d-none  @endif" width="100px" height="100px"/>
+                                                @if(@file_exists($edit_user->nic_front))
+                                                    <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute nopopup" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$edit_user->hashid,'type'=>'nic_front','path'=>$edit_user->nic_front]) }}" onclick="ajaxRequest(this)" id="remove_nic_front">
+                                                        <i class="fa fa-times"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="auto_renew_col">
+                                        <label for="">Auto Renew If Expired</label>
+                                        <select class="form-control" name="auto_renew" id="auto_renew">
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" value="" name="user_type" id="user_type">
+                                        <input type="hidden" name="redirect" value="reload">
+                                        {{-- <input type="hidden" value="{{ @$edit_transaction->hashid }}" name="transaction_id" id="transaction_id"> --}}
+                                        <input type="submit" class="btn btn-primary float-right" id="submit" value="{{ (isset($is_update)) ? 'Update' : 'Add' }}" required>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="tab-pane fade" id="remarks" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">
@@ -1156,6 +1264,9 @@
     $('#invoice_tab').click(function(){
         tabs_local_storage = localStorage.setItem('tab','invoices');
     });
+    $('#payments_tab').click(function(){
+        tabs_local_storage = localStorage.setItem('tab','payments');
+    });
     $('#remarks_tab').click(function(){
         tabs_local_storage = localStorage.setItem('tab','remarks');
     });
@@ -1189,6 +1300,8 @@
         $('#credit_limit_tab').click();
     }else if(tabs_local_storage == 'queue'){
         $('#queue_tab').click();
+    }else if(tabs_local_storage == 'payments'){
+        $('#payments_tab').click();
     }
 
 
@@ -1776,6 +1889,28 @@
             $('#upgrade_package_price').html(resp.upgrade_package_price);
         });
     });
+
+    $('#type').change(function(){
+        var type = $(this).val();
+        var user_type = $('#user_type').val();
+        if(type.length != 0){
+            if(type == 'online'){
+                $('.online').removeClass('d-none');
+                $('.image').removeClass('d-none');
+                $('.cheque').addClass('d-none');
+            }else if(type == 'cash'){
+                $('.online').addClass('d-none');
+                $('.cheque').addClass('d-none');
+                $('.image').addClass('d-none');
+            }else if(type == 'cheque'){
+                $('.image').removeClass('d-none');
+                $('.online').addClass('d-none');
+                $('.cheque').removeClass('d-none');
+
+            }
+        }
+    });
+
     
 </script>
 @endsection
