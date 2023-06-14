@@ -368,9 +368,11 @@
                                         <a href="{{ route('admin.accounts.invoices.invoice_taxes') }}">Taxes Summary</a>
                                     </li>
                                 @endcan
-                                <li>
-                                    <a href="{{ route('admin.accounts.credit_notes.index') }}">Credit Note</a>
-                                </li>
+                                @can('view-credit-note')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.credit_notes.index') }}">Credit Note</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                         @endcan

@@ -1696,7 +1696,7 @@ class UserController extends Controller
         $rad_check->save();
         
         CommonHelpers::kick_user_from_router($user_id);//kick user
-        CommonHelpers::activity_logs("Old expiration  $user->last_expiration_date new expiration $user->current_expiration_date");
+        CommonHelpers::activity_logs(" Old expiration  $user->last_expiration_date new expiration $user->current_expiration_date ($user->username)");
 
         return response()->json([
             'success'   => 'User expiration updated successfully',

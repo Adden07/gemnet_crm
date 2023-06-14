@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\CreditNote;
@@ -17,6 +18,10 @@ use DataTables;
 class CreditNoteController extends Controller
 {
     public function index(Request $req){
+        if(CommonHelpers::rights('enabled-finance','view-credit-note')){
+            return redirect()->route('admin.home');
+        }
+
         if($req->ajax()){
                 return DataTables::of(CreditNote::query())
                                     ->addIndexColumn()
@@ -43,13 +48,19 @@ class CreditNoteController extends Controller
                                     })
                                     ->addColumn('action', function($data){
                                         $html = '';
-                                        $html .= "<a href=".route('admin.accounts.credit_notes.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
-                                        <i class='icon-pencil'></i>
-                                       </a>";
-                                       $html .= " <button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.credit_notes.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
-                                               <span class='btn-label'><i class='icon-trash'></i>
-                                               </span>Delete
-                                           </button>";
+                                        if(auth()->user()->can('edit-credit-note')){
+                                            $html .= "<a href=".route('admin.accounts.credit_notes.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
+                                                    <i class='icon-pencil'></i>
+                                                </a>";
+                                        }
+                                        
+
+                                       if(auth()->user()->can('delete-credit-note')){
+                                            $html .= " <button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.credit_notes.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                                <span class='btn-label'><i class='icon-trash'></i>
+                                                </span>Delete
+                                            </button>";
+                                       }
                                     return $html;
                                    })
                                    ->filter(function($query) use ($req){
@@ -173,6 +184,11 @@ class CreditNoteController extends Controller
     }
 
     public function edit($id){
+        
+        if(CommonHelpers::rights('enabled-finance','edit-credit-note')){
+            return redirect()->route('admin.home');
+        }
+
         $data = array(
             'title'             => 'Credit Note',
             'users'             => User::latest()->get(),
@@ -186,6 +202,11 @@ class CreditNoteController extends Controller
     }
 
     public function delete($id){
+
+        if(CommonHelpers::rights('enabled-finance','delete-credit-note')){
+            return redirect()->route('admin.home');
+        }
+
         $credit_note = CreditNote::findOrFail(hashids_decode($id));
         $user        = User::findOrFail($credit_note->user_id)->decrement('user_current_balance',$credit_note->amount);
         $credit_note->transaction()->delete();

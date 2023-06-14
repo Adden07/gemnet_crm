@@ -19,19 +19,24 @@ class ActivityLogController extends Controller
 
         if($req->ajax()){
             $data = ActivityLog::with('user')
-                            ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'filed_engineer',function($query){
-                                $query->where('user-id', auth()->id());
-                            })->when(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'supervisor', function($query){
+                            // ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'filed_engineer',function($query){
+                            //     $query->where('user-id', auth()->id());
+                            // })
+                            ->when(auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'supervisor', function($query){
                                 $query->where('user_id', '!=', 0);
+                            }, function($query){
+                                if(auth()->user()->user_type != 'superadmin'){
+                                    $query->where('user_id', auth()->id());
+                                }
                             });
 
             return DataTables::of($data)
                                      ->addIndexColumn()
                                      ->addColumn('username',function($query){
-                                        return $query->user->username;
+                                        return @$query->user->username;
                                      })
                                      ->addColumn('type',function($query){
-                                        return $query->user->user_type;
+                                        return @$query->user->user_type;
                                      })
                                      ->addColumn('ip',function($query){
                                         return $query->user_ip;

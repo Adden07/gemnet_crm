@@ -44,92 +44,92 @@ class ProfileController extends Controller
         //     $ids = SubDealerController::getParentActivePacakges($packages);
         //     $data['packages'] = $packages->whereNotIn('package_id',$ids)->where('status','active');
         // }
-        if($req->ajax()){
-            $data =  Payment::with(['admin'])->where('receiver_id',auth()->user()->id);
+        // if($req->ajax()){
+        //     $data =  Payment::with(['admin'])->where('receiver_id',auth()->user()->id);
                                     
-            return DataTables::of($data)
-                                ->addIndexColumn()
-                                ->addColumn('date',function($data){
-                                    $date = '';
-                                    if(date('l',strtotime($data->created_at)) == 'Saturday')
-                                        $date = "<span class='badge' style='background-color: #0071bd'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Sunday')
-                                        $date = "<span class='badge' style='background-color: #f3872f'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Monday') 
-                                        $date = "<span class='badge' style='background-color: #236e96'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Tuesday')
-                                        $date = "<span class='badge' style='background-color: #ef5a54'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Wednesday')
-                                        $date = "<span class='badge' style='background-color: #8b4f85'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Thursday')
-                                        $date = "<span class='badge' style='background-color: #ca4236'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
-                                    elseif(date('l',strtotime($data->created_at)) == 'Friday')
-                                        $date = "<span class='badge' style='background-color: #6867ab'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //     return DataTables::of($data)
+        //                         ->addIndexColumn()
+        //                         ->addColumn('date',function($data){
+        //                             $date = '';
+        //                             if(date('l',strtotime($data->created_at)) == 'Saturday')
+        //                                 $date = "<span class='badge' style='background-color: #0071bd'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Sunday')
+        //                                 $date = "<span class='badge' style='background-color: #f3872f'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Monday') 
+        //                                 $date = "<span class='badge' style='background-color: #236e96'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Tuesday')
+        //                                 $date = "<span class='badge' style='background-color: #ef5a54'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Wednesday')
+        //                                 $date = "<span class='badge' style='background-color: #8b4f85'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Thursday')
+        //                                 $date = "<span class='badge' style='background-color: #ca4236'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+        //                             elseif(date('l',strtotime($data->created_at)) == 'Friday')
+        //                                 $date = "<span class='badge' style='background-color: #6867ab'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
 
-                                    return $date;
-                                })
-                                ->addColumn('added_by',function($data){
-                                    $added_by = '';
-                                    if(@$data->admin->id == 10)
-                                        $added_by = "<span class='badge badge-danger'>".$data->admin->name."</span>";
-                                    else 
-                                        $added_by =  @$data->admin->name."(<strong>".@$data->admin->username."</strong>)";
+        //                             return $date;
+        //                         })
+        //                         ->addColumn('added_by',function($data){
+        //                             $added_by = '';
+        //                             if(@$data->admin->id == 10)
+        //                                 $added_by = "<span class='badge badge-danger'>".$data->admin->name."</span>";
+        //                             else 
+        //                                 $added_by =  @$data->admin->name."(<strong>".@$data->admin->username."</strong>)";
                                     
-                                    return $added_by;
-                                })
-                                ->addColumn('type',function($data){
-                                    $type = '';
-                                    if($data->type == 0)
-                                        $type = "<span class='badge badge-danger'>System</span>";
-                                    else   
-                                        $type = "<span class='badge badge-success'>Person</span>";
+        //                             return $added_by;
+        //                         })
+        //                         ->addColumn('type',function($data){
+        //                             $type = '';
+        //                             if($data->type == 0)
+        //                                 $type = "<span class='badge badge-danger'>System</span>";
+        //                             else   
+        //                                 $type = "<span class='badge badge-success'>Person</span>";
                                     
-                                    return $type;
-                                })
-                                ->addColumn('amount',function($data){
-                                    return number_format($data->amount);
-                                })
-                                ->addColumn('old_balance',function($data){
-                                    return number_format($data->old_balance);
-                                })
-                                ->addColumn('new_balance',function($data){
-                                    return number_format($data->new_balance);
-                                })
-                                ->filter(function($query) use ($req){
-                                    if(isset($req->username)){
-                                        $query->where('receiver_id',hashids_decode($req->username));
-                                    }
-                                    if(isset($req->added_by)){
-                                        if($req->added_by == 'system'){
-                                            $query->where('type',0);
-                                        }elseif($req->added_by == 'person'){
-                                            $query->where('type',1);
-                                        }
-                                    }
-                                    if(isset($req->from_date) && isset($req->to_date)){
-                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
-                                    }
-                                    if(isset($req->search)){
-                                        $query->where(function($search_query) use ($req){
-                                            $search = $req->search;
-                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
-                                                        ->orWhere('type', 'LIKE', "%$search%")
-                                                        ->orWhere('amount', 'LIKE', "%$search%")
-                                                        ->orWhere('old_balance', 'LIKE', "%$search%")
-                                                        ->orWhere('new_balance', 'LIKE', "%$search%")
-                                                        ->orWhereHas('admin',function($q) use ($search){
-                                                            $q->whereLike(['name','username'], '%'.$search.'%');
+        //                             return $type;
+        //                         })
+        //                         ->addColumn('amount',function($data){
+        //                             return number_format($data->amount);
+        //                         })
+        //                         ->addColumn('old_balance',function($data){
+        //                             return number_format($data->old_balance);
+        //                         })
+        //                         ->addColumn('new_balance',function($data){
+        //                             return number_format($data->new_balance);
+        //                         })
+        //                         ->filter(function($query) use ($req){
+        //                             if(isset($req->username)){
+        //                                 $query->where('receiver_id',hashids_decode($req->username));
+        //                             }
+        //                             if(isset($req->added_by)){
+        //                                 if($req->added_by == 'system'){
+        //                                     $query->where('type',0);
+        //                                 }elseif($req->added_by == 'person'){
+        //                                     $query->where('type',1);
+        //                                 }
+        //                             }
+        //                             if(isset($req->from_date) && isset($req->to_date)){
+        //                                 $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+        //                             }
+        //                             if(isset($req->search)){
+        //                                 $query->where(function($search_query) use ($req){
+        //                                     $search = $req->search;
+        //                                     $search_query->orWhere('created_at', 'LIKE', "%$search%")
+        //                                                 ->orWhere('type', 'LIKE', "%$search%")
+        //                                                 ->orWhere('amount', 'LIKE', "%$search%")
+        //                                                 ->orWhere('old_balance', 'LIKE', "%$search%")
+        //                                                 ->orWhere('new_balance', 'LIKE', "%$search%")
+        //                                                 ->orWhereHas('admin',function($q) use ($search){
+        //                                                     $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                                        });      
-                                        });
-                                    }
-                                })
-                                ->orderColumn('DT_RowIndex', function($q, $o){
-                                    $q->orderBy('created_at', $o);
-                                    })
-                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
-                                ->make(true);
-        }
+        //                                                 });      
+        //                                 });
+        //                             }
+        //                         })
+        //                         ->orderColumn('DT_RowIndex', function($q, $o){
+        //                             $q->orderBy('created_at', $o);
+        //                             })
+        //                         ->rawColumns(['date', 'reciever_name', 'added_by', 'type'])
+        //                         ->make(true);
+        // }
         return view('admin.profile.index')->with($data);
     }
 

@@ -14,6 +14,7 @@
         </div>
     </div>
 </div>
+@can('add-credit-note')
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
@@ -56,6 +57,7 @@
         </div>
     </div>
 </div>
+@endcan
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
@@ -118,7 +120,9 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
-                        <th>Action</th>
+                        @if(auth()->user()->can('edit-credit-note') || auth()->user()->can('delete-credit-note'))
+                            <th>Action</th>
+                        @endif
                         {{-- @if(auth()->user()->can('delete-payments'))
                             <th>Action</th>
                         @elseif(auth()->user()->can('print-payments'))
@@ -188,7 +192,9 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
-                        {data:'action', name:'action',orderable:true,searchable:true},
+                        @if(auth()->user()->can('edit-credit-note') || auth()->user()->can('delete-credit-note'))
+                            {data:'action', name:'action',orderable:true,searchable:true},
+                        @endif
 
                     ],
                 });

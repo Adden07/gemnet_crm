@@ -87,7 +87,7 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link active" id="personal_info_tab" data-toggle="tab" href="#personal_info" role="tab" aria-controls="personal_info" aria-selected="true" >Personal Info</a>
     </li>
-    @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
+    {{-- @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="user_packages_tab" data-toggle="tab" href="#user_packages" role="tab" aria-selected="true" >Packages</a>
         </li>
@@ -96,17 +96,17 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="user_payments_tab" data-toggle="tab" href="#user_payments" role="tab" aria-selected="true" >Payments</a>
         </li>
-    @endif
-    <li class="nav-item" role="presentation">
+    @endif --}}
+    {{-- <li class="nav-item" role="presentation">
         <a class="nav-link" id="packages_tab" data-toggle="tab" href="#packages" role="tab" aria-controls="personal_info" aria-selected="true" >Locations</a>
-    </li>
+    </li> --}}
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="change_pass_tab" data-toggle="tab" href="#change_pass" role="tab" aria-controls="change_pass" aria-selected="true" >Change Password</a>
     </li>
 
-    <li class="nav-item" role="presentation">
+    {{-- <li class="nav-item" role="presentation">
         <a class="nav-link" id="doc_tab" data-toggle="tab" href="#document_tab" role="tab" aria-selected="true" >Documents</a>
-    </li>
+    </li> --}}
 
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="record_tab" data-toggle="tab" href="#record" role="tab" aria-selected="true" >Records-activity</a>
@@ -224,7 +224,7 @@
         </div>
     </div>
 
-    <div class="tab-pane fade" id="document_tab" role="tabpanel">
+    {{-- <div class="tab-pane fade" id="document_tab" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">
                 <div class="card-box">
@@ -285,7 +285,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="tab-pane fade" id="record" role="tabpanel">
         <div class="row">
@@ -336,7 +336,7 @@
             </div>
         </div>
     </div>
-    @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
+    {{-- @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
     <div class="tab-pane fade" id="user_packages" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">
@@ -402,8 +402,8 @@
             </div>
         </div>
     </div>
-    @endif
-
+    @endif --}}
+{{-- 
     @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
     <div class="tab-pane fade" id="user_payments" role="tabpanel">
         <div class="row">
@@ -433,7 +433,7 @@
                             <th>New Balance</th>
                         </thead>
                         <tbody>
-                            {{-- @foreach($payments AS $payment)
+                            @foreach($payments AS $payment)
                                 <tr>
                                     <td>{{ $loop->iteration}}</td>
                                     <td>
@@ -465,14 +465,14 @@
                                     <td>{{ number_format($payment->old_balance) }}</td>
                                     <td>{{ number_format($payment->new_balance) }}</td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-    @endif
+    @endif --}}
     <div class="tab-pane fade" id="login_fail" role="tabpanel">
         <div class="row">
             <div class="col-lg-12">

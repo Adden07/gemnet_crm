@@ -246,6 +246,41 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group" >
+                            <label for="Rights">Credit Note</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enabled-Finance</th>
+                                        <th>View</th>
+                                        <th>Add</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-finance" @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-credit-note" @if(isset($update)){{ @(in_array('view-credit-note',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-credit-note" @if(isset($update)){{ @(in_array('add-credit-note',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                        @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>    
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-credit-note" @if(isset($update)){{ @(in_array('edit-credit-note',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>    
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="delete-credit-note" @if(isset($update)){{ @(in_array('delete-credit-note',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <div class="row" id="rights">
                    
                     <div class="col-sm-6">
