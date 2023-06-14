@@ -28,7 +28,7 @@
                         <select class="form-control select2" name="user_id" id="user_id">
                             <option value="">Select User</option>
                             @foreach($users AS $user)
-                                <option value="{{ $user->hashid }}">{{ $user->name}}</option>
+                                <option value="{{ $user->hashid }}" @if(@$edit_credit_note->user_id == $user->id) selected @endif>{{ $user->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -36,13 +36,19 @@
                         <label for="">User Invoices</label>
                         <select class="form-control" name="invoice_id" id="invoice_id" required>
                             <option value="">Select User</option>
+                            @isset($is_update)
+                                @foreach($invoices AS $invoice)
+                                    <option value="{{ $invoice->hashid }}" @if($invoice->id == $edit_credit_note->invoice_id) selected @endif>{{ $invoice->invoice_id }}</option>
+                                @endforeach
+                            @endisset
                         </select>
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="">Amount</label>
-                        <input type="number" class="form-control" min="1" name="amount" id="amount" required>
+                        <input type="number" class="form-control" min="1" name="amount" id="amount" value="{{ @$edit_credit_note->amount }}" required>
                     </div>
                     <div class="col-md-12">
+                        <input type="hidden" name="credit_note_id" value="{{ @$edit_credit_note->hashid }}">
                         <input type="submit" class="btn btn-primary float-right" value="{{ (isset($is_update)) ? 'Update' : 'Add' }}">
                     </div>
                 </div>
@@ -71,6 +77,7 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
+                        <th>Action</th>
                         {{-- @if(auth()->user()->can('delete-payments'))
                             <th>Action</th>
                         @elseif(auth()->user()->can('print-payments'))
@@ -142,11 +149,7 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
-                        // @if(auth()->user()->can('delete-payments'))
-                        //     {data:'action', name:'payments.action',orderable:false,searchable:false},
-                        // @elseif(auth()->user()->can('print-payments'))
-                        //     {data:'action', name:'payments.action',orderable:false,searchable:false},
-                        // @endcan
+                        {data:'action', name:'action',orderable:true,searchable:true},
 
                     ],
                 });

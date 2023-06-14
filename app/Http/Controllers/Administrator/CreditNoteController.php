@@ -40,7 +40,18 @@ class CreditNoteController extends Controller
                                     ->orderColumn('DT_RowIndex', function($q, $o){
                                         $q->orderBy('created_at', $o);
                                     })
-                                    ->rawColumns(['reciever_name'])
+                                    ->addColumn('action', function($data){
+                                        $html = '';
+                                        $html .= "<a href=".route('admin.accounts.credit_notes.edit',['id'=>$data->hashid])." class='btn btn-warning btn-xs waves-effect waves-light' title='Edit'>
+                                        <i class='icon-pencil'></i>
+                                       </a>";
+                                       $html .= " <button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'>
+                                               <span class='btn-label'><i class='icon-trash'></i>
+                                               </span>Delete
+                                           </button>";
+                                   return $html;
+                                   })
+                                    ->rawColumns(['reciever_name', 'action'])
                                     ->make(true);
             }
         $data = array(
@@ -66,21 +77,36 @@ class CreditNoteController extends Controller
 
         $validated = $validator->validated();
         $msg       = null;
+        $old_balance = 0;
+        $new_balance = 0;
 
-        if(isset($validated['credit_note_id']) && !empty($validated['credit_note_id'])){
+        if(isset($validated['credit_note_id']) && !empty($validated['credit_note_id'])){//edit credit note
+        
+            $credit_note = CreditNote::findOrFail(hashids_decode($validated['credit_note_id']));
+            $transaction = Ledger::findOrFail($credit_note->transaction_id);
+            // User::findOrFail(hashids_decode($validated['user_id']))->decrement('user_current_balance', $credit_note->amount);
+            $user        = User::findOrFail(hashids_decode($validated['user_id']));
+            $user->decrement('user_current_balance', $credit_note->amount);
+            // dd($user->user_current_balance);
+            $msg         = 'User updated successfully';
+        }else{//insert new credit note row
 
-        }else{
             $user       = User::findOrFail(hashids_decode($validated['user_id']));
             $transaction = new Ledger;
             $credit_note= new CreditNote;
+            
+            $transaaction_id =  rand(111111111,999999999);
+            $transaction->transaction_id    = $transaaction_id;
+            $msg       = 'User added successfully';
         }
-        $transaaction_id =  rand(111111111,999999999);
+       
+ 
+
         $transaction->admin_id          = auth()->id();
-        $transaction->transaction_id    = $transaaction_id;
         $transaction->user_id           = $user->id;
         $transaction->amount            = $validated['amount'];
         $transaction->old_balance       = $user->user_current_balance;
-        $transaction->new_balance       = $user->user_current_balance + $validated['amount'];
+        $transaction->new_balance       = $user->user_current_balance+$validated['amount'];
         $transaction->type              = 2;
         $transaction->created_at        = date('Y-m-d H:i:s');
         $transaction->save();
@@ -96,8 +122,8 @@ class CreditNoteController extends Controller
         $user->save();
 
         return response()->json([
-            'success'   => "Credit note added successfully",
-            'reload'    => true
+            'success'       => $msg,
+            'redirect'  => route('admin.accounts.credit_notes.index')
         ]);
         
     }
@@ -112,16 +138,15 @@ class CreditNoteController extends Controller
         ]);
     }
 
-    public function transaction($user_id, $amount, $old_balance){
-        $transaction = new Ledger;
-        $transaction->admin_id          = auth()->id();
-        $transaction->transaction_id    = rand(111111111,999999999);
-        $transaction->user_id           = $user_id;
-        $transaction->amount            = $amount;
-        $transaction->old_balance       = $old_balance;
-        $transaction->new_balance       = $old_balance + $amount;
-        $transaction->type              = 2;
-        $transaction->created_at        = date('Y-m-d H:i:s');
-        $transaction->save();
+    public function edit($id){
+        $data = array(
+            'title'             => 'Credit Note',
+            'users'             => User::latest()->get(),
+            'edit_credit_note'  => CreditNote::findOrFail(hashids_decode($id)),
+            'is_update'         => true
+        );
+        $data['invoices'] = Invoice::where('user_id', $data['edit_credit_note']->user_id)->get();
+
+        return view('admin.credit_note.index')->with($data);
     }
 }
