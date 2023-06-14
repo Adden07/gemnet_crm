@@ -166,7 +166,7 @@
                     @endphp
                     @foreach($invoices AS $invoice)
                         
-                        @if(!in_array(hashids_encode($invoice->admin_id), $admin_ids))<!--if admin id does not exists then print the name on top-->
+                        {{-- @if(!in_array(hashids_encode($invoice->admin_id), $admin_ids))<!--if admin id does not exists then print the name on top-->
                             @php  
                                 $admin_ids[] = hashids_encode($invoice->admin_id); $increment = 0; 
                                 $last_id     = $invoices->where('admin_id',$invoice->admin_id)->last(); //get the last id so we can sum total cost
@@ -175,7 +175,7 @@
                             <tr>
                                 <td colspan="8" class="text-center"><h4 style="color:rgb(15, 8, 8)">{{ @$invoice->admin->username }}</h4></td>
                             </tr>
-                        @endif
+                        @endif --}}
                         
                         <tr @if($invoice->type == 0) style="background-color:#DFDDD9" @elseif($invoice->type == 2) style="background-color:#82F1DB" @endif>
                             <td>{{ ++$page_counter }}</td>
@@ -189,13 +189,13 @@
                             <td>Rs.{{ round($invoice->total) }}</td>
                         </tr>
 
-                        @if($invoice->id == hashids_decode($last_id))
+                        {{-- @if($invoice->id == hashids_decode($last_id))
                             <tr>    
                                 <td colspan="6"></td>
                                 <td><b>Total</b></td>
                                 <td><b>Rs.{{ $invoices->where('admin_id',$invoice->admin_id)->sum('total') }}</b></td>
                             </tr>
-                        @endif
+                        @endif --}}
                     
                     @endforeach
                 </tbody>
