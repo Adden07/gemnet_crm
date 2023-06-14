@@ -59,6 +59,47 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="card-box">
+            <div class="d-flex align-items-center justify-content-between">
+                <h4 class="header-title">Filters</h4>
+            </div>
+            <form action="{{ route('admin.accounts.payments.index') }}" method="GET">
+                @csrf
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="">Username</label>
+                        <select class="form-control select2" name="username" id="user_id_filter">
+                            <option value="all">All</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->hashid }}" @if(request()->has('username') && request()->get('username') == $user->hashid) selected @endif>{{ $user->username }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="">Added By</label>
+                        <select class="form-control select2" name="added_by" id="admin_id">
+                            <option value="">Select Added By</option>
+                            <option value="all">All</option>
+                            @foreach($admins as $user)
+                                <option value="{{ $user->hashid }}" @if(request()->has('username') && request()->get('username') == $user->hashid) selected @endif>{{ $user->username }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="">From Date</label>
+                        <input type="date" class="form-control" value="{{ (request()->has('from_date')) ? date('Y-m-d',strtotime(request()->get('from_date'))) : date('Y-m-d') }}" name="from_date" id="from_date">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="">To Date</label>
+                        <input type="date" class="form-control" value="{{ (request()->has('to_date')) ? date('Y-m-d',strtotime(request()->get('to_date'))) : date('Y-m-d') }}" name="to_date" id="to_date">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
             {{-- <div class="d-flex align-items-center justify-content-between">
                 <h4 class="header-title">All Payments List</h4>
             </div> --}}
@@ -130,13 +171,11 @@
                     ajax:{
                         url : "{{ route('admin.accounts.credit_notes.index') }}",
                         data:function(d){
-                                    d.receiver_id        = $('#receiver_id').val(),
-                                    d.admin_id        = $('#admin_id').val(),
-                                    d.added_by        = $('#added_by').val(),
-                                    d.from_date       = $('#from_date').val(),
-                                    d.to_date         = $('#to_date').val(),
-                                    // d.search          = $('input[type="search"]').val(),
-                                    d.type            = $('#type').val()
+                            d.user_id    = $('#user_id_filter').val(),
+                            d.admin_id   = $('#admin_id').val(),
+                            d.from_date  = $('#from_date').val(),
+                            d.to_date    = $('#to_date').val(),
+                            d.search     = $('input[type="search"]').val()
                         },
                     },
                     
@@ -155,7 +194,7 @@
                 });
 
 
-       $('#receiver_id,#admin_id,#from_date,#to_date,#added_by,#type').change(function(){
+       $('#user_id_filter,#admin_id,#from_date,#to_date').change(function(){
             table.draw();
        });
     });

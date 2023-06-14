@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administrator;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\CreditNote;
 use App\Models\Invoice;
 use App\Models\Ledger;
@@ -49,14 +50,47 @@ class CreditNoteController extends Controller
                                                <span class='btn-label'><i class='icon-trash'></i>
                                                </span>Delete
                                            </button>";
-                                   return $html;
+                                    return $html;
                                    })
+                                   ->filter(function($query) use ($req){
+                                    // dd($req->all());
+                                    if(isset($req->user_id) && $req->user_id != 'all'){
+                                        $query->where('user_id',hashids_decode($req->user_id));
+                                    }
+                                    if(isset($req->admin_id) && $req->admin_id != 'all'){
+                                        $query->where('admin_id',hashids_decode($req->admin_id));
+                                    }
+                                    if(isset($req->from_date) && isset($req->to_date)){
+                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+                                    }
+
+                                    if(isset($req->type) && $req->type != 'all'){
+                                        $query->where('type', $req->type);
+                                    }
+
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search['value'];
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('amount', 'LIKE', "%$search%")
+                                                        ->orWhereHas('user',function($q) use ($search){
+                                                                $q->whereLike(['name','username'], '%'.$search.'%');
+                                                            })
+                                                        ->orWhereHas('admin',function($q) use ($search){
+                                                            $q->whereLike(['name','username'], '%'.$search.'%');
+                                                        });      
+                                        });
+                                    }
+
+                                    
+                                })
                                     ->rawColumns(['reciever_name', 'action'])
                                     ->make(true);
             }
         $data = array(
             'title' => 'Credit Note',
             'users' => User::latest()->get(),
+            'admins'        => Admin::where('user_type','!=','superadmin')->get(),
         );
         return view('admin.credit_note.index')->with($data);
     }
@@ -143,6 +177,7 @@ class CreditNoteController extends Controller
             'title'             => 'Credit Note',
             'users'             => User::latest()->get(),
             'edit_credit_note'  => CreditNote::findOrFail(hashids_decode($id)),
+            'admins'        => Admin::where('user_type','!=','superadmin')->get(),
             'is_update'         => true
         );
         $data['invoices'] = Invoice::where('user_id', $data['edit_credit_note']->user_id)->get();
