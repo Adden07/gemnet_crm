@@ -168,20 +168,20 @@ class PaymentController extends Controller
     }
 
     public function add(Request $req){
+
         if(CommonHelpers::rights('enabled-finance','add-payments')){
             return redirect()->route('admin.home');
         }
-
         $data = array(
             'title'     => 'Add Payment',
             'user_type' => auth()->user()->user_type,
             'users'     => User::when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
-                if(auth()->user()->user_type == 'sales_person'){
-                    $query->whereIn('sales_id', auth()->id());
-                }elseif(auth()->user()->user_type == 'fe_id'){
-                    $query->whereIn('fe_id', auth()->id());
-                }
-            })->latest()->get(),
+                            if(auth()->user()->user_type == 'sales_person'){
+                                $query->whereIn('sales_id', auth()->id());
+                            }elseif(auth()->user()->user_type == 'fe_id'){
+                                $query->whereIn('fe_id', auth()->id());
+                            }
+                        })->latest()->get(),
         );
 
         return view('admin.payment.add_payment')->with($data);
@@ -203,6 +203,7 @@ class PaymentController extends Controller
             'transaction_image'     => [Rule::requiredIf($req->type == 'online'), 'nullable', 'mimes:jpg,jpeg,png', 'max:2000'],
             'payment_id'            => ['nullable', 'string', 'max:100'],
             'auto_renew'            => ['required', 'in:1,0'],
+            'redirect'              => ['nullable']
         ];
         
         $validator = Validator::make($req->all(),$rules);
@@ -210,6 +211,7 @@ class PaymentController extends Controller
         if($validator->fails()){
             return ['errors'    => $validator->errors()];
         }
+
         $msg  = '';
         $user = User::findOrFail(hashids_decode($req->receiver_id));//get the user
 
@@ -244,6 +246,14 @@ class PaymentController extends Controller
             ];
             CommonHelpers::activity_logs("failed payment - $user->username");//add the activity log
         }
+        
+        if(isset($req->redirect)){
+            $msg = [
+                'success'   => 'Payment added successfully',
+                'redirect'  => $req->redirect,
+            ];
+        }
+
         return response()->json($msg);
 
     }

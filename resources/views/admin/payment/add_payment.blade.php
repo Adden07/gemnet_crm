@@ -43,7 +43,7 @@
                         <select class="form-control select2" name="receiver_id" id="receiver_id">
                             <option value="">Select user</option>
                             @foreach($users AS $user)
-                                <option value="{{ $user->hashid }}">{{ $user->name }}--( {{ $user->username }} )</option>
+                                <option value="{{ $user->hashid }}" @if(request()->get('user_id') == $user->hashid) selected @endif>{{ $user->name }}--( {{ $user->username }} )</option>
                             @endforeach
                         </select>
                     </div>
@@ -117,6 +117,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                        @if(request()->has('user_id'))
+                            <input type="hidden" name="redirect" value="{{ route('admin.users.profile',['id'=>request()->get('user_id')]) }}">
+                        @endif
                         <input type="hidden" value="{{ $user_type }}" name="user_type" id="user_type">
                         {{-- <input type="hidden" value="{{ @$edit_transaction->hashid }}" name="transaction_id" id="transaction_id"> --}}
                         <input type="submit" class="btn btn-primary float-right" id="submit" value="{{ (isset($is_update)) ? 'Update' : 'Add' }}" required>
@@ -179,15 +182,6 @@
                 required:true,
                 digits:true, 
                 minlength:1,
-                // minlength:function(element){//if user is admin then minimum required amount is 10000
-                //     var user_type = "{{ auth()->user()->user_type }}";
-                //     var min_amount = 1;
-
-                //     if(user_type == 'admin'){
-                //         min_amount = 5;
-                //     }
-                //     return parseInt(min_amount);
-                // },
                 maxlength:7 
             },
             payment_method:{
@@ -205,17 +199,6 @@
         }
     });
 
-    //get user available balance
-    $('#franchise_id, #dealer_id, #subdealer_id').change(function(){
-        var id = $(this).val();
-        var route = "{{ route('admin.accounts.payments.balance',':id') }}";
-        var route = route.replace(':id',id);
-        
-        getAjaxRequests(route, '', 'GET', function(resp){
-                $('#available_balance').val(resp.balance);
-            });
-    });
-
     //change action when update package  
     $('#submit').click(function(e){
         e.preventDefault();
@@ -225,8 +208,6 @@
             
             number_format = new Intl.NumberFormat('en-US')
 
-            // var current_package = "{{ @$user_details->current_package->name }}";
-            // var new_package     = $('#current_package_ddl').find(':selected').text();
             var nopopup         = false;
             var btn_txt         = 'yes, confirm it!';
             var data_msg        = '';
@@ -264,8 +245,6 @@
         setTimeout(() => {
             getUserPackageAndBalanceDetails();
         }, 1000);
-        // getUserPackageAndBalanceDetails();
-
     });
 
     function getUserPackageAndBalanceDetails(){
@@ -308,5 +287,12 @@
             $('#user_profile_col').html(resp.html);
         });
     }
+
+    $(document).ready(function(){
+        @if(request()->has('user_id'))
+            getUserProfile();
+            getUserPackageAndBalanceDetails();
+        @endif
+    });
 </script>
 @endsection
