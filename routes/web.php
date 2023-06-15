@@ -274,6 +274,12 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::get('/edit/{id}', 'CreditNoteController@edit')->name('edit');
             Route::get('/delete/{id}', 'CreditNoteController@delete')->name('delete');
         });
+        //deposit slip
+        Route::prefix('/deposit-slip')->name('deposit_slips.')->group(function(){
+            Route::get('/', 'DepositSlipController@index')->name('index');
+            Route::post('/store', 'DepositSlipController@store')->name('store');
+            Route::get('/get-payment-date-amount/{date}', 'DepositSlipController@getPaymentDateAmount')->name('get_payment_date_amount');
+        });
     });
 
     //profile routes
