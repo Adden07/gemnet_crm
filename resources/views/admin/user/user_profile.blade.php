@@ -811,9 +811,11 @@
                             <input type="hidden" name="id" value="{{ $user_details->hashid }}">
                             <input type="submit" class="btn btn-primary mt-3" value="search">
                         </div>
-                        <div class="col-md-2">
-                            <a href="{{ route('admin.accounts.payments.add', ['user_id'=>$user_details->hashid]) }}" class="btn btn-primary mt-3">Add Payments</a>
-                        </div>
+                        @can('add-payments')
+                            <div class="col-md-2">
+                                <a href="{{ route('admin.accounts.payments.add', ['user_id'=>$user_details->hashid]) }}" class="btn btn-primary mt-3">Add Payments</a>
+                            </div>
+                        @endcan
                     </div>
                 </form>
             </div>

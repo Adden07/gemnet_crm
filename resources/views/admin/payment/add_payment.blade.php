@@ -41,10 +41,15 @@
                     <div class="col-md-6">
                         <label for="">Users</label>
                         <select class="form-control select2" name="receiver_id" id="receiver_id">
-                            <option value="">Select user</option>
-                            @foreach($users AS $user)
-                                <option value="{{ $user->hashid }}" @if(request()->get('user_id') == $user->hashid) selected @endif>{{ $user->name }}--( {{ $user->username }} )</option>
-                            @endforeach
+                            @if(request()->has('user_id'))
+                                @php $user = $users->where('id', hashids_decode(request()->get('user_id')))->first() @endphp
+                                <option value="{{ $user->hashid }}" selected readonly>{{ $user->name }}</option>
+                            @else 
+                                <option></option>
+                                @foreach($users AS $user)
+                                    <option value="{{ $user->hashid }}">{{ $user->name }}--( {{ $user->username }} )</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="col-md-6 d-none" id="franchise_col">
@@ -293,6 +298,10 @@
             getUserProfile();
             getUserPackageAndBalanceDetails();
         @endif
+    });
+
+    $('.select2').select2({
+        placeholder: "Select user",
     });
 </script>
 @endsection
