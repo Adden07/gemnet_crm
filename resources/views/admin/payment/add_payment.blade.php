@@ -29,6 +29,7 @@
                                 <option value="cash">Cash</option>
                                 <option value="online">Online</option>
                                 <option value="cheque">Cheque</option>
+                                <option value="challan">Tax Challan</option>
                             </select>
                         </div>
                     </div>
@@ -64,12 +65,6 @@
                             <input type="number" class="form-control" placeholder="0" value="" name="amount" id="available_balance" disabled style="background-color: #EBF4E6">
                         </div>
                     </div>
-                    {{-- <div class="col-md-6 d-none online" id="transaction_id_col">
-                        <div class="form-group">
-                            <label for="">Transaction ID</label>
-                            <input type="number" class="form-control" placeholder="0" value="" name="transaction_id" id="transaction_id">
-                        </div>
-                    </div> --}}
                     <div class="col-md-6 d-none online" id="online_transaction_col">
                         <div class="form-group">
                             <label for="">Online Transaciton ID</label>
@@ -82,20 +77,32 @@
                             <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date">
                         </div>
                     </div>
+                    <div class="col-md-6 d-none challan" id="">
+                        <div class="form-group">
+                            <label for="">Challan ID</label>
+                            <input type="number" class="form-control" placeholder="0" value="" name="online_transaction" id="online_transaction" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-none challan" id="">
+                        <div class="form-group">
+                            <label for="">Challan Date</label>
+                            <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date" required>
+                        </div>
+                    </div>
                     <div class="col-md-6 d-none cheque" id="">
                         <div class="form-group">
                             <label for="">Cheque No</label>
-                            <input type="number" class="form-control" placeholder="0" value="" name="cheque_no" id="cheque_no">
+                            <input type="number" class="form-control" placeholder="0" value="" name="cheque_no" id="cheque_no" required>
                         </div>
                     </div>
                     <div class="col-md-6 d-none cheque" id="">
                         <div class="form-group">
                             <label for="">Cheque Date</label>
-                            <input type="date" class="form-control" placeholder="0" value="" name="cheque_date" id="cheque_date">
+                            <input type="date" class="form-control" placeholder="0" value="" name="cheque_date" id="cheque_date" required>
                         </div>
                     </div>
                     <div class="form-group col-md-6 image d-none" id="transaction_image_col">
-                        <label for="logo">Transaction/Recipt photo</label>
+                        <label for="logo">Transaction/Recipt/Challan photo</label>
                         <div class="input-group">
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input" name="transaction_image"  id="transaction_image" onchange="showPreview('preview_nic_front')">
@@ -163,7 +170,11 @@
                 $('.image').removeClass('d-none');
                 $('.online').addClass('d-none');
                 $('.cheque').removeClass('d-none');
-
+            }else if(type == 'challan'){
+                $('.online').addClass('d-none');
+                $('.cheque').addClass('d-none');
+                $('.image').removeClass('d-none');
+                $('.challan').removeClass('d-none');
             }
         }
     });

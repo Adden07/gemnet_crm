@@ -77,6 +77,8 @@ class PaymentController extends Controller
                                     $type = '';
                                     if($data->type == 'cash')
                                         $type = "<span class='badge badge-success'>Cash</span>";
+                                    elseif($data->type == 'challan')
+                                        $type = "<span class='badge badge-info'>Challan</span>";
                                     else   
                                         $type = "<span class='badge badge-primary'>Online</span>";
                                     
@@ -191,12 +193,11 @@ class PaymentController extends Controller
     public function store(Request $req){
         
         $rules = [
-            'type'                  => ['required', 'in:cash,online,cheque'],
+            'type'                  => ['required', 'in:cash,online,cheque,challan'],
             'receiver_id'           => ['required','string', 'max:100'],
             'amount'                => ['required', 'integer', 'min:1'],
             // 'transaction_id'        => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
             'online_transaction'    => [Rule::requiredIf($req->type == 'online'), 'nullable', 'string'],
-            'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
             'online_date'           => [Rule::requiredIf($req->type == 'online'), 'nullable', 'date'],
             'cheque_no'             => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'integer'],
             'cheque_date'           => [Rule::requiredIf($req->type == 'cheque'), 'nullable', 'date'],
