@@ -43,7 +43,7 @@ class InvoiceController extends Controller
                                         $query->where('type',$req->type);
                                     })->when(auth()->user()->user_type != 'admin',function($query){
                                         // $query->whereIn('admin_id',\CommonHelpers::getChildIds());
-                                    })->orderBy('admin_id','DESC')->orderBy('id','DESC')->paginate(1000)->withQueryString(),
+                                    })->latest()->paginate(1000)->withQueryString(),
                                     
             'invoices_total'  => Invoice::with(['package:id,name','user'=>function($query){
                                     if(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer'){

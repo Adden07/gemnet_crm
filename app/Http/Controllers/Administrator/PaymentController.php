@@ -78,7 +78,7 @@ class PaymentController extends Controller
                                     if($data->type == 'cash')
                                         $type = "<span class='badge badge-success'>Cash</span>";
                                     elseif($data->type == 'challan')
-                                        $type = "<span class='badge badge-info'>Challan</span>";
+                                        $type = "<span class='badge badge-info'>Tax-Chalan</span>";
                                     else   
                                         $type = "<span class='badge badge-primary'>Online</span>";
                                     

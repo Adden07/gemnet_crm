@@ -310,7 +310,33 @@
                                     <tr>
                                         <th>Status</th>
                                         <td>
-                                            @if($user_details->user_status == 1)
+                                        @if ($user_details->user_status != 0 && $user_details->user_status != 2)
+                                            @if ($user_details->status == 'registered')
+                                                <span class="badge badge-info">Registered</span>
+                                            @elseif ($user_details->status == 'active' && $user_details->last_logout_time != null && date('Y', strtotime($user_details->last_logout_time)) == '1970')
+                                                <span class="badge badge-success">Active</span>-<span class="badge badge-warning">Never Online</span>
+                                            @elseif ($user_details->status == 'expired' && $user_details->last_logout_time != null && date('Y', strtotime($user_details->last_logout_time)) != '1970')
+                                                <span class="badge badge-danger">Expired</span>-<span class="badge badge-danger">Offline</span>
+                                            @elseif ($user_details->status == 'expired' && $user_details->last_logout_time != null && date('Y', strtotime($user_details->last_logout_time)) == '1970')
+                                                <span class="badge badge-danger">Expired</span>-<span class="badge badge-warning">Never Online</span>
+                                            @elseif ($user_details->status == 'active' && $user_details->last_logout_time == null)
+                                                <span class="badge badge-success">Active</span>-<span class="badge badge-success">Online</span>
+                                            @elseif ($user_details->status == 'active' && $user_details->last_logout_time != null)
+                                                <span class="badge badge-success">Active</span>-<span class="badge badge-danger">Offline</span>
+                                            @elseif ($user_details->status == 'expired' && $user_details->last_logout_time == null)
+                                                <span class="badge badge-danger">Expired</span>-<span class="badge badge-success">Online</span>
+                                            @elseif ($user_details->status == 'terminated')
+                                                <span class="badge badge-danger">Terminated</span>
+                                            @else
+                                                <span class="badge badge-danger">Expired</span>
+                                            @endif
+                                        @elseif ($user_details->user_status == 2)
+                                            <span class="badge badge-danger">Disabled By Admin</span>
+                                        @else
+                                            <span class="badge badge-danger">Disabled</span>
+                                        @endif
+
+                                            {{-- @if($user_details->user_status == 1)
                                                 @if($user_details->status == 'registered')
                                                     <span class="badge badge-info">Registered</span>
                                                 @elseif($user_details->status == 'active' && $user_details->last_logout_time != null && date('Y',strtotime($user_details->last_logout_time)) == 1970)
@@ -334,7 +360,8 @@
                                                 <span class="badge badge-danger">Disabled By Admin</span>
                                             @else
                                                 <span class="badge badge-danger">Disabled</span>
-                                            @endif    
+                                            @endif     --}}
+     
 
                                         </td>
                                     </tr>

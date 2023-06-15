@@ -58,11 +58,11 @@
                 <thead>
                     <tr>
                         <th width="20">S.No</th>
+                        <th>Date</th>
                         <th>Admin</th>
                         <th>Remark Type</th>
                         <th>User</th>
                         <th>Remark</th>
-                        <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,11 +106,11 @@
             },
             columns : [
                 { data : 'DT_RowIndex', name : 'DT_RowIndex', searchable:false },
+                { data : 'date', name : 'date' },
                 { data : 'admin', name: 'admin' },
                 { data : 'remark_type', name : 'remark_type' },
                 { data : 'user', name : 'user' },
-                { data : 'remark', name : 'remark' },
-                { data : 'date', name : 'date' }
+                { data : 'remark', name : 'remark' }
             ],   
         });
 

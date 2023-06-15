@@ -120,7 +120,7 @@
                             <option value="0" {{ (request()->has('type') && request()->get('type') == 0) ? 'selected' : '' }}>Activation</option>
                             <option value="1" {{ (request()->has('type') && request()->get('type') == 1) ? 'selected' : '' }}>Renew</option>
                             <option value="2" {{ (request()->has('type') && request()->get('type') == 2) ? 'selected' : '' }}>OTC</option>
-                            <option value="3" {{ (request()->has('type') && request()->get('type') == 3) ? 'selected' : '' }}>pgrade</option>
+                            <option value="3" {{ (request()->has('type') && request()->get('type') == 3) ? 'selected' : '' }}>Upgrade</option>
 
 
                         </select>
@@ -150,6 +150,7 @@
                         <th width="20">S.No</th>
                         <th>Invoice No</th>
                         <th>Datetime</th>
+                        <th>Renew By</th>
                         <th>Name</th>
                         <th>Username</th>
                         <th>Package Name</th>
@@ -181,6 +182,7 @@
                             <td>{{ ++$page_counter }}</td>
                             <td><a href="{{ route('admin.accounts.invoices.get_invoice', ['id'=>$invoice->hashid]) }}" target="_blank">{{ $invoice->invoice_id }}</a></td>
                             <td>{{ date('d-M-y H:i:s',strtotime($invoice->created_at)) }}</td>
+                            <td>{{ $invoice->admin->name }}</td>
                             <td>{{ @$invoice->user->name }}</td>
                             <td><a href="{{ route('admin.users.profile',['id'=>hashids_encode($invoice->user_id)]) }}" target="_blank">{{ @$invoice->user->username }}</a></td>
                             <td>{{ @$invoice->package->name }}</td>

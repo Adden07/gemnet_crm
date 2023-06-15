@@ -2196,7 +2196,7 @@ class UserController extends Controller
                                         return $query->remark_type;
                                      })
                                      ->addColumn('remark',function($query){
-                                        return $query->text;
+                                        return wordwrap($query->text, 70, "<br />\n", true);
                                      })
                                      ->addColumn('date',function($query){
                                         return $query->created_at;
@@ -2229,7 +2229,7 @@ class UserController extends Controller
                                             });
                                         }
                                     })
-                                    ->rawcolumns(['user'])
+                                    ->rawcolumns(['user', 'remark'])
                                      ->make(true);
         }
 

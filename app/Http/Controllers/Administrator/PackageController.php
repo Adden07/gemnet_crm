@@ -48,7 +48,7 @@ class PackageController extends Controller
             'status'     => ['required', 'in:registered,active,expired'],
             'package_id' => [Rule::requiredIf($req->renew_type == 'queue')],
             'user_id'    => ['required'],
-            'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_month,full_year,promo'],
+            'month_type' => [Rule::requiredIf(empty($req->renew_type)),'in:monthly,half_year,full_year,promo'],
             // 'calendar'   => [Rule::requiredIf($req->month_type != 'monthly')],
             'otc'        => ['nullable', 'in:1,0'], 
             'renew_type' => [Rule::requiredIf(empty(!$req->renew_type)), 'in:immediate,queue'] 
@@ -98,32 +98,53 @@ class PackageController extends Controller
         //         }
         //     }
         // }
+
         if($user->paid == 1){
+            // if($user->user_current_balance < (intval($package->price+$mrc_total))){
+            //     $err =  [
+            //         'error' => 'User balance is less than the package price'
+            //     ];
+            //     if(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total) && $user->credit_limit == 0){
+            //         return [
+            //             'error' => 'User balance is less than the package price and OTC price'
+            //         ];    
+            //     }
+
+            //     if($user->credit_limit > (intval($package->price+$mrc_total))){//
+            //         if(($user->credit_limit-abs($user->user_current_balance)) < (intval($package->price+$mrc_total))){
+            //             return [
+            //                 'error' => 'User credit limit is less than the package price'
+            //             ];
+            //         }
+            //     }elseif($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
+            //         return [
+            //             'error' => 'User credit limit is less than the package price'
+            //         ];
+            //     }
+            // }
             if($user->user_current_balance < (intval($package->price+$mrc_total))){
-                $err =  [
+                return [
                     'error' => 'User balance is less than the package price'
                 ];
-
-                if(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total) && $user->credit_limit == 0){
-                    return [
-                        'error' => 'User balance is less than the package price and OTC price'
-                    ];    
-                }
-
-                if($user->credit_limit > (intval($package->price+$mrc_total))){//
-                    if(($user->credit_limit-abs($user->user_current_balance)) < (intval($package->price+$mrc_total))){
-                        return [
-                            'error' => 'User credit limit is less than the package price'
-                        ];
-                    }
-                }elseif($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
+            }
+            elseif(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total) && $user->credit_limit == 0){
+                return [
+                    'error' => 'User balance is less than the package price and OTC price'
+                ];    
+            }
+            elseif($user->credit_limit > (intval($package->price+$mrc_total))){//
+                if(($user->credit_limit-abs($user->user_current_balance)) < (intval($package->price+$mrc_total))){
                     return [
                         'error' => 'User credit limit is less than the package price'
                     ];
                 }
+            }elseif($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
+                return [
+                    'error' => 'User credit limit is less than the package price'
+                ];
             }
         }
-
+        // dd('done');
         // dd('done');
         // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
         //     if($user->user_current_balance < ($package->price+$package->otc)){
