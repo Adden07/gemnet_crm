@@ -14,105 +14,107 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card-box">
-            <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title">Filters</h4>
-            </div>
-                <form action="{{ route('admin.accounts.deposit_slips.store') }}" method="POST" class="ajaxForm">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="">Deposit Date</label>
-                            <select class="form-control" name="deposit_date" id="deposit_date">
-                                <option value="">Select date</option>
-                                @foreach($payment_dates AS $date)
-                                    <option value="{{ now()->parse($date->created_at)->format('Y-m-d') }}">{{ now()->parse($date->created_at)->format('d-M-Y') }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="">Amount</label>
-                            <input type="number" class="form-control" placeholder="0" readonly name="amount" id="amount" required>
-                        </div>
-                        <div class="form-group col-md-4 image" id="transaction_image_col">
-                            <label for="logo">Slip Photo</label>
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="image"  id="image" onchange="showPreview('preview_nic_front')">
-                                    <label class="custom-file-label profile_img_label" for="logo">Choose Slip Photo</label>
-                                </div>
-                                <div class="nic_front_err w-100"></div>
-                                <div class="position-relative mt-3">
-                                    <img id="preview_nic_front" src="@if(@file_exists($edit_user->nic_front)) {{ asset($edit_user->nic_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) d-none  @endif" width="100px" height="100px"/>
-                                    @if(@file_exists($edit_user->nic_front))
-                                        <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute nopopup" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$edit_user->hashid,'type'=>'nic_front','path'=>$edit_user->nic_front]) }}" onclick="ajaxRequest(this)" id="remove_nic_front">
-                                            <i class="fa fa-times"></i>
-                                        </a>
-                                    @endif
+@can('add-deposit-slip')
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title">Filters</h4>
+                </div>
+                    <form action="{{ route('admin.accounts.deposit_slips.store') }}" method="POST" class="ajaxForm">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="">Deposit Date</label>
+                                <select class="form-control" name="deposit_date" id="deposit_date">
+                                    <option value="">Select date</option>
+                                    @foreach($payment_dates AS $date)
+                                        <option value="{{ now()->parse($date->created_at)->format('Y-m-d') }}">{{ now()->parse($date->created_at)->format('d-M-Y') }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="">Amount</label>
+                                <input type="number" class="form-control" placeholder="0" readonly name="amount" id="amount" required>
+                            </div>
+                            <div class="form-group col-md-4 image" id="transaction_image_col">
+                                <label for="logo">Slip Photo</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="image"  id="image" onchange="showPreview('preview_nic_front')">
+                                        <label class="custom-file-label profile_img_label" for="logo">Choose Slip Photo</label>
+                                    </div>
+                                    <div class="nic_front_err w-100"></div>
+                                    <div class="position-relative mt-3">
+                                        <img id="preview_nic_front" src="@if(@file_exists($edit_user->nic_front)) {{ asset($edit_user->nic_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) d-none  @endif" width="100px" height="100px"/>
+                                        @if(@file_exists($edit_user->nic_front))
+                                            <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute nopopup" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$edit_user->hashid,'type'=>'nic_front','path'=>$edit_user->nic_front]) }}" onclick="ajaxRequest(this)" id="remove_nic_front">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <input type="submit" class="btn btn-primary float-right">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="submit" class="btn btn-primary float-right">
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+            </div>
         </div>
     </div>
-</div>
-<div class="row">
-    
-    <div class="col-lg-12">
-        <div class="card-box">
-            <form action="{{ route('admin.accounts.payments.approve_payment') }}" class="ajaxForm" method="POST">
-                @csrf
-                <input type="hidden" name="ids[]" id="ids">
-                <input type="submit" class="btn btn-primary d-none" id="checkbox_submit" name="submit" value="Approve">
-            </form>
-            <table class="table table-bordered w-100 nowrap dt_table" id="payment_table">
-                <thead>
-                    <tr>
-                        <th width="20">S.No</th>
-                        <th>Deposit Date</th>
-                        <td>Amount</td>
-                        <td>Image</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($deposit_slips AS $slip)
+@endcan
+@can('view-deposit-slip')
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <form action="{{ route('admin.accounts.payments.approve_payment') }}" class="ajaxForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="ids[]" id="ids">
+                    <input type="submit" class="btn btn-primary d-none" id="checkbox_submit" name="submit" value="Approve">
+                </form>
+                <table class="table table-bordered w-100 nowrap dt_table" id="payment_table">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ now()->parse($slip->deposit_date)->format('d-M-Y') }}</td>
-                            <td>{{ number_format($slip->amount) }}</td>
-                            <td>
-                                <a href="{{ asset($slip->image) }}" class='btn btn-primary btn-xs add_package ml-2' title='view image' target="_blank">
-                                    <i class='icon-eye'></i>
-                                </a>
-                                {{-- <a href="{{ asset($slip->image) }}" target="_blank">
-                                    <img src="{{ asset($slip->image) }}" alt="" width="70px" hieght="100px">
-                                </a> --}}
-                            </td>
+                            <th width="20">S.No</th>
+                            <th>Deposit Date</th>
+                            <td>Amount</td>
+                            <td>Image</td>
                         </tr>
-                    @endforeach
-                </tbody>
-                <tbody>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach($deposit_slips AS $slip)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ now()->parse($slip->deposit_date)->format('d-M-Y') }}</td>
+                                <td>{{ number_format($slip->amount) }}</td>
+                                <td>
+                                    <a href="{{ asset($slip->image) }}" class='btn btn-primary btn-xs add_package ml-2' title='view image' target="_blank">
+                                        <i class='icon-eye'></i>
+                                    </a>
+                                    {{-- <a href="{{ asset($slip->image) }}" target="_blank">
+                                        <img src="{{ asset($slip->image) }}" alt="" width="70px" hieght="100px">
+                                    </a> --}}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tbody>
+                    </tbody>
+                </table>
 
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <div class="float-right"> 
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="float-right"> 
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+@endcan
 @endsection
 
 @section('page-scripts')

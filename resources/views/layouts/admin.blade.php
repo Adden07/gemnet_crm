@@ -373,9 +373,11 @@
                                         <a href="{{ route('admin.accounts.credit_notes.index') }}">Credit Note</a>
                                     </li>
                                 @endcan
-                                <li>
-                                    <a href="{{ route('admin.accounts.deposit_slips.index') }}">Deposit Slip</a>
-                                </li>
+                                @can('enabled-deposit-slip')
+                                    <li>
+                                        <a href="{{ route('admin.accounts.deposit_slips.index') }}">Deposit Slip</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                         @endcan

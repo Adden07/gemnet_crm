@@ -280,6 +280,33 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group" >
+                            <label for="Rights">Deposit Slip</label>  
+                            <table class=" table-bordered w-100 nowrap responsive">
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <th>Enabled-Depost-slip</th>
+                                        <th>View</th>
+                                        <th>Add</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center;">
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="enabled-deposit-slip" @if(isset($update)){{ @(in_array('enabled-deposit-slip',@$edit_permission->permissions)) ? 'checked' : '' }}@endif /></td>
+
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="view-deposit-slip" @if(isset($update)){{ @(in_array('view-deposit-slip',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-deposit-slip',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>       
+                                        
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="add-deposit-slip" @if(isset($update)){{ @(in_array('add-deposit-slip',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                        @if(isset($update)){{ @(in_array('enabled-deposit-slip',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>    
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="row" id="rights">
                    
