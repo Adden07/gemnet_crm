@@ -49,6 +49,8 @@
                             <option value="cash" @if(request()->has('type') && request()->get('type') == 'cash') selected @endif>Cash</option>
                             <option value="online" @if(request()->has('type') && request()->get('type') == 'online') selected @endif>Online</option>
                             <option value="cheque" @if(request()->has('type') && request()->get('type') == 'cheque') selected @endif>Cheque</option>
+                            <option value="challan" @if(request()->has('type') && request()->get('type') == 'challan') selected @endif>Tax-Chalan</option>
+
                         </select>
                     </div>
                     <div class="form-group col-md-3">
