@@ -535,7 +535,7 @@
         return this.optional(element) || !/[A-Z]/.test(value); 
     }, "Only small characters are allowed");
 
-    // $('.select2').select2();
+    $('.select2').select2();
 
     </script>
 

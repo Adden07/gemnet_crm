@@ -59,7 +59,7 @@
     <div class="col-lg-12">
         <div class="card-box">
             @isset($is_ledger)
-                <h4>Username : {{ $user_data->username }} -- Name : {{ $user_data->name }} -- Current Package : {{ $user_data->packages->name }} -- Expiration : {{ date('d-M-Y', strtotime($user_data->current_expiration_date)) }}</h4>
+                <h4>Username : {{ @$user_data->username }} -- Name : {{ @$user_data->name }} -- Current Package : {{ @$user_data->packages->name }} -- Expiration : {{ date('d-M-Y', strtotime($user_data->current_expiration_date)) }}</h4>
             @endif
             <table class="table table-bordered w-100 nowrapp" id="online_users">
                 <thead>

@@ -29,7 +29,7 @@ class LedgerController extends Controller
         $req->validate([
             'user_id'   => ['required']
         ]);
-        
+
         $data = array(
             'title'     => 'User Ledger',
             'payments'  => Payment::where('receiver_id', hashids_decode($req->user_id))->get(),
