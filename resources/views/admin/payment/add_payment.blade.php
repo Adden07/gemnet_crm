@@ -77,7 +77,7 @@
                             <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date">
                         </div>
                     </div>
-                    <div class="col-md-6 d-none challan" id="">
+                    {{-- <div class="col-md-6 d-none challan" id="">
                         <div class="form-group">
                             <label for="">Challan ID</label>
                             <input type="number" class="form-control" placeholder="0" value="" name="online_transaction" id="online_transaction" required>
@@ -88,7 +88,7 @@
                             <label for="">Challan Date</label>
                             <input type="date" class="form-control" placeholder="0" value="" name="online_date" id="online_date" required>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-6 d-none cheque" id="">
                         <div class="form-group">
                             <label for="">Cheque No</label>
@@ -162,6 +162,10 @@
                 $('.online').removeClass('d-none');
                 $('.image').removeClass('d-none');
                 $('.cheque').addClass('d-none');
+
+                $('#online_date').prev('label').text("Transaction Date");
+                $('#online_transaction').prev('label').text('Transaction ID');
+
             }else if(type == 'cash'){
                 $('.online').addClass('d-none');
                 $('.cheque').addClass('d-none');
@@ -171,10 +175,14 @@
                 $('.online').addClass('d-none');
                 $('.cheque').removeClass('d-none');
             }else if(type == 'challan'){
-                $('.online').addClass('d-none');
+                $('.online').removeClass('d-none');
                 $('.cheque').addClass('d-none');
                 $('.image').removeClass('d-none');
-                $('.challan').removeClass('d-none');
+                // $('.challan').removeClass('d-none');
+
+                $('#online_date').prev('label').text("Chalan Date");
+                $('#online_transaction').prev('label').text('Chaln ID');
+
             }
         }
     });

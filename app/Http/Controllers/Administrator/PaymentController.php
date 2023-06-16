@@ -191,7 +191,7 @@ class PaymentController extends Controller
 
     //update and store payment
     public function store(Request $req){
-        
+        // dd($req->all());
         $rules = [
             'type'                  => ['required', 'in:cash,online,cheque,challan'],
             'receiver_id'           => ['required','string', 'max:100'],
