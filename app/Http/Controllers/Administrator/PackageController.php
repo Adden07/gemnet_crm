@@ -122,7 +122,8 @@ class PackageController extends Controller
             //         ];
             //     }
             // }
-            if($user->user_current_balance < (intval($package->price+$mrc_total))){
+            
+            if($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
                 return [
                     'error' => 'User balance is less than the package price'
                 ];
