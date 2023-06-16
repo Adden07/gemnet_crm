@@ -79,6 +79,7 @@
                     <thead>
                         <tr>
                             <th width="20">S.No</th>
+                            <th>Upload Date</th>
                             <th>Deposit Date</th>
                             <td>Amount</td>
                             <td>Image</td>
@@ -88,6 +89,7 @@
                         @foreach($deposit_slips AS $slip)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
+                                <td>{{ now()->parse($slip->created_at)->format('d-M-Y') }}</td>
                                 <td>{{ now()->parse($slip->deposit_date)->format('d-M-Y') }}</td>
                                 <td>{{ number_format($slip->amount) }}</td>
                                 <td>
