@@ -2190,7 +2190,7 @@ class UserController extends Controller
                                         return $query->admin->username;
                                      })
                                      ->addColumn('user',function($query){
-                                        return "<a href=".route('admin.users.profile',['id'=>$query->user->hashid])." target='_blank'>{$query->user->username}</a>";
+                                        return "<a href=".route('admin.users.profile',['id'=>@$query->user->hashid])." target='_blank'>".$query->user->username."</a>";
                                      })
                                      ->addColumn('remark_type',function($query){
                                         return $query->remark_type;
