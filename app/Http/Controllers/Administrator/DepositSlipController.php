@@ -19,6 +19,7 @@ class DepositSlipController extends Controller
                             ->whereNotIn(\DB::raw('DATE(created_at)'),DepostSlip::select('deposit_date')->get()->pluck('deposit_date')->toArray())
                             ->where('type', 'cash')
                             ->whereDate('created_at','>=', date('2023-06-01'))
+                            ->whereDate('created_at', '!=', now())
                             ->groupBy(\DB::raw('Day(created_at), MONTH(created_at), YEAR(created_at)'))
                             ->orderBy('created_at', 'DESC')
                             ->get(),
