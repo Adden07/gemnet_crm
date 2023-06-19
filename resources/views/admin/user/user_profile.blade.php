@@ -118,11 +118,13 @@
             <a class="nav-link" id="invoice_tab" data-toggle="tab" href="#invoices" role="tab" aria-selected="true" >Invoices/Payments</a>
         </li>
     @endcan
+    @can('edit-expiration')
     @if(auth()->user()->user_type == 'admin' && $user_details->status != 'registered')
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="edit_expiration_tab" data-toggle="tab" href="#edit_expiration" role="tab" aria-selected="true" >Edit Expiration</a>
         </li>
     @endif
+    @endcan
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="remarks_tab" data-toggle="tab" href="#remarks" role="tab" aria-selected="true" >Remarks</a>
     </li>

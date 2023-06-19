@@ -632,6 +632,7 @@
                                         <th>Queue User</th>
                                         <th>Quota User</th>
                                         <th>Quota Low</th>
+                                        <th>Edit Expiraiton</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -660,6 +661,10 @@
 
                                             <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="quota-low" @if(isset($update)){{ @(in_array('quota-low',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                                 @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> 
+
+                                                <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="edit-expiration" @if(isset($update)){{ @(in_array('edit-expiration',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                                    @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td> 
+    
 
                                     </tr>
                                 </tbody>
