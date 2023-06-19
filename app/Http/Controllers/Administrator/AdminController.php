@@ -302,11 +302,11 @@ class AdminController extends Controller
 
     //update admin personal info
     public function updateInfo(Request $req){
-        
+
         if(\CommonHelpers::rights('enabled-admin','view-admin')){
             return redirect()->route('admin.home');
         }
-
+        
         if(isset($req->admin_id) && !empty($req->admin_id)){
             $rules = [
                 'name'              => ['required', 'string', 'max:50'],
@@ -334,7 +334,7 @@ class AdminController extends Controller
             $admin->save();
 
             \CommonHelpers::activity_logs($activity);
-
+            // dd('done');
             return response()->json([
                 'success'   => $msg,
                 'redirect'    => route('admin.admins.index'),
