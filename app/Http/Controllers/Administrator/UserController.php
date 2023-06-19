@@ -2172,7 +2172,7 @@ class UserController extends Controller
     }
 
     public function allUserRemarks(Request $req){
-
+        
         if($req->ajax()){
             $data = Remarks::with(['user'=>function($query){
                 $query->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer',function($query){
@@ -2207,25 +2207,22 @@ class UserController extends Controller
                                     ->filter(function($query) use ($req){
                                         
                                         if(isset($req->remark_type)){
-                                            // dd('done');
                                             $query->where('remark_type', 'LIKE', '%'.$req->remark_type.'%');
-                                            // $query->whereDate('created_at', '>=', date('Y-m-d',strtotime($req->from_date)))
-                                            // ->whereDate('created_at', '<=', date('Y-m-d',strtotime($req->to_date)));
-                                            // $query->whereBetween('created_at',[date('Y-m-d',strtotime($req->from_date)),date('Y-m-d',strtotime($req->to_date))]);
                                         }
                                         if(isset($req->search)){
                                             $query->where(function($search_query) use ($req){
                                                 $search = $req->search;
                                                 $search_query->whereLike([
-                                                            // 'username',
-                                                            'user_ip',
-                                                            'activity',
+                                                            'remark_type',
+                                                            'text',
                                                             'created_at'
                                                         ], 
-                                                $search);
-                                                // ->orWhereHas('admin', function($q) use ($search) {
-                                                //     $q->whereLike(['name','username'], '%'.$search.'%');
-                                                // });
+                                                $search)
+                                                ->orWhereHas('admin', function($q) use ($search) {
+                                                    $q->whereLike(['name','username'], '%'.$search.'%');
+                                                })->orWhereHas('user', function($q) use ($search) {
+                                                    $q->whereLike(['name','username'], '%'.$search.'%');
+                                                });
                                             });
                                         }
                                     })
