@@ -719,7 +719,7 @@ class UserController extends Controller
             
             $user       = User::findOrFail(hashids_decode($req->user_id));
             $msg        = 'User Personal Info Updated Successfully';
-            $activity   = 'updated-personal-info';
+            $activity   = '';
             
 
 

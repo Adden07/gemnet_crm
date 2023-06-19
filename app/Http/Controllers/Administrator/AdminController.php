@@ -325,7 +325,7 @@ class AdminController extends Controller
             
             $admin       = Admin::findOrFail(hashids_decode($req->admin_id));
             $msg        = 'Admin Personal Info Updated Successfully';
-            $activity   = 'updated-personal-info';
+            $activity   = 'updated-personal-info '.$admin->username;
             
             $admin->name        = $req->name;
             $admin->nic         = $req->nic;
