@@ -905,8 +905,8 @@
                             <th>DateTime</th>
 
                             <th>Amount</th>
-                            <th>New Balance</th>
                             <th>Old Balance</th>
+                            <th>New Balance</th>
                             <th>Type</th>
                             <th>Online Date</th>
                         </thead>
@@ -916,8 +916,8 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ date('d-M-Y H:i:s', strtotime($payment->created_at)) }}</td>
                                     <td>{{ number_format($payment->amount) }}</td>
-                                    <td>{{ number_format($payment->new_balance) }}</td>
                                     <td>{{ number_format($payment->old_balance) }}</td>
+                                    <td>{{ number_format($payment->new_balance) }}</td>
                                     <td>{{ $payment->type }}</td>
                                     <td>{{ (!is_null($payment->online_date)) ? date('d-M-Y', strtotime($payment->online_date)) : '' }}</td>
 
