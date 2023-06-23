@@ -300,14 +300,13 @@ class CommonHelpers
     public static function sendSms($mobile_no, $message, $sms_type=null){
         // return 'Success';
         // return 'Success';
-        
+
         $setting = Cache::get('edit_setting');
         $sms     = Cache::get('sms_cache')->where('type', $sms_type)->first();
-
+     
         // dd($setting);
         // dd($setting->is_sms);
         if($setting->is_sms == 1 && (@$sms->status == 1 || $sms_type == 'manual')){
-
             $params = [
                 'id'    => config('sms.sms_api_id'),
                 'pass'  => config('sms.sms_api_pass'),
