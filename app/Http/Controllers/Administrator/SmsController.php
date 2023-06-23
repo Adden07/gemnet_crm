@@ -162,6 +162,7 @@ class SmsController extends Controller
             $users = User::when($validated['type'] != 'all', function($query) use ($validated){
                             $query->where('status', $validated['type']);
                         })->get(['id', 'status', 'mobile']);
+            dd($users->count());
             $counter=0;
 
             foreach($users AS $user){
