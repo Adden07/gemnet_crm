@@ -166,11 +166,13 @@ class SmsController extends Controller
             $counter=0;
 
             foreach($users AS $user){
-                if(CommonHelpers::sendSms($user->mobile, $validated['message']) == 'Success'){//send sms and check status
+                if(CommonHelpers::sendSms($user->mobile, $validated['message'], 'manual') == 'Success'){//send sms and check status
                     CommonHelpers::smsLog(hashids_encode($user->id),null,$user->mobile,$validated['message'],1,1);//success log
                     ++$counter;
                 }
+
             }
+
             $msg =[
                 'success'   => "SMS sent to $counter users",
                 'reload'    => true
