@@ -124,7 +124,7 @@ class SmsController extends Controller
         $data = array(
             'title'     => 'Sms By User',
             'users'     => User::latest()->get(),
-            'messages'  => SmsLog::with(['user:id,name,username'])->where('is_manual', 1)->whereNotNUll('user_id')->get(),
+            'messages'  => SmsLog::with(['user:id,name,username'])->where('is_manual', 1)->whereNotNUll('user_id')->latest()->get(),
         );
         return view('admin.sms.sms_by_user')->with($data);
     }
