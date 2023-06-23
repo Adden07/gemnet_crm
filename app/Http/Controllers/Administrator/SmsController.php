@@ -160,9 +160,10 @@ class SmsController extends Controller
             }
         }else{//send message to multiple users based on their status
             $users = User::when($validated['type'] != 'all', function($query) use ($validated){
-                            $query->where('status', $validated['status']);
+                            $query->where('status', $validated['type']);
                         })->get(['id', 'status', 'mobile']);
             $counter=0;
+
             foreach($users AS $user){
                 if(CommonHelpers::sendSms($user->mobile, $validated['message']) == 'Success'){//send sms and check status
                     CommonHelpers::smsLog(hashids_encode($user->id),null,$user->mobile,$validated['message'],1,1);//success log
