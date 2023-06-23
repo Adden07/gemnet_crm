@@ -237,24 +237,19 @@ class SmsController extends Controller
                                         $query->where('is_manual', $req->sent_by);
                                     }
 
-                                    // if(isset($req->search)){
-                                    //     $query->where(function($search_query) use ($req){
-                                    //         $search = $req->search;
-                                    //         $search_query->orWhere('created_at', 'LIKE', "%$search%")
-                                    //                     ->orWhere('type', 'LIKE', "%$search%")
-                                    //                     ->orWhere('amount', 'LIKE', "%$search%")
-                                    //                     ->orWhere('old_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhere('new_balance', 'LIKE', "%$search%")
-                                    //                     ->orWhereHas('receiver',function($q) use ($search){
-                                    //                             $q->whereLike(['name','username'], '%'.$search.'%');
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search;
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('sms_type', 'LIKE', "%$search%")
+                                                        ->orWhere('mobile_no', 'LIKE', "%$search%")
+                                                        ->orWhere('sms', 'LIKE', "%$search%")
+                                                        ->orWhereHas('user',function($q) use ($search){
+                                                            $q->whereLike(['name','username'], '%'.$search.'%');
 
-                                    //                         })
-                                    //                     ->orWhereHas('admin',function($q) use ($search){
-                                    //                         $q->whereLike(['name','username'], '%'.$search.'%');
-
-                                    //                     });      
-                                    //     });
-                                    // }
+                                                        });      
+                                        });
+                                    }
 
                                     
                                 })
