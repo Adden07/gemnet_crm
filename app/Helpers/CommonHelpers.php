@@ -310,8 +310,8 @@ class CommonHelpers
             $sms_status = $sms->status;
         }
         // dd($setting->is_sms);
-        if($setting->is_sms == 1){
-            dd('dones');
+        dd($setting);
+        if($setting->is_sms == 1 && ($sms_status == 1 || $sms_type == 'manual')){
             $params = [
                 'id'    => config('sms.sms_api_id'),
                 'pass'  => config('sms.sms_api_pass'),
