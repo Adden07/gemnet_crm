@@ -170,7 +170,6 @@ class SmsController extends Controller
                     CommonHelpers::smsLog(hashids_encode($user->id),null,$user->mobile,$validated['message'],1,1);//success log
                     ++$counter;
                 }
-
             }
 
             $msg =[
