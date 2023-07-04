@@ -96,6 +96,7 @@
                         <th>Amount</th>
                         <th>Old Balance</th>
                         <th>New Balance</th>
+                        <th>Image</th>
                         @if(auth()->user()->can('delete-payments'))
                             <th>Action</th>
                         @elseif(auth()->user()->can('print-payments'))
@@ -162,6 +163,7 @@
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},
                         {data:'old_balance', name:'payments.old_balance',orderable:true,searchable:true},
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
+                        {data:'image', name:'image',orderable:false,searchable:false},
                         @if(auth()->user()->can('delete-payments'))
                             {data:'action', name:'payments.action',orderable:false,searchable:false},
                         @elseif(auth()->user()->can('print-payments'))

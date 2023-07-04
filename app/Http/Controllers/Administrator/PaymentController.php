@@ -95,6 +95,16 @@ class PaymentController extends Controller
                                 ->addColumn('new_balance',function($data){
                                     return number_format($data->new_balance);
                                 })
+                                ->addColumn('image', function($data){
+                                    $action = '';
+                                    if(file_exists($data->transaction_image)){
+                                        $action = "<a href=".asset($data->transaction_image)." class='btn btn-primary btn-xs waves-effect waves-light' title='Edit' target='_blank'>
+                                            <i class='icon-eye'></i>
+                                        </a>";
+                                    }
+                                    
+                                   return $action;
+                                })
                                 ->addColumn('action', function($data){
                                      $html = '';
 
@@ -152,7 +162,7 @@ class PaymentController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', $o);
                                     })
-                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type', 'action'])
+                                ->rawColumns(['date', 'reciever_name', 'added_by', 'type', 'action', 'image'])
                                 ->make(true);
                                 // ->with('total_amount',function() use ($data){
                                 //     return $data->sum('amount');
@@ -365,7 +375,7 @@ class PaymentController extends Controller
         if(CommonHelpers::rights('enabled-finance','view-approve-payments')){
             return redirect()->route('admin.home');
         }
-
+        
         if($req->ajax()){
             $data =                 Payment::with(['admin', 'receiver'])
                                             ->select('payments.*')

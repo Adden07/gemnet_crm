@@ -96,9 +96,6 @@
                                     <a href="{{ asset($slip->image) }}" class='btn btn-primary btn-xs add_package ml-2' title='view image' target="_blank">
                                         <i class='icon-eye'></i>
                                     </a>
-                                    {{-- <a href="{{ asset($slip->image) }}" target="_blank">
-                                        <img src="{{ asset($slip->image) }}" alt="" width="70px" hieght="100px">
-                                    </a> --}}
                                 </td>
                             </tr>
                         @endforeach
