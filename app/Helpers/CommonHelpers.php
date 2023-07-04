@@ -418,9 +418,9 @@ class CommonHelpers
         if(strpos($sms->message, '$date') !== false && $date != null){//check if $date exists in string
             $sms->message = str_replace('$date', $date, $sms->message);//replace the $date with the actual payment_type
         }
-
+        
         $sms_status = self::sendSms($mobile_no, $sms->message, $sms_type);
-
+        
         if($sms_status == 'Success'){//send sms and check status
             self::smsLog(hashids_encode($user_id), $sms_type, $mobile_no, $sms->message, 1,0);//save the success log
             return true;
