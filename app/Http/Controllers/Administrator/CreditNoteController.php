@@ -145,6 +145,8 @@ class CreditNoteController extends Controller
             $user       = User::findOrFail(hashids_decode($validated['user_id']));
             $transaction = new Ledger;
             $credit_note= new CreditNote;
+            $credit_note->credit_note_id  = CommonHelpers::generateCreditNoteNo('CN');
+
             
             $transaaction_id =  rand(111111111,999999999);
             $transaction->transaction_id    = $transaaction_id;

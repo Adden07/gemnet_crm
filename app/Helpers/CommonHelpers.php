@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use SoapClient;
 use App\Models\Admin;
+use App\Models\CreditNote;
 use App\Models\Setting;
 use App\Models\Sms;
 use App\Models\SmsLog;
@@ -279,6 +280,50 @@ class CommonHelpers
         }
     }
 
+    public static function generateCreditNoteNo($string){
+        $year  = date('y');
+        $month = date('m');
+        
+        if(date('d') == '01'){//on the month start date invoice will start from 01
+            $day = '01';//if its a 1st day of month then assign 01 to day
+        }else{//if its not 1st date then get the last record 
+            $day   = CreditNote::where('credit_note_id', 'LIKE', '%'.$string.'%')->latest()->first();
+            if ($day) {
+                $parts = explode('-', $day->credit_note_id);
+                $day = isset($parts[2]) ? $parts[2] : null;
+            } else {//if invoices table is empty and its not a first date then assign 01 to day
+                $day = '01';
+            }
+        }
+        $invoice = $string.'-'.$year.$month.'-'.$day;
+        if(CreditNote::where('credit_note_id', $invoice)->doesntExist()){
+            return $invoice;
+        }else{
+            return self::generateUniqueCreditNoteeNo($invoice);
+        }
+        
+    }
+
+    public static function generateUniqueCreditNoteeNo($invoice){
+        $inv = CreditNote::where('credit_note_id', $invoice)->first();
+        $firstDashPos = strpos($invoice, '-'); // Find the position of the first dash
+        if ($firstDashPos !== false) {
+            $secondDashPos = strpos(substr($invoice, $firstDashPos + 1), '-'); // Find the position of the second dash
+            if ($secondDashPos !== false) {
+                $secondDashPos += $firstDashPos + 1; // Adjust the position based on the substring
+
+                $day            = substr($invoice, $secondDashPos+1);
+                $newInvoiceId = str_replace($day, CommonHelpers::incrementNumber($day), $invoice);
+                if(CreditNote::where('credit_note_id', $newInvoiceId)->exists()){
+                    return self::generateUniqueCreditNoteeNo($newInvoiceId);
+                }
+                // dd($newInvoiceId);
+                return $newInvoiceId;
+            }
+        }
+        dd('rer');
+    }
+    
     public static function incrementNumber($value){
         // Convert the value to an integer
         $intValue = intval($value);

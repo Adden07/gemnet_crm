@@ -922,19 +922,35 @@
                                     <td>{{ (!is_null($payment->online_date)) ? date('d-M-Y', strtotime($payment->online_date)) : '' }}</td>
 
                                 </tr>
-                                {{-- <tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="card-box">
+                    <table class="table">
+                        <thead>
+                        <th>S.No</th>
+                        <th>Date</th>
+                        <th>Credit Note ID</th>
+                        <th>Invoice ID</th>
+                        <th>Amount</th>
+                        <th>Old Balance</th>
+                        <th>New Balance</th>
+                        </thead>
+                        <tbody>
+                            @foreach($credit_notes As $note)
+                                <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $invoice->invoice_id }}</td>
-                                    <td>{{ date('d-M-Y H:i:s',strtotime($invoice->created_at)) }}</td>
-                                    <td>{{  $invoice->package->name}}</td>
-                                    <td>
-                                        @if(date('Y',strtotime($invoice->current_exp_date)) != 1970)
-                                            {{ date('d-M-Y H:i:s',strtotime($invoice->current_exp_date)) }}
-                                        @endif
-                                    </td>
-                                    <td>{{ (!is_null($invoice->new_exp_date))? date('d-M-Y H:i:s',strtotime($invoice->new_exp_date)) : '' }}</td>
-                                    <td>{{ round($invoice->total) }}</td>
-                                </tr> --}}
+                                    <td>{{ date('d-M-Y H:i:s', strtotime($note->created_at)) }}</td>
+                                    <td>{{ @$note->credit_note_id }}</td>
+                                    <td>{{ $note->invoice->invoice_id }}</td>
+                                    <td>{{ number_format($note->amount) }}</td>
+                                    <td>{{ number_format($note->transaction->old_balance) }}</td>
+                                    <td>{{ number_format($note->transaction->new_balance) }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>

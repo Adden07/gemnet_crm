@@ -33,12 +33,14 @@ use App\Exports\UserTmpExport;
 use App\Exports\UpdateUserExport;
 use App\Imports\UpdateUserExpirationImport;
 use App\Imports\UpdateUserImport;
+use App\Models\CreditNote;
 use App\Models\FileLog;
 use App\Models\PkgQueue;
 use App\Models\QtOver;
 use App\Models\Remark;
 use App\Models\Remarks;
 use App\Models\RemarkType;
+use COM;
 use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
@@ -578,18 +580,22 @@ class UserController extends Controller
                                             },function($query){
                                                 $query->whereBetween('created_at', [now()->subMonths(11), now()]);
                                             }) 
-                                            // ->when(auth()->user()->user_type != 'admin',function($query){
-                                            //     $query->where('admin_id',auth()->user()->id);
-                                            // })
                                             ->latest()->get(),
                 'packages'      =>      Package::get(),
                 'areas'         =>      Area::latest()->get(),
-                'remarks'       => RemarkType::latest()->get(),
+                'remarks'       =>      RemarkType::latest()->get(),
+                'credit_notes'  =>      CreditNote::where('user_id', hashids_decode($req->id))
+                                            ->when(isset($req->from_date, $req->to_date), function($query) use ($req){
+                                                $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                            },function($query){
+                                                $query->whereBetween('created_at', [now()->subMonths(11), now()]);
+                                            })
+                                            ->latest()
+                                            ->get(),
             );
             if($req->remark_id != null){
                 $data['edit_remark'] = Remarks::findOrFail(hashids_decode($req->remark_id));
             }
-            // dd($data['user_details']->remark);
             //update user last profile visit column
             User::where('id',hashids_decode($req->id))->update(['last_profile_visit_time'=>date('Y-m-d H:i:s')]);
             
