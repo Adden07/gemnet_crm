@@ -31,6 +31,9 @@ class CreditNoteController extends Controller
                                     ->addColumn('reciever_name',function($data){
                                         return "<a href=".route('admin.users.profile',['id'=>hashids_encode(@$data->user->id)])." target='_blank'>".@$data->user->username."</a>";
                                     })
+                                    ->addColumn('invoice',function($data){
+                                        return "<a href=".route('admin.accounts.invoices.get_invoice', ['id'=>$data->invoice->hashid])." target='_blank'>".@$data->invoice->invoice_id."</a>";
+                                    })
                                     ->addColumn('added_by', function($data){
                                         return $data->admin->username;
                                     })
@@ -95,8 +98,8 @@ class CreditNoteController extends Controller
 
                                     
                                 })
-                                    ->rawColumns(['reciever_name', 'action'])
-                                    ->make(true);
+                                ->rawColumns(['reciever_name', 'action', 'invoice'])
+                                ->make(true);
             }
         $data = array(
             'title' => 'Credit Note',
@@ -174,10 +177,13 @@ class CreditNoteController extends Controller
     }
 
     public function getUserInvoices($id){
+        
         $html = '';
-        $invoices = Invoice::where('user_id', hashids_decode($id))->get()->map(function($data) use (&$html){
-            $html .= "<option value='$data->hashid'>$data->invoice_id</option>";
-        });
+        $invoices = Invoice::where('user_id', hashids_decode($id))
+                    ->whereBetween('created_at', [now()->subMonth(7)->format('Y-m-d'), now()->format('Y-m-d')])
+                    ->get()->map(function($data) use (&$html){
+                        $html .= "<option value='$data->hashid'>$data->invoice_id</option>";
+                    });
         return response()->json([
             'html'  => $html,
         ]);

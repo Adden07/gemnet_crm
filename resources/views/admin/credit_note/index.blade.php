@@ -29,7 +29,7 @@
                         <select class="form-control select2" name="user_id" id="user_id">
                             <option value="">Select User</option>
                             @foreach($users AS $user)
-                                <option value="{{ $user->hashid }}" @if(@$edit_credit_note->user_id == $user->id) selected @endif>{{ $user->name}}</option>
+                                <option value="{{ $user->hashid }}" @if(@$edit_credit_note->user_id == $user->id) selected @endif>{{ $user->name}}--({{ $user->username }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -115,6 +115,7 @@
                         <th width="20">S.No</th>
                         <th>Date</th>
                         <th>Username</th>
+                        <th>Invoice ID</th>
                         <th>Added By</th>
                         {{-- <th>Mode</th> --}}
                         <th>Amount</th>
@@ -187,6 +188,7 @@
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
                         {data:'reciever_name', name:'receiver.name',orderable:true,searchable:true},
+                        {data:'invoice', name:'invoice.invoice_id',orderable:true,searchable:true},
                         {data:'added_by', name:'admin.name',orderable:true,searchable:true},
                         // // {data:'type', name:'payments.type',orderable:true,searchable:true},
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},

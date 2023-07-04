@@ -23,5 +23,9 @@ class CreditNote extends Model
     public function transaction(){
         return $this->belongsTo(Ledger::class, 'transaction_id', 'id');
     }
+
+    public function invoice(){
+        return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
+    }
     
 }
