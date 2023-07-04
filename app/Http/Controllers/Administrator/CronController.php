@@ -87,7 +87,7 @@ class CronController extends Controller
     }
 
     public function qtOver(){
-
+        
         $users = User::with(['current_package.default_package'])
                     ->whereRaw('qt_used > qt_total')
                     ->where('qt_enabled', 1)
@@ -97,10 +97,8 @@ class CronController extends Controller
         
         $qt_over            = array();
         $kicked_users_count = 0;
-        
+  
         foreach($users AS $key=>$user){
-            CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'qouta_over', $user->mobile, null,null );
-            // dd($user->mobile);
             if(isset($user->current_package->default_package->id)){
                 $qt_over[$key] = array(
                     'user_id'       => $user->id,

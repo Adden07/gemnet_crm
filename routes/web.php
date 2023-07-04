@@ -21,7 +21,7 @@ Route::prefix('web_admin')->namespace('Auth')->group(function () {
         Route::get('/qt_over','CronController@qtOver')->name('qt_over');
         Route::get('/qt_low','CronController@qtLow')->name('qt_low');
         // Route::get('/queu','CronController@queue');
-        Route::get('/auto-renew', 'CronController@autoRenew');
+        // Route::get('/auto-renew', 'CronController@autoRenew');
         Route::get('/expiry', 'CronController@expiry');
         Route::get('/update-transcation-image-path', 'CronController@updateTransactionImagePath');
         Route::get('/users-about-to-expire', 'CronController@usersAboutToExpire');
