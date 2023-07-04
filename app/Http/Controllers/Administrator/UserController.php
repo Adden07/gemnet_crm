@@ -73,7 +73,7 @@ class UserController extends Controller
 
             $search = $req->search;
             
-            $data = User::selectRaw('id,c_id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance')
+            $data = User::selectRaw('id,c_id,name,username,status,user_status,last_logout_time,current_expiration_date,mobile,package,user_current_balance, user_type')
                         ->when(auth()->user()->user_type == 'sales_person' || auth()->user()->user_type == 'field_engineer', function($query){
                             if(auth()->user()->user_type == 'sales_person'){
                                 $query->where('sales_id', auth()->id());
@@ -91,11 +91,12 @@ class UserController extends Controller
                                     return wordwrap($data->name,10,"<br>\n");
                                 })
                                 ->addColumn('username',function($data){
-                                    return "<a href=".route('admin.users.profile',['id'=>$data->hashid])." target='_blank'>$data->username</a>";
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->hashid])." target='_blank' user-type='$data->user_type'>$data->username</a>";
                                 })
                                 ->addColumn('mobile',function($data){
                                     return $data->mobile;
                                 })
+                                
                                 // ->addColumn('sales_person',function($data){
                                 //     return wordwrap($data->admin->name."(<strong>".$data->admin->username."</strong>)",10,"<br>\n");
                                 // })
@@ -234,6 +235,10 @@ class UserController extends Controller
                                         $query->where('user_current_balance', '<', 0);
                                         }
                                     }
+
+                                    if(isset($req->user_type) && $req->user_type != 'all'){
+                                        $query->where('user_type', $req->user_type);
+                                    }
                                     
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
@@ -259,6 +264,7 @@ class UserController extends Controller
                                     $q->orderBy('created_at', $o);
                                 })
                                 ->rawColumns(['sales_person','status','expiration','action','name','username','package','user_current_balance'])
+                    
                                 ->toJson();
         }
         
@@ -320,7 +326,7 @@ class UserController extends Controller
             'city_id'           => ['required'],
             'name'              => [Rule::requiredIf($req->user_type != 'company'), 'string', 'max:50', 'nullable'],
             'comp_name'         => [Rule::requiredIf($req->user_type == 'company'), 'string', 'max:50', 'nullable'],
-            'username'          => ['required', 'string', 'min:1', 'max:14'],
+            'username'          => ['required', 'string', 'min:1', 'max:50'],
             'password'          => [Rule::requiredIf(!isset($req->user_id)), 'nullable', 'min:6', 'max:12', 'confirmed'],
             'nic'               => [Rule::requiredIf($req->user_type == 'individual'), 'string', 'min:15', 'max:15', 'nullable'],
             'mobile'            => [Rule::requiredIf($req->user_type != 'company'), 'numeric', 'nullable'],

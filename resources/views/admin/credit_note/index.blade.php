@@ -115,6 +115,7 @@
                         <th width="20">S.No</th>
                         <th>Date</th>
                         <th>Username</th>
+                        <th>Credit Note ID</th>
                         <th>Invoice ID</th>
                         <th>Added By</th>
                         {{-- <th>Mode</th> --}}
@@ -188,6 +189,7 @@
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
                         {data:'reciever_name', name:'receiver.name',orderable:true,searchable:true},
+                        {data:'credit_note_id', name:'credit_note_id',orderable:true,searchable:true},
                         {data:'invoice', name:'invoice.invoice_id',orderable:true,searchable:false},
                         {data:'added_by', name:'admin.name',orderable:true,searchable:true},
                         // // {data:'type', name:'payments.type',orderable:true,searchable:true},

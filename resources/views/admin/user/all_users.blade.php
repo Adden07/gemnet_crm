@@ -98,6 +98,14 @@
                         <option value="0">Balance</option>
                     </select>
                 </div>
+                <div class="form-group col-md-3">
+                    <label for="">User Type</label>
+                    <select class="form-control" name="user_type" id="user_type">
+                        <option value="all">All</option>
+                        <option value="individual">Individual</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
             </div>  
         </div>
     </div>
@@ -185,7 +193,8 @@
                                     d.expiration_date = $('#expiration_date').val(),
                                     d.search        = $('input[type="search"]').val(),
                                     d.paid          = $('#paid').val(),
-                                    d.balance       = $('#balance').val()
+                                    d.balance       = $('#balance').val(),
+                                    d.user_type     = $('#user_type').val()
                         },
                     },
                     
@@ -201,11 +210,22 @@
                         {data:'expiration', name:'users.current_expiration_date'},
                         {data:'user_current_balance', name:'users.user_current_balance'},
                         {data:'action',name:'action',orderable:false,searchable:false}
+                        
                     ],
+
+                       // Other DataTables options...
+                    "createdRow": function(row, data, dataIndex) {
+                        // Apply row color based on condition
+                        if (data.user_type === 'company'){
+                            $(row).css({
+                                'background-color': '#DAE1D7',
+                            });
+                        }
+                    }
                 });
 
 
-       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date,#paid,#balance').change(function(){
+       $('#user_status,#from_date,#to_date,#package_id,#franchise_id,#dealer_id,#subdealer_id,#expiration_date,#paid,#balance,#user_type').change(function(){
             if($(this).attr('id') == 'expiration_date'){
                 $('#from_date').val('');
                 $('#to_date').val('');

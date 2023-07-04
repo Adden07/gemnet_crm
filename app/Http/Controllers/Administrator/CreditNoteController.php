@@ -31,6 +31,9 @@ class CreditNoteController extends Controller
                                     ->addColumn('reciever_name',function($data){
                                         return "<a href=".route('admin.users.profile',['id'=>hashids_encode(@$data->user->id)])." target='_blank'>".@$data->user->username."</a>";
                                     })
+                                    ->addColumn('credit_note_id',function($data){
+                                        return "<a href='#'>".@$data->credit_note_id."</a>";
+                                    })
                                     ->addColumn('invoice',function($data){
                                         return "<a href=".route('admin.accounts.invoices.get_invoice', ['id'=>$data->invoice->hashid])." target='_blank'>".@$data->invoice->invoice_id."</a>";
                                     })
@@ -87,6 +90,7 @@ class CreditNoteController extends Controller
                                             $search = $req->search;
                                             $search_query->orWhere('created_at', 'LIKE', "%$search%")
                                                         ->orWhere('amount', 'LIKE', "%$search%")
+                                                        ->orWhere('credit_note_id', 'LIKE', "%$search%")
                                                         ->orWhereHas('user',function($q) use ($search){
                                                                 $q->whereLike(['name','username'], '%'.$search.'%');
                                                             })
@@ -101,7 +105,7 @@ class CreditNoteController extends Controller
 
                                     
                                 })
-                                ->rawColumns(['reciever_name', 'action', 'invoice'])
+                                ->rawColumns(['reciever_name', 'action', 'invoice', 'credit_note_id'])
                                 ->make(true);
             }
         $data = array(

@@ -24,6 +24,13 @@ class CronController extends Controller
 {   
     private $user_id = null;
 
+    public function __construct(Request $req)
+    {
+        if($req->ip() != '127.0.0.1'){
+            abort(404);
+        }
+    }
+
     public function userExpiry(){
         $now    = date('Y-m-d');
         
@@ -397,5 +404,29 @@ class CronController extends Controller
             }
         }
         dd("Send sms to $count users");
+    }
+
+    public function resetQoutaUnapaidUsers(){
+        $users = User::with(['primary_package'])->where('paid', 0)->where('qt_enabled',1)->where('qt_expired', 1)->get();//find user
+        $counter = 0;
+        foreach($users AS $user){
+            $user_qt_expired = $user->qt_expired;
+            if($user->qt_expired == 1){
+                $user->qt_expired = 0;
+                $user->c_package  = $user->package;//replace current package with primay package
+                //update raduesrgroup table because we have updated the package
+                RadUserGroup::where('username',$user->username)->update(['groupname'=>$user->primary_package->groupname]);
+            }
+            $user->qt_used = 0;
+            $user->save();
+            
+            if(is_null($user->last_login_time) || $user_qt_expired == 1){//kick user if user if online or qt_expired is 1
+                CommonHelpers::kick_user_from_router($user->hashid);
+            }
+            ++$counter;
+        }
+        dd("$counter users qouta reset");
+        
+
     }
 }
