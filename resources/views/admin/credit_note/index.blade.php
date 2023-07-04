@@ -188,7 +188,7 @@
                         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable:true,searchable:false},
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
                         {data:'reciever_name', name:'receiver.name',orderable:true,searchable:true},
-                        {data:'invoice', name:'invoice.invoice_id',orderable:true,searchable:true},
+                        {data:'invoice', name:'invoice.invoice_id',orderable:true,searchable:false},
                         {data:'added_by', name:'admin.name',orderable:true,searchable:true},
                         // // {data:'type', name:'payments.type',orderable:true,searchable:true},
                         {data:'amount', name:'payments.amount',orderable:true,searchable:true},

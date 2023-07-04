@@ -26,7 +26,7 @@ class CreditNoteController extends Controller
                 return DataTables::of(CreditNote::query())
                                     ->addIndexColumn()
                                     ->addColumn('date',function($data){
-                                        return date('d-M-Y', strtotime($data->created_at));
+                                        return date('d-M-Y H:i:s', strtotime($data->created_at));
                                     })
                                     ->addColumn('reciever_name',function($data){
                                         return "<a href=".route('admin.users.profile',['id'=>hashids_encode(@$data->user->id)])." target='_blank'>".@$data->user->username."</a>";
@@ -84,7 +84,7 @@ class CreditNoteController extends Controller
 
                                     if(isset($req->search)){
                                         $query->where(function($search_query) use ($req){
-                                            $search = $req->search['value'];
+                                            $search = $req->search;
                                             $search_query->orWhere('created_at', 'LIKE', "%$search%")
                                                         ->orWhere('amount', 'LIKE', "%$search%")
                                                         ->orWhereHas('user',function($q) use ($search){
@@ -92,6 +92,9 @@ class CreditNoteController extends Controller
                                                             })
                                                         ->orWhereHas('admin',function($q) use ($search){
                                                             $q->whereLike(['name','username'], '%'.$search.'%');
+                                                        })
+                                                        ->orWhereHas('invoice',function($q) use ($search){
+                                                            $q->whereLike(['invoice_id'], '%'.$search.'%');
                                                         });      
                                         });
                                     }
@@ -181,6 +184,7 @@ class CreditNoteController extends Controller
         $html = '';
         $invoices = Invoice::where('user_id', hashids_decode($id))
                     ->whereBetween('created_at', [now()->subMonth(7)->format('Y-m-d'), now()->format('Y-m-d')])
+                    ->latest()
                     ->get()->map(function($data) use (&$html){
                         $html .= "<option value='$data->hashid'>$data->invoice_id</option>";
                     });
