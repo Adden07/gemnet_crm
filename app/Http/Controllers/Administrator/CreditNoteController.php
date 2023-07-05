@@ -189,7 +189,9 @@ class CreditNoteController extends Controller
         
         $html = '';
         $invoices = Invoice::where('user_id', hashids_decode($id))
-                    ->whereBetween('created_at', [now()->subMonth(7)->format('Y-m-d'), now()->format('Y-m-d')])
+                    // ->whereBetween('created_at', [now()->subMonth(6)->format('Y-m-d'), now()->format('Y-m-d')])
+                    ->whereDate('created_at', '>=', now()->subMonth(6)->format('Y-m-d'))
+                    ->whereDate('created_at', '<=', now()->format('Y-m-d'))
                     ->latest()
                     ->get()->map(function($data) use (&$html){
                         $html .= "<option value='$data->hashid'>$data->invoice_id</option>";
