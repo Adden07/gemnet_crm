@@ -24,12 +24,13 @@ class CronController extends Controller
 {   
     private $user_id = null;
 
-    public function __construct(Request $req)
-    {
-        // if($req->ip() != '127.0.0.1'){
-        //     abort(404);
-        // }
-    }
+    // public function __construct(Request $req)
+    // {   
+    //     dd('done');
+    //     // if($req->ip() != '127.0.0.1'){
+    //     //     abort(404);
+    //     // }
+    // }
 
     public function userExpiry(){
         $now    = date('Y-m-d');
