@@ -41,7 +41,7 @@
         <select class="form-control package_id @if(!empty($user_package_id)) disabled @endif" name="package_id" id="package_id">
             <option value="">Select Package</option>
             @foreach($packages AS $package)
-                <option value="{{ $package->hashid }}" @if(@$user->package == $package->id) selected @endif>{{ $package->name }}</option>
+                <option value="{{ $package->hashid }}" @if(@$user->package == $package->id) selected @endif data-otc="{{ $package->otc }}">{{ $package->name }}</option>
             @endforeach
         </select>
     </div>

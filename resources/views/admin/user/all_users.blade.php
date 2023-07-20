@@ -391,22 +391,27 @@
         route           = route.replace(':package_id', package_id);
         route           = route.replace(':user_id', user_id);
         var total_amount=0;
+        var month_type  = $('#month_type').find(':selected').val();
+        
         getAjaxRequests(route, '', 'GET', function(resp){
             $('#new_expiration').html(resp.new_expiration_date);
             $('#package_price').html(resp.package_price.toLocaleString('en-US'));
             $('#renew_package_name').html(resp.renew_package_name);
             
             total_amount += parseInt(resp.package_price);
-            //resp.user_status == 'registered'
-            if(true){
+
+            if(resp.user_status == 'registered' || month_type == 'full_year'){
                 $('#package_price_tab').removeClass('d-none');
-                $('#otc_price').html(resp.otc.toLocaleString('en-US'));
                 
+                $('#otc_price').html(resp.otc.toLocaleString('en-US'));
                 $('#otc_tab').removeClass('d-none');
                 
                 if(resp.otc != false){
                     total_amount += parseInt(resp.otc);
                 }
+            }else{
+                $('#otc_tab').addClass('d-none');
+
             }
             $('#total_amount').html(total_amount.toLocaleString('en-US'));
             $('#total_amount_tab').removeClass('d-none');
@@ -448,7 +453,6 @@
         }else if(user_status != 'registered'){
             $('#otc_div').addClass('d-none');
         }
-        $('#package_id').trigger("change");
     });
 </script>
 @endsection
