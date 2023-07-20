@@ -397,8 +397,8 @@
             $('#renew_package_name').html(resp.renew_package_name);
             
             total_amount += parseInt(resp.package_price);
-
-            if(resp.user_status == 'registered'){
+            //resp.user_status == 'registered'
+            if(true){
                 $('#package_price_tab').removeClass('d-none');
                 $('#otc_price').html(resp.otc.toLocaleString('en-US'));
                 
@@ -448,6 +448,7 @@
         }else if(user_status != 'registered'){
             $('#otc_div').addClass('d-none');
         }
+        $('#package_id').trigger("change");
     });
 </script>
 @endsection
