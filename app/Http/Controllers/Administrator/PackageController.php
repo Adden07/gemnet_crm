@@ -1034,9 +1034,9 @@ class PackageController extends Controller
         }else{
             $new_expiration_date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
         }
-        if($user->status == 'registered'){
+        // if($user->status == 'registered'){
             $otc = $package->otc;
-        }
+        //}
 
         return response()->json([
             'new_expiration_date'   => $new_expiration_date,

@@ -438,5 +438,16 @@
             $('#otc_tab').addClass('d-none');
         }
     });
+
+    $(document).on('change', '#month_type', function(){
+        let user_status = $('#hidden_user_status').val();
+        let month_type  = $(this).val();
+        
+        if(user_status != 'registered' && month_type == 'full_year'){
+            $('#otc_div').removeClass('d-none');
+        }else if(user_status != 'registered'){
+            $('#otc_div').addClass('d-none');
+        }
+    });
 </script>
 @endsection

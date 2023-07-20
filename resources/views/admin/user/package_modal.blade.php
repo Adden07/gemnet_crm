@@ -128,16 +128,15 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
         </span>
     @endif --}}
 </div>
+ 
+<div class="form-group @if($user->status != 'registered') d-none @endif" id="otc_div">
+    <label for="">One Time Charges</label>
+    <select class="form-control" name="otc" id="otc">
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+    </select>
+</div>
 
-@if(empty($user->current_expiration_date))
-    <div class="form-group">
-        <label for="">One Time Charges</label>
-        <select class="form-control" name="otc" id="otc">
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-        </select>
-    </div>
-@endif
 
 @if(!empty($user->current_expiration_date))
     <div class="">
@@ -202,7 +201,7 @@ $current_expiration = strtotime(date('Y-m-d',strtotime($user->current_expiration
     </div>
 @endif
 
-<input type="hidden" class="form-control " id="" name="status" value="{{ $user->status }}">
+<input type="hidden" class="form-control " id="hidden_user_status" name="status" value="{{ $user->status }}">
 <input type="hidden" class="form-control" id="username" name="username"  value="{{ $user->username }}">
 <input type="hidden" name="user_id" id="user_id" value="{{ $user->hashid }}">
 
