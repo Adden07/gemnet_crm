@@ -343,7 +343,7 @@ class CommonHelpers
     }
 
     public static function sendSms($mobile_no, $message, $sms_type=null){
-        // return 'Success';
+        return 'Success';
         // return 'Success';
 
         $setting = Cache::get('edit_setting');
