@@ -161,14 +161,39 @@
                     <form action="{{ route('admin.users.update_info') }}" method="POST" class="ajaxForm" id="personal_info_form">
                         @csrf
                         <table class="table">
+                            @if($user_details->user_type == 'company')
+                                <tr>
+                                    <th>Business Name</th>
+                                    <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
+                                        <input type="text" class="form-control border-0" disabled name="business_name" id="business_name" data-ov="{{ $user_details->business_name }}" value="{{ $user_details->business_name }}">
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <th>Name</th>
                                 <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="name" id="name" data-ov="{{ $user_details->name }}" value="{{ $user_details->name }}"></td>
                             </tr>
                             <tr>
-                                <th>NIC</th>
-                                <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="nic" id="nic" data-ov="{{ $user_details->nic }}" value="{{ $user_details->nic }}"></td>
+                                <th>Email</th>
+                                <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
+                                    <input type="text" class="form-control border-0" disabled name="email" id="email" data-ov="{{ $user_details->email }}" value="{{ $user_details->email }}">
+                                </td>
                             </tr>
+                            @if($user_details->user_type == 'individual')
+                                <tr>
+                                    <th>NIC</th>
+                                    <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="nic" id="nic" data-ov="{{ $user_details->nic }}" value="{{ $user_details->nic }}"></td>
+                                </tr>
+                                <tr>
+                                    <th>NTN</th>
+                                    <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="ntn" id="ntn" data-ov="{{ $user_details->ntn }}" value="{{ $user_details->ntn }}"></td>
+                                </tr>
+                            @else 
+                                <tr>
+                                    <th>NTN</th>
+                                    <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="ntn" id="ntn" data-ov="{{ $user_details->ntn }}" value="{{ $user_details->ntn }}"></td>
+                                </tr>
+                            @endif
                             <tr>
                                 <th>Mobile</th>
                                 <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
@@ -221,6 +246,7 @@
                         </table>
                         <div class="row">
                             <div class="col-md-12">
+                                <input type="hidden" name="user_type" id="user_type" value="{{ $user_details->user_type }}">
                                 <input type="hidden" name="user_id" value="{{ $user_details->hashid }}">
                                 <input type="submit" class="btn btn-primary float-right d-none" value="update" id="personal_info_form_submit">
                             </div>
@@ -456,6 +482,12 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    @if(($user_details->radreply->where('attribute', 'Framed-IP-Address')->isNotEmpty()))
+                                    <tr>
+                                        <th>Static IP</th>
+                                        <td>{{ $user_details->radreply->where('attribute', 'Framed-IP-Address') }}</td>
+                                    </tr>
+                                    @endif
                                     <!--display macaddress when not null-->
                                     {{-- @if($user_details->macaddress != null)
                                         <tr>
@@ -606,12 +638,13 @@
                                     @endif
                                     <tr>
                                         <th>Sales Person</th>
-                                        <td>{{ @$user_details->salePerson->username }}</td>
+                                        <td>{{ @$user_details->fieldEngineer->username }}</td>
+
                                     </tr>
                                     {{-- {{ dd($user_details) }} --}}
                                     <tr>
                                         <th>Field Enginner</th>
-                                        <td>{{ @$user_details->fieldEngineer->username }}</td>
+                                        <td>{{ @$user_details->salePerson->username }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -1372,7 +1405,7 @@
             var new_val = $(this).val();
             var old_val = $(this).data('ov');   
 
-            if(id == 'name' || id == 'nic' || id == 'address'){
+            if(id == 'name' || id == 'nic' || id == 'address' || id == 'email' || id == 'business_name' || id == 'ntn'){
                 if(new_val != old_val){
                     break_out = false;
                 }
@@ -1564,6 +1597,7 @@
     */
     $('#personal_info_form input').keyup(function(){
        var result =  detectChangesInPersonaInForm();
+
        if(result == false){
             $('#personal_info_form_submit').removeClass('d-none');
         }else{

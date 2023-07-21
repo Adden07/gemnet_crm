@@ -110,4 +110,8 @@ class User extends Model
         return $this->hasMany(Payment::class, 'receiver_id', 'id');
     }
 
+    public function radreply(){
+        return $this->hasMany(RadReply::class, 'username', 'username');
+    }
+
 }

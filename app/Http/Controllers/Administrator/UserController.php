@@ -706,7 +706,7 @@ class UserController extends Controller
 
     //update user personal info
     public function updateInfo(Request $req){
-
+        // dd('done');
         if(CommonHelpers::rights('enabled-user','view-user')){
             return redirect()->route('admin.home');
         }
@@ -719,7 +719,11 @@ class UserController extends Controller
                 'address'           => ['required', 'string' ],
                 'city_id'           => ['required'],
                 'area_id'           => ['nullable'],
-                'subarea_id'        => ['nullable']
+                'subarea_id'        => ['nullable'],
+                'email'             => ['required', 'email'],
+                'user_type'         => ['required', 'in:company,individual'],
+                'business_name'     => [Rule::requiredIf($req->user_type == 'company')],
+                'ntn'               => [Rule::requiredIf($req->user_type == 'company')] 
             ];
 
             $validator = Validator::make($req->all(),$rules);
@@ -731,7 +735,7 @@ class UserController extends Controller
             
             $user       = User::findOrFail(hashids_decode($req->user_id));
             $msg        = 'User Personal Info Updated Successfully';
-            $activity   = '';
+            $activity   = "update user info ($user->username)";
             
 
 
@@ -739,9 +743,12 @@ class UserController extends Controller
             $user->area_id     = @hashids_decode($req->area_id) ?? null;
             $user->subarea_id  = @hashids_decode($req->subarea_id) ?? null;
             $user->name        = $req->name;
+            $user->email        = $req->email;
             $user->nic         = $req->nic;
             $user->mobile      = '92'.$req->mobile;
             $user->address     = $req->address;
+            $user->business_name     = $req->business_name;
+            $user->ntn     = $req->ntn;
             $user->save();
 
             CommonHelpers::activity_logs($activity);

@@ -379,7 +379,7 @@ class PaymentController extends Controller
         if($req->ajax()){
             $data =                 Payment::with(['admin', 'receiver'])
                                             ->select('payments.*')
-                                            ->where('type', 'online');
+                                            ->whereIn('type', ['online', 'cheque']);
 
             return DataTables::of($data)
                                 ->addIndexColumn()

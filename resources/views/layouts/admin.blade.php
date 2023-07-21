@@ -187,7 +187,7 @@
                     </button>
                 </li>
                 
-                @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
+                {{-- @if(auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'superadmin')
                     @if(auth()->user()->credit_limit != 0)
                         <li class="mr-3">
                             <h4 class="text-white mt-3">Credit Limit: {{ number_format(auth()->user()->credit_limit,2) }}</h4>
@@ -196,7 +196,7 @@
                     <li class="mr-3">
                         <h4 class="text-white mt-3">Balance: {{ number_format(auth()->user()->balance,2) }}</h4>
                     </li>
-                @endif
+                @endif --}}
                 
                 <li>
                     <h4 class="text-white mt-3">{{ ucwords(auth()->user()->user_type) }}</h4>

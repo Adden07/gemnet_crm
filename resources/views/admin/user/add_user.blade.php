@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-6 compy @if(@$edit_user->user_type != 'company') d-none @endif">
+                    <div class="form-group col-md-6">
                         <label for="name">NTN<span class="text-danger">*</span></label>
                         <input type="string" name="ntn"   placeholder="Enter NTN" value="{{ @$edit_user->ntn }}" class="form-control" id="ntn">
                     </div>
