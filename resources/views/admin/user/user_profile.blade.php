@@ -184,10 +184,12 @@
                                     <th>NIC</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="nic" id="nic" data-ov="{{ $user_details->nic }}" value="{{ $user_details->nic }}"></td>
                                 </tr>
+                                @if(!empty($user->ntn))
                                 <tr>
                                     <th>NTN</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="ntn" id="ntn" data-ov="{{ $user_details->ntn }}" value="{{ $user_details->ntn }}"></td>
                                 </tr>
+                                @endif
                             @else 
                                 <tr>
                                     <th>NTN</th>
@@ -485,7 +487,7 @@
                                     @if(($user_details->radreply->where('attribute', 'Framed-IP-Address')->isNotEmpty()))
                                     <tr>
                                         <th>Static IP</th>
-                                        <td>{{ $user_details->radreply->where('attribute', 'Framed-IP-Address') }}</td>
+                                        <td>{{ $user_details->radreply->where('attribute', 'Framed-IP-Address')->value }}</td>
                                     </tr>
                                     @endif
                                     <!--display macaddress when not null-->
