@@ -487,7 +487,7 @@
                                     @if(($user_details->radreply->where('attribute', 'Framed-IP-Address')->isNotEmpty()))
                                     <tr>
                                         <th>Static IP</th>
-                                        <td>{{ $user_details->radreply->where('attribute', 'Framed-IP-Address')->value }}</td>
+                                        <td>{{ $user_details->radreply->where('attribute', 'Framed-IP-Address')->first()->value }}</td>
                                     </tr>
                                     @endif
                                     <!--display macaddress when not null-->
