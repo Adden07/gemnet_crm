@@ -42,7 +42,7 @@ class PackageController extends Controller
 
     //active and renew user package
     public function updateUserPackage(Request $req){
-
+        // dd($req->all());
         $rules = [
             'username'   => ['required', 'max:191'],
             'status'     => ['required', 'in:registered,active,expired'],
@@ -87,6 +87,7 @@ class PackageController extends Controller
         //     // $date    = Carbon::now()->addMonth()->format('d-M-Y 12:00');//get date of 1 month from today date 
         //     $date = now()->addMonth($package->duration)->format('d-M-Y 12:00');
         // }
+
         $date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
         //when renew the package then check package exists or not
         // if(auth()->user()->user_type != 'admin'){//if user is not admin
@@ -119,43 +120,8 @@ class PackageController extends Controller
                 }
             }
             
-            // if($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
-            //     return [
-            //         'error' => 'User balance is less than the package price'
-            //     ];
-            // }
-            // elseif(@$validated['otc'] == 1 && $user->user_current_balance < ($package->price+$package->otc+$mrc_total) && $user->credit_limit == 0){
-            //     return [
-            //         'error' => 'User balance is less than the package price and OTC price'
-            //     ];    
-            // }
-            // elseif($user->credit_limit > (intval($package->price+$mrc_total))){//
-            //     if(($user->credit_limit-abs($user->user_current_balance)) < (intval($package->price+$mrc_total))){
-            //         return [
-            //             'error' => 'User credit limit is less than the package price'
-            //         ];
-            //     }
-            // }elseif($user->credit_limit+$user->user_current_balance < (intval($package->price+$mrc_total))){
-            //     return [
-            //         'error' => 'User credit limit is less than the package price'
-            //     ];
-            // }
         }
-        // dd('done');
-        // dd('done');
-        // if($validated['status'] == 'registered'){//if user is register and its current balance is less than package price + otc through errors
-        //     if($user->user_current_balance < ($package->price+$package->otc)){
-        //         return [
-        //             'error' => 'User balance is less than the package price and OTC price'
-        //         ];
-        //     }
-        // }
-        // //if user curen balance is less than the package price than throw error
-        // if($user->user_current_balance < $package->price){
-        //     return [
-        //         'error' => 'User balance is less than the package price'
-        //     ];
-        // }
+
         
         DB::transaction(function() use ($validated,$date, &$user, &$package, &$mrc_sales_tax, &$mrc_adv_inc_tax, &$otc_sales_tax, &$otc_adv_inc_tax, &$mrc_total, &$otc_total, &$site_setting){
             
@@ -178,38 +144,8 @@ class PackageController extends Controller
                 // global $msg          = 'Package Renewed Successfully';
                 $GLOBALS['msg'] = 'Package Renewed Successfully';
                 
-                //if status is expired then calculate the new date from today's date
-                //if($validated['status'] == 'expired'){
-                    //if month type is month and status is expired then get the current date otherwise get the calendar date for expiry
-                    // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
-                    //     $date = date('Y-m-d 12:00');
-                    // }else{
-                    //     $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
-                    // }
-                //}else{//if status is not expired then calculate the date from the db date
-                    //if month type is month and status is expired then get the current date otherwise get the calendat date for expiry
-                    // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){
-                    //     $date = $user->current_expiration_date;
-                    // }else{
-                    //     $date = date('Y-m-d 12:00',strtotime($validated['calendar']));
-                    // }
-                    //$date = $user->current_expiration_date;
-                //}
-
-                //create expiry date 
-                // if($validated['month_type'] == 'monthly' && empty($validated['calendar'])){//expir
-                //     $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                //     $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
-                //     $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
-                // }else{//expiry date from calendar date
-                //     $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                //     $date             = Carbon::parse($date)->format('d-M-Y 12.00');
-                //     $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
-                // }
                 $current_exp_date =  date('Y-m-d H:i:s',strtotime($date));
-                // $date             = Carbon::parse($date)->addMonth()->format('d-M-Y 12.00');
                 $new_exp_date     = date('Y-m-d H:i:s',strtotime($date));//converting back to DB datetime  format
-                    // dd($new_exp_date);
 
                 $user->renew_by             = auth()->user()->id;
                 $user->renew_date           = date('Y-m-d H:i:s');
@@ -251,7 +187,6 @@ class PackageController extends Controller
             //update user and set status active even status is registered or expired
 
             $user->macs                     = auth()->user()->user_mac;
-            // $user->last_expiration_date     = $current_exp_date;
             $user->save();
             //if its renew then find if its registered then create new record
             $rad_user_group = RadUserGroup::where('username',$user->username)->firstOrNew();
@@ -357,8 +292,7 @@ class PackageController extends Controller
                 PkgQueue::insert($pkg_queue_arr);
             }
 
-            if(isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered' && $user->is_tax == 1 && $user->paid == 1){//if user is register and otc is     true then creat another transaction and invoice
-              
+            if((isset($validated['otc']) && $validated['otc'] == 1 && $validated['status'] == 'registered' && $user->is_tax == 1 && $user->paid == 1) || ($validated['month_type'] == 'full_year') || $validated['month_type'] == 'half_year'){//if user is register and otc is     true then creat another transaction and invoice
                 $transaction_id = rand(1111111111,9999999999);
                 $transaction_arr = array(// array for transaction table
                     'transaction_id'    => $transaction_id,
@@ -1036,6 +970,7 @@ class PackageController extends Controller
         }
         // if($user->status == 'registered'){
             $otc = $package->otc;
+            $otc += ($otc*19.5)/100;
         //}
 
         return response()->json([

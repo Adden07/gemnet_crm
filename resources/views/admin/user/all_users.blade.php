@@ -400,7 +400,8 @@
             
             total_amount += parseInt(resp.package_price);
 
-            if(resp.user_status == 'registered' || month_type == 'full_year'){
+            if(resp.user_status == 'registered' || month_type == 'full_year' || month_type == 'half_year'){
+                // alert('done');
                 $('#package_price_tab').removeClass('d-none');
                 
                 $('#otc_price').html(resp.otc.toLocaleString('en-US'));
@@ -444,15 +445,15 @@
         }
     });
 
-    $(document).on('change', '#month_type', function(){
-        let user_status = $('#hidden_user_status').val();
-        let month_type  = $(this).val();
+    // $(document).on('change', '#month_type', function(){
+    //     let user_status = $('#hidden_user_status').val();
+    //     let month_type  = $(this).val();
         
-        if(user_status != 'registered' && month_type == 'full_year'){
-            $('#otc_div').removeClass('d-none');
-        }else if(user_status != 'registered'){
-            $('#otc_div').addClass('d-none');
-        }
-    });
+    //     if(user_status != 'registered' && month_type == 'full_year'){
+    //         $('#otc_div').removeClass('d-none');
+    //     }else if(user_status != 'registered'){
+    //         $('#otc_div').addClass('d-none');
+    //     }
+    // });
 </script>
 @endsection
