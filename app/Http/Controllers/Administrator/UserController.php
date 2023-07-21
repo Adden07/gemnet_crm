@@ -714,7 +714,7 @@ class UserController extends Controller
         if(isset($req->user_id) && !empty($req->user_id)){
             $rules = [
                 'name'              => ['required', 'string', 'max:50'],
-                'nic'               => ['required', 'string', 'min:15', 'max:15'],
+                'nic'               => [Rule::requiredIf($req->user_type != 'company'), 'string', 'min:15', 'max:15'],
                 'mobile'            => ['required', 'numeric', 'digits:10'],
                 'address'           => ['required', 'string' ],
                 'city_id'           => ['required'],
