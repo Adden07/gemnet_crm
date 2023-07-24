@@ -130,14 +130,13 @@ class PackageController extends Controller
             $last_package           = $user->package;
             $user_current_balance   = $user->user_current_balance;
             
-            if($user->paid == 1){
+            if(($user->paid == 1 && $user->status == 'registered') || in_array($validated['month_type'], ['half_year', 'full_year'])){
                 //calculat user new balance
                 $user_new_balance       = $user_current_balance-($package->price+$otc_total+$mrc_total);
                 $user_new_balance       -= (@$validated['otc'] == 1) ? $package->otc : 0;
             }else{
                 $user_new_balance       = $user_current_balance;
             }
-
             //when renew the package add the one month in last expiration date            
             if($validated['status'] == 'active' || $validated['status'] == 'expired'){
                 $activity_log = "renewed user - ($user->username)";
