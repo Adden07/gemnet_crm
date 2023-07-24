@@ -184,12 +184,12 @@
                                     <th>NIC</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="nic" id="nic" data-ov="{{ $user_details->nic }}" value="{{ $user_details->nic }}"></td>
                                 </tr>
-                                @if(!empty($user->ntn))
+                                {{-- @if(!empty($user->ntn)) --}}
                                 <tr>
                                     <th>NTN</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="ntn" id="ntn" data-ov="{{ $user_details->ntn }}" value="{{ $user_details->ntn }}"></td>
                                 </tr>
-                                @endif
+                                {{-- @endif --}}
                             @else 
                                 <tr>
                                     <th>NTN</th>
@@ -1862,6 +1862,9 @@
             $('#upgrade_package_price').html(resp.upgrade_package_price);
         });
     });
+
+    $('#ntn').mask('0000000-0');
+
     
 </script>
 @endsection

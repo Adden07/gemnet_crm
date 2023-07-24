@@ -89,6 +89,7 @@ class PackageController extends Controller
         // }
 
         $date = now()->parse($user->current_expiration_date)->addMonth($package->duration)->format('d-M-Y 12:00');
+        // dd($date);
         //when renew the package then check package exists or not
         // if(auth()->user()->user_type != 'admin'){//if user is not admin
         //     if($validated['status'] == 'active'){//if its renew
@@ -130,7 +131,7 @@ class PackageController extends Controller
             $last_package           = $user->package;
             $user_current_balance   = $user->user_current_balance;
             
-            if(($user->paid == 1 && $user->status == 'registered') || in_array($validated['month_type'], ['half_year', 'full_year'])){
+            if(($user->paid == 1 && $user->status == 'registered') || in_array($validated['month_type'], ['half_year', 'full_year','promo'])){
                 //calculat user new balance
                 $user_new_balance       = $user_current_balance-($package->price+$otc_total+$mrc_total);
                 $user_new_balance       -= (@$validated['otc'] == 1) ? $package->otc : 0;
@@ -256,7 +257,7 @@ class PackageController extends Controller
                     'type'              => 0,
                     'created_at'        => date('Y-m-d H:i:s')
                 );
-                
+
                 $inv_id     = rand(1111111111,9999999999);
                 Ledger::insert($transaction_arr);
                 //insert data in invoices
@@ -268,7 +269,7 @@ class PackageController extends Controller
                 $invoice->pkg_id            = $package->id;
                 $invoice->pkg_price         = $package->price;
                 $invoice->type              = $package_status;
-                $invoice->current_exp_date  = $current_exp_date;
+                $invoice->current_exp_date  = $last_expiration_date;
                 $invoice->new_exp_date      = $new_exp_date;
                 $invoice->created_at        = date('Y-m-d H:i:s');
                 $invoice->sales_tax         = $mrc_sales_tax;
@@ -324,7 +325,7 @@ class PackageController extends Controller
             }
          
             //if user status is expired and user is online then kick user
-            if($validated['status'] == 'expired' && $user->last_logout_time == null){
+            if(($validated['status'] == 'expired' && $user->last_logout_time == null) || $user->qt_expired == 1){
                 CommonHelpers::kick_user_from_router($validated['user_id']);//kick user
             }
             ($validated['status'] == 'registered') ? 

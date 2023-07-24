@@ -732,10 +732,56 @@ class UserController extends Controller
                 return ['errors'    => $validator->errors()];
             }
             
-            
+ 
             $user       = User::findOrFail(hashids_decode($req->user_id));
             $msg        = 'User Personal Info Updated Successfully';
-            $activity   = "update user info ($user->username)";
+            $activity   = 'updated-personal-info';
+            $city       = City::findorFail(@hashids_decode($req->city_id));
+
+            if(isset($req->area, $req->sub_area)){
+                $area       = Area::with(['subAreas'])->findOrFail(@hashids_decode($req->area_id));
+                $sub_area   = $area->where('area_id', $area->id)->first();
+
+                if($user->area_id != $area->id){
+                    CommonHelpers::activity_logs("updated $user->username area old {$user->area->area_name}  new  $area->area_name");
+                }
+    
+                if($user->subarea_id != $sub_area->id){
+                    CommonHelpers::activity_logs("updated $user->username subarea old {$user->subarea->area_name}  new  $sub_area->area_name");
+                }
+            }
+
+            if($user->name != $req->name){
+                CommonHelpers::activity_logs("updated $user->username name old name $user->name new  $req->name");
+            }
+
+            if($user->nic != $req->nic){
+                CommonHelpers::activity_logs("updated $user->username nic old nic $user->nic new  $req->nic");
+            }
+
+            if($user->mobile != '92'.$req->mobile){
+                CommonHelpers::activity_logs("updated $user->username mobile old mobile $user->mobile new  92$req->mobile");
+            }
+
+            if($user->address != $req->address){
+                CommonHelpers::activity_logs("updated $user->username address old address $user->address new  $req->address");
+            }
+
+            if($user->city_id != $city->id){
+                CommonHelpers::activity_logs("updated $user->username city old {$user->city->city_name}  new  $city->city_name");
+            }
+
+            if($user->email != $req->email){
+                CommonHelpers::activity_logs("updated $user->username email old $user->email  new  $req->area");
+            }
+
+            if($user->business_name != $req->business_name){
+                CommonHelpers::activity_logs("updated $user->username business name old $user->business_name  new  $req->business_name");
+            }
+            
+            if($user->ntn != $req->ntn){
+                CommonHelpers::activity_logs("updated $user->username ntn old $user->ntn  new  $req->ntn");
+            }
             
 
 
@@ -751,7 +797,7 @@ class UserController extends Controller
             $user->ntn     = $req->ntn;
             $user->save();
 
-            CommonHelpers::activity_logs($activity);
+            // CommonHelpers::activity_logs($activity);
 
             return response()->json([
                 'success'   => $msg,
@@ -1716,7 +1762,11 @@ class UserController extends Controller
         
         CommonHelpers::kick_user_from_router($user_id);//kick user
         CommonHelpers::activity_logs(" Old expiration  $user->last_expiration_date new expiration $user->current_expiration_date ($user->username)");
-
+        
+        //if user status is expired and user is online then kick user
+        if(($user->status == 'expired' && $user->last_logout_time == null)){
+            CommonHelpers::kick_user_from_router($user_id);//kick user
+        }
         return response()->json([
             'success'   => 'User expiration updated successfully',
             'reload'    => true
