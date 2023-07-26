@@ -154,8 +154,9 @@ class PackageController extends Controller
                 $package_status             =1;
                 
                 if(isset($validated['renew_type']) && @$validated['renew_type'] == 'queue'){
-                    $user->user_current_balance     = $user_new_balance;
+                    $user->user_current_balance     = ($user_current_balance-($package->price+$mrc_total))-($package->otc+$otc_total);
                 }else{
+                    // dd($package->price+$mrc_total);
                     $user->status                   = 'active';
                     $user->qt_total                 = $package->volume;
                     $user->qt_used                  = 0;
@@ -164,7 +165,7 @@ class PackageController extends Controller
                     $user->c_package                = $package->id;
                     $user->current_expiration_date  = $new_exp_date;
                     $user->qt_expired               = 0;
-                    $user->user_current_balance     = $user_new_balance;
+                    $user->user_current_balance     = ($user_current_balance-($package->price+$mrc_total))-($package->otc+$otc_total);
                 }
             }else{//means user is registered
                 $package_status             =0;
@@ -257,7 +258,7 @@ class PackageController extends Controller
                     'type'              => 0,
                     'created_at'        => date('Y-m-d H:i:s')
                 );
-
+                // dd($package->price+$mrc_total);
                 $inv_id     = rand(1111111111,9999999999);
                 Ledger::insert($transaction_arr);
                 //insert data in invoices
