@@ -173,23 +173,25 @@
                                 <th>Name</th>
                                 <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="name" id="name" data-ov="{{ $user_details->name }}" value="{{ $user_details->name }}"></td>
                             </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
-                                    <input type="text" class="form-control border-0" disabled name="email" id="email" data-ov="{{ $user_details->email }}" value="{{ $user_details->email }}">
-                                </td>
-                            </tr>
+                            @if(!empty($user_details->email))
+                                <tr>
+                                    <th>Email</th>
+                                    <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;">
+                                        <input type="text" class="form-control border-0" disabled name="email" id="email" data-ov="{{ $user_details->email }}" value="{{ $user_details->email }}">
+                                    </td>
+                                </tr>
+                            @endif
                             @if($user_details->user_type == 'individual')
                                 <tr>
                                     <th>NIC</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="nic" id="nic" data-ov="{{ $user_details->nic }}" value="{{ $user_details->nic }}"></td>
                                 </tr>
-                                {{-- @if(!empty($user->ntn)) --}}
+                                @if(!empty($user->ntn))
                                 <tr>
                                     <th>NTN</th>
                                     <td style="vertical-align: middle;padding-top: 0;padding-bottom: 0;"><input type="text" class="form-control border-0" disabled name="ntn" id="ntn" data-ov="{{ $user_details->ntn }}" value="{{ $user_details->ntn }}"></td>
                                 </tr>
-                                {{-- @endif --}}
+                                @endif
                             @else 
                                 <tr>
                                     <th>NTN</th>
