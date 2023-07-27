@@ -408,7 +408,7 @@ class CronController extends Controller
     }
 
     public function resetQoutaUnapaidUsers(){
-        $users = User::with(['primary_package'])->where('paid', 0)->where('qt_enabled',1)->where('qt_expired', 1)->get();//find user
+        $users = User::with(['primary_package'])->where('paid', 0)->where('qt_expired', 1)->get();//find user
         // dd($users);
         $counter = 0;
         foreach($users AS $user){
