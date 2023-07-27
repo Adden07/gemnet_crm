@@ -8,11 +8,11 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active">Users</li>
-                    <li class="breadcrumb-item active">Qouta Over </li>
+                    <li class="breadcrumb-item active">Qouta Reset </li>
 
                 </ol>
             </div>
-            <h4 class="page-title">Qouta Over</h4>
+            <h4 class="page-title">Qouta Reset</h4>
         </div>
     </div>
 </div>
