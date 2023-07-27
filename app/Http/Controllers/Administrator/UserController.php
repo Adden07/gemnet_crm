@@ -720,7 +720,7 @@ class UserController extends Controller
                 'city_id'           => ['required'],
                 'area_id'           => ['nullable'],
                 'subarea_id'        => ['nullable'],
-                'email'             => ['required', 'email'],
+                'email'             => ['nullable', 'email'],
                 'user_type'         => ['required', 'in:company,individual'],
                 'business_name'     => [Rule::requiredIf($req->user_type == 'company')],
                 'ntn'               => [Rule::requiredIf($req->user_type == 'company')] 
