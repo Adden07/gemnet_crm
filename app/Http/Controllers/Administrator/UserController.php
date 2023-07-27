@@ -37,6 +37,7 @@ use App\Models\CreditNote;
 use App\Models\FileLog;
 use App\Models\PkgQueue;
 use App\Models\QtOver;
+use App\Models\QtReset;
 use App\Models\Remark;
 use App\Models\Remarks;
 use App\Models\RemarkType;
@@ -1331,7 +1332,11 @@ class UserController extends Controller
             }
             $user->qt_used = 0;
             $user->save();
-            
+            QtReset::insert([
+                'user_id'       => $user->id,
+                'package_id'    => $user->package,
+                'type'          => 'manual'
+            ]);
             if(is_null($user->last_login_time) || $user_qt_expired == 1){//kick user if user if online or qt_expired is 1
                 CommonHelpers::kick_user_from_router($id);
             }
@@ -2484,5 +2489,69 @@ class UserController extends Controller
         return response()->json([
             'html'  => view('admin.user.get_user_profile', ['user_details'=>User::findOrFail(hashids_decode($id))])->render()
         ]);
+    }
+
+    public function qoutaReset(Request $req){
+        
+        if(CommonHelpers::rights('enabled-user','quota-user')){
+            return redirect()->route('admin.home');
+        }
+
+        if($req->ajax()){
+            return DataTables::of(QtReset::with(['user', 'package']))
+                                ->addIndexColumn()
+                                ->addColumn('date', function($data){
+                                    return date('d-M-Y H:i:s', strtotime($data->created_at));
+                                })
+                                ->addColumn('type', function($data){
+                                    return $data->type;
+                                })
+                                ->addColumn('name',function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>$data->user->hashid])." target='_blank'>{$data->user->name}-({$data->user->username})</a>";
+                                })
+                                ->addColumn('package', function($data){
+                                    return $data->package->name;
+                                })
+                                // ->addColumn('default_package', function($data){
+                                //     return $data->defaultPackage->name;
+                                // })
+                                ->filter(function($query) use ($req){
+                                    if(isset($req->user_id)){//get user wise
+                                        $query->where('user_id', hashids_decode($req->user_id));
+                                    }
+                                    if(isset($req->from_date) && isset($req->to_date)){//get date wise
+                                        $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                    }
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search['value'];
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('type', 'LIKE', "%$search%")
+                                                        // ->orWhereHas('defaultPackage',function($q) use ($search){
+                                                        //     $q->whereLike(['name'], '%'.$search.'%');
+
+                                                        // })
+                                                        ->orWhereHas('package',function($q) use ($search){
+                                                            $q->whereLike(['name'], '%'.$search.'%');
+
+                                                        })
+                                                        ->orWhereHas('user',function($q) use ($search){
+                                                            $q->whereLike(['name', 'username', 'current_expiration_date'], '%'.$search.'%');
+
+                                                        });     
+                                        });
+                                    }
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', $o);
+                                })
+                                ->rawColumns(['name', 'date'])
+                                ->toJson();
+        }
+        $data = array(
+            'title' => 'Qouta Over',
+            'users' => QtReset::with(['user'])->get(),
+        );
+        return view('admin.user.qouta_reset')->with($data);
     }
 }

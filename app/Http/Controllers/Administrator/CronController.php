@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\PkgQueue;
 use App\Models\QtOver;
+use App\Models\QtReset;
 use Illuminate\Http\Request;
 use App\Models\RadCheck;
 use App\Models\RadUserGroup;
@@ -113,9 +114,11 @@ class CronController extends Controller
                 $u->c_package = $user->current_package->default_package->id;
                 $u->qt_expired = 1;
                 $u->save();
+                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'qouta_over', $user->mobile, null,null );
+
                 //update rad user group
                 RadUserGroup::where('username',$user->username)->update(['groupname'=>$user->current_package->default_package->groupname]);
-                CommonHelpers::sendSmsAndSaveLog($user->id, $user->username, 'qouta_over', $user->mobile, null,null );
+
                 if(CommonHelpers::kick_user_from_router(hashids_encode($user->id))){
                     $kicked_users_count += 1;
                 }
@@ -406,6 +409,7 @@ class CronController extends Controller
 
     public function resetQoutaUnapaidUsers(){
         $users = User::with(['primary_package'])->where('paid', 0)->where('qt_enabled',1)->where('qt_expired', 1)->get();//find user
+        // dd($users);
         $counter = 0;
         foreach($users AS $user){
             $user_qt_expired = $user->qt_expired;
@@ -417,14 +421,16 @@ class CronController extends Controller
             }
             $user->qt_used = 0;
             $user->save();
-            
+            QtReset::insert([
+                'user_id'       => $user->id,
+                'package_id'    => $user->package,
+                'type'          => 'crone'
+            ]);
             if(is_null($user->last_login_time) || $user_qt_expired == 1){//kick user if user if online or qt_expired is 1
                 CommonHelpers::kick_user_from_router($user->hashid);
             }
             ++$counter;
         }
         dd("$counter users qouta reset");
-        
-
     }
 }

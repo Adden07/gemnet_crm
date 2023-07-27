@@ -313,6 +313,9 @@
                                         <a href="{{ route('admin.users.qouta_low') }}">Qouta Low</a>
                                     </li>
                                 @endcan
+                                <li>
+                                    <a href="{{ route('admin.users.qouta_reset') }}">Qouta Reset</a>
+                                </li>
                             </ul>
                         </li>
                     @endcan
