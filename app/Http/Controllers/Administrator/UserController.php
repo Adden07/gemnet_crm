@@ -2493,7 +2493,7 @@ class UserController extends Controller
 
     public function qoutaReset(Request $req){
         
-        if(CommonHelpers::rights('enabled-user','quota-user')){
+        if(CommonHelpers::rights('enabled-user','qouta-reset')){
             return redirect()->route('admin.home');
         }
 
