@@ -75,7 +75,7 @@
             </tr>
             <tr>
                 <th>Total Value Before Taxes</th>
-                <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('pkg_r_cost')+$invoices->sum('sales_tax')) }}</td>
+                <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('pkg_price')+$invoices->sum('sales_tax')) }}</td>
             </tr>
             <tr>
                 <th>Total Adv: Income Tax (FBR)</th>
@@ -83,7 +83,7 @@
             </tr>
             <tr>
                 <th>Total Value After Taxe</th>
-                <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('pkg_r_cost')+$invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
+                <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('pkg_price')+$invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
             </tr>
         </table>
     </div>
@@ -98,7 +98,7 @@
             </tr>
             <tr>
                 <th>Total Revenue (Without Tax)</th>
-                <td>{{ number_format($invoices->sum('pkg_r_cost')) }}</td>
+                <td>{{ number_format($invoices->sum('pkg_price')) }}</td>
             </tr>
             <tr>
                 <th>Total Taxes</th>
@@ -106,7 +106,7 @@
             </tr>
             <tr>
                 <th>Total Revenue (With Taxes)</th>
-                <td>{{ number_format($invoices->sum('pkg_r_cost')+$invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
+                <td>{{ number_format($invoices->sum('pkg_price')+$invoices->sum('sales_tax')+$invoices->sum('adv_inc_tax')) }}</td>
             </tr>
         </table>
     </div>
