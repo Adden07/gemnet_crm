@@ -52,7 +52,7 @@
             </tr>
             <tr>
                 <th>Total Value Before Taxes</th>
-                <td>{{ number_format($invoices->where('sales_tax', '>', 0)->sum('pkg_r_cost')) }}</td>
+                <td>{{ number_format($invoices->where('sales_tax', '>', 0)->sum('pkg_price')) }}</td>
             </tr>
             <tr>
                 <th>Total  Sales Tax (SRB)</th>
@@ -60,7 +60,7 @@
             </tr>
             <tr>
                 <th>Total Value After Taxes</th>
-                <td>{{ number_format($invoices->where('sales_tax', '>', 0)->sum('sales_tax')+$invoices->where('sales_tax', '>', 0)->sum('pkg_r_cost')) }}</td>
+                <td>{{ number_format($invoices->where('sales_tax', '>', 0)->sum('sales_tax')+$invoices->where('sales_tax', '>', 0)->sum('pkg_price')) }}</td>
             </tr>
         </table>
     </div>
