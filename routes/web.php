@@ -254,6 +254,7 @@ Route::namespace('Administrator')->middleware('auth:admin')->name('admin.')->gro
             Route::get('/available-balance/{id}','PaymentController@getBalance')->name('balance');
             Route::get('/delete/{id}', 'PaymentController@delete')->name('delete');
             Route::get('/approve-payments', 'PaymentController@approvePayments')->name('approve_payments');
+            Route::get('/rejected-payments', 'PaymentController@rejectedPayments')->name('rejected_payments');
             Route::match(['get', 'post'],'/approve-payment', 'PaymentController@approvePayment')->name('approve_payment');
             Route::get('/receipt-pdf/{id}', 'PaymentController@receiptPdf')->name('receipt_pdf');
 

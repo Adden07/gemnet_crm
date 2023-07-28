@@ -82,7 +82,7 @@
                 <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('adv_inc_tax')) }}</td>
             </tr>
             <tr>
-                <th>Total Value After Taxe</th>
+                <th>Total Value After Taxes</th>
                 <td>{{ number_format($invoices->where('adv_inc_tax', '>', 0)->sum('pkg_price')+$invoices->where('adv_inc_tax', '>', 0)->sum('sales_tax')+$invoices->where('adv_inc_tax', '>', 0)->sum('adv_inc_tax')) }}</td>
             </tr>
         </table>

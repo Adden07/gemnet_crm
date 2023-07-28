@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\DianujHashidsTrait;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Payment extends Model
 {
-    use HasFactory,DianujHashidsTrait;
+    use HasFactory,DianujHashidsTrait, SoftDeletes;
 
     protected $table = 'payments';
     protected $guarded  = [];

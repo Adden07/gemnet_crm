@@ -470,7 +470,16 @@ class PaymentController extends Controller
                                     }
                                     return $html;
                                 })
-                                
+                                ->addColumn('reject', function($data){
+                                    $html = '';
+                                    if($data->approved_by_id == null){
+                                        $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
+                                    <i class='icon-trash'></i>
+                                        </span>Reject
+                                    </button>";
+                                    }
+                                    return $html;
+                                })
                                 ->filter(function($query) use ($req){
                                     if(isset($req->status) && $req->status != 'all'){
                                         $query->where('status', $req->status);
@@ -503,13 +512,165 @@ class PaymentController extends Controller
                                 ->orderColumn('DT_RowIndex', function($q, $o){
                                     $q->orderBy('created_at', 'asc');
                                 })
-                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'checkbox'])
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'checkbox', 'reject'])
                                 ->make(true);
         }
         $data = array(
             'title'         => 'Approve payments',
         );
         return view('admin.payment.approve_payments')->with($data);
+    }
+
+    public function rejectedPayments(Request $req){
+        
+        if(CommonHelpers::rights('enabled-finance','view-approve-payments')){
+            return redirect()->route('admin.home');
+        }
+        
+        if($req->ajax()){
+            $data =                 Payment::onlyTrashed()->with(['admin', 'receiver'])
+                                            ->select('payments.*')
+                                            ->whereIn('type', ['online', 'cheque']);
+
+            return DataTables::of($data)
+                                ->addIndexColumn()
+                                ->addColumn('checkbox', function ($data) {
+                                    $html = '';
+                                    if($data->status == 0){
+                                        $html = '<input type="checkbox" name="checkbox[]" value="' . $data->hashid . '" onclick="getCheckbox()" class="id_checkbox">';
+                                    }
+                                    return $html;
+                                })
+                                ->addColumn('date',function($data){
+                                    $date = '';
+                                    if(date('l',strtotime($data->created_at)) == 'Saturday')
+                                        $date = "<span class='badge' style='background-color: #0071bd'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Sunday')
+                                        $date = "<span class='badge' style='background-color: #f3872f'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Monday') 
+                                        $date = "<span class='badge' style='background-color: #236e96'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Tuesday')
+                                        $date = "<span class='badge' style='background-color: #ef5a54'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Wednesday')
+                                        $date = "<span class='badge' style='background-color: #8b4f85'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Thursday')
+                                        $date = "<span class='badge' style='background-color: #ca4236'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+                                    elseif(date('l',strtotime($data->created_at)) == 'Friday')
+                                        $date = "<span class='badge' style='background-color: #6867ab'>".date('d-M-Y H:i A',strtotime($data->created_at))."</span>";
+
+                                    return $date;
+                                })
+                                ->addColumn('approved_date',function($data){
+                                    if($data->approved_date != null){
+                                        return date('d-M-Y H:i:s', strtotime($data->approved_date));
+                                    }
+                                    return '';
+                                })
+                                ->addColumn('online_date',function($data){
+                                    if($data->online_date != null){
+                                        return date('d-M-Y H:i:s', strtotime($data->online_date));
+                                    }
+                                    return '';
+                                })
+                                ->addColumn('reciever_name',function($data){
+                                    return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";
+                                })
+                                ->addColumn('added_by',function($data){
+                                    $added_by = '';
+                                    if(@$data->admin->id == 10)
+                                        $added_by = "<span class='badge badge-danger'>".$data->admin->name."</span>";
+                                    else 
+                                        $added_by =  @$data->admin->name."(<strong>".@$data->admin->username."</strong>)";
+                                    
+                                    return $added_by;
+                                })
+                                ->addColumn('amount',function($data){
+                                    return number_format($data->amount);
+                                })
+                                ->addColumn('old_balance',function($data){
+                                    return number_format($data->old_balance);
+                                })
+                                ->addColumn('new_balance',function($data){
+                                    return number_format($data->new_balance);
+                                })
+                                ->addColumn('status', function($data){
+                                        // if($data->status == 0){
+                                        //     $html = '<span class="badge badge-danger">Pending</span>';
+                                        // }else{
+                                        //     $html = '<span class="badge badge-success">Approved</span>';
+                                        // }
+                                        // return $html;
+                                        return '<span class="badge badge-danger">Deleted</span>';
+                                    })
+                                ->addColumn('image', function($data){
+                                    $action = '';
+                                    if(file_exists($data->transaction_image)){
+                                        $action = "<a href=".asset($data->transaction_image)." class='btn btn-primary btn-xs waves-effect waves-light' title='Edit' target='_blank'>
+                                            <i class='icon-eye'></i>
+                                        </a>";
+                                    }
+                                    
+                                   return $action;
+                                })
+                                // ->addColumn('action', function($data){
+                                //     $html = '';
+                                //     if($data->approved_by_id == null){
+                                //         $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.approve_payment', ['id'=>$data->hashid])." class='btn btn-success btn-xs waves-effect waves-light'><span class='btn-label'>
+                                //     <i class='icon-check'></i>
+                                //         </span>Approve
+                                //     </button>";
+                                //     }
+                                //     return $html;
+                                // })
+                                // ->addColumn('reject', function($data){
+                                //     $html = '';
+                                //     if($data->approved_by_id == null){
+                                //         $html = "<button type'button' onclick='ajaxRequest(this)' data-url=".route('admin.accounts.payments.delete', ['id'=>$data->hashid])." class='btn btn-danger btn-xs waves-effect waves-light'><span class='btn-label'>
+                                //     <i class='icon-trash'></i>
+                                //         </span>Reject
+                                //     </button>";
+                                //     }
+                                //     return $html;
+                                // })
+                                ->filter(function($query) use ($req){
+                                    if(isset($req->status) && $req->status != 'all'){
+                                        $query->where('status', $req->status);
+                                    }
+                                    if(isset($req->from_date) && isset($req->to_date)){
+                                        // $query->whereBetween('created_at', [$req->from_date, $req->to_date]);
+                                        $query->whereDate('created_at', '>=', $req->from_date)->whereDate('created_at', '<=', $req->to_date);
+
+                                    }
+                                    
+                                    if(isset($req->search)){
+                                        $query->where(function($search_query) use ($req){
+                                            $search = $req->search['value'];
+                                            $search_query->orWhere('created_at', 'LIKE', "%$search%")
+                                                        ->orWhere('type', 'LIKE', "%$search%")
+                                                        ->orWhere('amount', 'LIKE', "%$search%")
+                                                        ->orWhere('old_balance', 'LIKE', "%$search%")
+                                                        ->orWhere('new_balance', 'LIKE', "%$search%")
+                                                        ->orWhereHas('receiver',function($q) use ($search){
+                                                                $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                                            })
+                                                        ->orWhereHas('admin',function($q) use ($search){
+                                                            $q->whereLike(['name','username'], '%'.$search.'%');
+
+                                                        });      
+                                        });
+                                    }
+                                })
+                                ->orderColumn('DT_RowIndex', function($q, $o){
+                                    $q->orderBy('created_at', 'asc');
+                                })
+                                ->rawColumns(['date', 'approved_date', 'reciever_name', 'added_by', 'status', 'action', 'image', 'checkbox', 'reject'])
+                                ->make(true);
+        }
+        $data = array(
+            'title'         => 'Rejected payments',
+        );
+        return view('admin.payment.rejected_payments')->with($data);
     }
 
     public function approvePayment(Request $req){

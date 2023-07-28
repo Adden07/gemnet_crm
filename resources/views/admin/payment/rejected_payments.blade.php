@@ -7,10 +7,10 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active">Finance</li>
-                    <li class="breadcrumb-item active">Approve online payments</li>
+                    <li class="breadcrumb-item active">Rejected payments</li>
                 </ol>
             </div>
-            <h4 class="page-title">Approve online payments</h4>
+            <h4 class="page-title">Rejected payments</h4>
         </div>
     </div>
 </div>
@@ -69,10 +69,10 @@
                         <th>New Balance</th>
                         <th>Image</th>
                         <th>Status</th>
-                        @can('approve-payments')
+                        {{-- @can('approve-payments')
                             <th>Approve</th>
                         @endcan
-                        <th>Reject</th>
+                        <th>Reject</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -109,7 +109,7 @@
                     "dom": '<"top"ifl<"clear">>rt<"bottom"ip<"clear">>',
 
                     ajax:{
-                        url : "{{ route('admin.accounts.payments.approve_payments') }}",
+                        url : "{{ route('admin.accounts.payments.rejected_payments') }}",
                         data:function(d){
                             d.status    = $('#payement_status').val(),
                             d.from_date = $('#from_date').val(),
@@ -137,10 +137,10 @@
                         {data:'new_balance', name:'payments.new_balance',orderable:true,searchable:true},
                         {data:'image', name:'image',orderable:false,searchable:false},
                         {data:'status', name:'payments.status',orderable:false,searchable:false},
-                        @can('approve-payments')
-                            {data:'action', name:'payments.action',orderable:false,searchable:false},
-                        @endcan
-                        {data:'reject', name:'payments.reject',orderable:false,searchable:false},
+                        // @can('approve-payments')
+                        //     {data:'action', name:'payments.action',orderable:false,searchable:false},
+                        // @endcan
+                        // {data:'reject', name:'payments.reject',orderable:false,searchable:false},
 
 
                     ],
