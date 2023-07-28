@@ -25,7 +25,7 @@ Route::prefix('web_admin')->namespace('Auth')->group(function () {
         Route::get('/expiry', 'CronController@expiry');
         Route::get('/update-transcation-image-path', 'CronController@updateTransactionImagePath');
         Route::get('/users-about-to-expire', 'CronController@usersAboutToExpire');
-        Route::get('/qt-reset', 'CronController@resetQoutaUnapaidUsers');
+        Route::get('/qt_reset', 'CronController@resetQoutaUnapaidUsers');
     });
 
 //pages route
