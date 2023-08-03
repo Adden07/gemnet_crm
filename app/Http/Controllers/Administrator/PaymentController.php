@@ -524,7 +524,7 @@ class PaymentController extends Controller
 
     public function rejectedPayments(Request $req){
         
-        if(CommonHelpers::rights('enabled-finance','view-approve-payments')){
+        if(CommonHelpers::rights('enabled-finance','rejected-payments')){
             return redirect()->route('admin.home');
         }
         

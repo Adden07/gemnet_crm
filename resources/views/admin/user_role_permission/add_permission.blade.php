@@ -198,6 +198,7 @@
                                         <th>Taxation</th>
                                         <th>Ledger</th>
                                         <th>Taxes Summary</th>
+                                        <th>Rejected Payments</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -238,7 +239,9 @@
                                             
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="taxes-summary" @if(isset($update)){{ @(in_array('taxes-summary',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
                                             @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
-    
+                                            
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="rejected-payments" @if(isset($update)){{ @(in_array('rejected-payments',@$edit_permission->permissions)) ? 'checked' : '' }}@endif 
+                                            @if(isset($update)){{ @(in_array('enabled-finance',@$edit_permission->permissions)) ? '' : 'disabled' }}@endif/></td>
                                         </tr>
                                 </tbody>
                             </table>

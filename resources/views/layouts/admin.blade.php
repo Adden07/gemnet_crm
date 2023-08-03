@@ -353,9 +353,11 @@
                                         <a href="{{ route('admin.accounts.payments.approve_payments') }}">Approve Payments</a>
                                     </li>
                                 @endcan
+                                @can('rejected-payments')
                                 <li>
                                     <a href="{{ route('admin.accounts.payments.rejected_payments') }}">Rejected Payments</a>
                                 </li>
+                                @endcan
                                 @can('transaction')
                                     <li>
                                         <a href="{{ route('admin.accounts.transactions.index') }}">Transactions</a>
