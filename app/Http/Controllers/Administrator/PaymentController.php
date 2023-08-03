@@ -354,6 +354,7 @@ class PaymentController extends Controller
         try{
             DB::transaction(function() use (&$id, &$msg){
                 $payment = Payment::findOrFail(hashids_decode($id));
+                $payment->update(['deleted_by'=>auth()->id()]);
                 $payment->transaciton()->delete();
                 User::findOrFail($payment->receiver->id)->decrement('user_current_balance', $payment->amount);
                 $payment->delete();
@@ -528,7 +529,7 @@ class PaymentController extends Controller
         }
         
         if($req->ajax()){
-            $data =                 Payment::onlyTrashed()->with(['admin', 'receiver'])
+            $data =                 Payment::onlyTrashed()->with(['admin', 'receiver', 'deletedBy'])
                                             ->select('payments.*')
                                             ->whereIn('type', ['online', 'cheque']);
 
@@ -566,11 +567,22 @@ class PaymentController extends Controller
                                     }
                                     return '';
                                 })
+                                ->addColumn('deleted_at',function($data){
+                                    //if($data->approved_date != null){
+                                        return date('d-M-Y H:i:s', strtotime($data->deleted_at));
+                                    //}
+                                    //return '';
+                                })
                                 ->addColumn('online_date',function($data){
                                     if($data->online_date != null){
                                         return date('d-M-Y H:i:s', strtotime($data->online_date));
                                     }
                                     return '';
+                                })
+
+                                ->addColumn('deleted_by',function($data){
+                                    //dd($data);
+                                    return @$data->deletedBy->username;
                                 })
                                 ->addColumn('reciever_name',function($data){
                                     return "<a href=".route('admin.users.profile',['id'=>hashids_encode($data->receiver->id)])." target='_blank'>{$data->receiver->username}</a>";

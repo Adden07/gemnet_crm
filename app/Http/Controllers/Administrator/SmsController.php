@@ -267,7 +267,7 @@ class SmsController extends Controller
         $data = array(  
             'title'     => 'SMS Logs',
             'users'     => User::whereIn('id', $sms->pluck('user_id')->toArray())->get(),
-            'sms_types' =>  SmsLog::select('sms_type')->distinct()->get()->pluck('sms_type')->toArray(),
+            'sms_types' =>  SmsLog::select('sms_type')->whereNotNull('sms_type')->distinct()->get()->pluck('sms_type')->toArray(),
         );
         return view('admin.sms.sms_log')->with($data);
     }

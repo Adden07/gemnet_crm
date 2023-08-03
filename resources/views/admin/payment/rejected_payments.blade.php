@@ -61,6 +61,8 @@
                         <th>Date</th>
                         <th>Transaction <br />Date</th>
                         <th>Approved <br />Date</th>
+                        <th>Rejected <br />Date</th>
+                        <th>Deleted <br />By</th>
                         <th>Receiver Name</th>
                         <th>Added By</th>
                         {{-- <th>Type</th> --}}
@@ -129,6 +131,8 @@
                         {data:'date', name:'payments.created_at', orderable:true, searchable:true},  
                         {data:'online_date', name:'payments.online_date', orderable:true, searchable:true},  
                         {data:'approved_date', name:'payments.approved_date', orderable:true, searchable:true},  
+                        {data:'deleted_at', name:'deleted_at', orderable:true, searchable:true},  
+                        {data:'deleted_by', name:'deleted_by',orderable:false,searchable:true},
                         {data:'reciever_name', name:'receiver.name',orderable:false,searchable:true},
                         {data:'added_by', name:'admin.name',orderable:false,searchable:true},
                         // {data:'type', name:'payments.type',orderable:true,searchable:true},

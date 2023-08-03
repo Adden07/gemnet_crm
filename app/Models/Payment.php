@@ -27,4 +27,8 @@ class Payment extends Model
         return $this->hasOne(Transaction::class, 'transaction_id', 'transaction_id');
     }
 
+    public function deletedBy(){
+        return $this->belongsTo(Admin::class, 'deleted_by', 'id');
+    }
+
 }
