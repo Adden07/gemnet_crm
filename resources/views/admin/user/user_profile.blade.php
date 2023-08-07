@@ -788,7 +788,9 @@
                                 <input type="hidden" name="old-user_form_front" value="{{ @$user_details->user_form_front }}">
                                 <input type="hidden" name="old_user_form_back" value="{{ @$user_details->user_form_back }}">
                                 <input type="hidden" name="user_id" value="{{ $user_details->hashid }}">
+                                @can('document-update')
                                 <input type="submit" class="btn btn-primary float-right mt-2" value="Update"> 
+                                @endcan
                             </div>
                         </div>
                     </form>

@@ -693,6 +693,7 @@
                                         <th>Remove Mac</th>
                                         <th>Invoice</th>
                                         <th>Documnets Browse</th>
+                                        <th>Add Documents</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -722,7 +723,9 @@
                                         <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="document-browse" @if(isset($update)){{ @(in_array('document-browse',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
                                             @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
                                           
-    
+                                        <td><input type="checkbox" class="form-control" name="permissions[]"  data-toggle="switchery" data-size="small" data-color="#1bb99a" value="document-update" @if(isset($update)){{ @(in_array('document-update',@$edit_permission->permissions)) ? 'checked' : '' }}@endif  
+                                            @if(isset($update)){{ @(in_array('enabled-user',@$edit_permission->permissions)) ? '' : 'readonly' }}@endif/></td>  
+                                            
                                     </tr>
                                 </tbody>
                             </table>

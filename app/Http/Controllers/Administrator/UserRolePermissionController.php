@@ -21,7 +21,7 @@ class UserRolePermissionController extends Controller
         //     }
         // },$a->permissions);
         // dd(array_filter($m));
-
+            
         $data = array(
             'title' => 'User Role Permission List',
             'user_roles'    => UserRolePermission::get(),
