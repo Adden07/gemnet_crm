@@ -708,11 +708,15 @@
                                     </div>
                                     <div class="nic_front_err w-100"></div>
                                     <div class="position-relative mt-3">
-                                        <img id="preview_nic_front" src="@if(@file_exists($user_details->nic_front)) {{ asset($user_details->nic_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) @endif" width="100px" height="100px"/>
+                                        <a href="{{ asset(@$user_details->nic_front) }}" target="_blank">
+                                            <img id="preview_nic_front" src="@if(@file_exists($user_details->nic_front)) {{ asset($user_details->nic_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update)) @endif" width="100px" height="100px"/>
+                                        </a>
                                         @if(@file_exists($user_details->nic_front))
-                                            <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_front','path'=>$user_details->nic_front]) }}" onclick="ajaxRequest(this)" id="remove_nic_front">
-                                                <i class="fa fa-times"></i>
-                                            </a>
+                                            @can('document-delete')
+                                                <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_front','path'=>$user_details->nic_front]) }}" onclick="ajaxRequest(this)" id="remove_nic_front">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            @endcan
                                         @endif
                                     </div>
                                 </div>
@@ -728,11 +732,15 @@
                                     <div class="nic_back_err w-100"></div>
         
                                     <div class="position-relative mt-3">
+                                        <a href="{{ asset($user_details->nic_back) }}" target="_blank">
                                         <img id="preview_nic_back" src="@if(@file_exists($user_details->nic_back)) {{ asset($user_details->nic_back) }} @else {{ asset('admin_uploads/no_image.jpg') }} @endif"  class="@if(!isset($is_update))  @endif" width="100px" height="100px"/>
+                                        </a>
                                         @if(@file_exists($user_details->nic_back))
-                                            <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_back','path'=>$user_details->nic_back]) }}" onclick="ajaxRequest(this)" id="remove_nic_back">
-                                                <i class="fa fa-times"></i>
-                                            </a>
+                                            @can('document-delete')
+                                                <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_back','path'=>$user_details->nic_back]) }}" onclick="ajaxRequest(this)" id="remove_nic_back">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            @endcan
                                         @endif
                                     </div>
         
@@ -750,11 +758,15 @@
                                     </div>
                                     <div class="user_form_front_err w-100"></div>
                                     <div class="position-relative mt-3">
+                                        <a href="{{ asset($user_details->user_form_front) }}" target="_blank">
                                         <img id="preview_user_form_front" src="@if(@file_exists($user_details->user_form_front)) {{ asset($user_details->user_form_front) }} @else {{ asset('admin_uploads/no_image.jpg') }}  @endif"  class="@if(!isset($is_update))  @endif" width="100px" height="100px"/>
+                                        </a>
                                         @if(@file_exists($user_details->user_form_front))
-                                            <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'user_form_front','path'=>$user_details->user_form_front]) }}" onclick="ajaxRequest(this)" id="remove_user_form_front">
-                                                <i class="fa fa-times"></i>
-                                            </a>
+                                            @can('document-delete')
+                                                <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'user_form_front','path'=>$user_details->user_form_front]) }}" onclick="ajaxRequest(this)" id="remove_user_form_front">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            @endcan
                                         @endif
                                     </div>
                                 </div>
@@ -770,11 +782,15 @@
                                     <div class="user_form_back_err w-100"></div>
         
                                     <div class="position-relative mt-3">
+                                        <a href="{{ asset($user_details->user_form_back) }}" target="_blank">
                                         <img id="preview_user_form_back" src="@if(@file_exists($user_details->user_form_back)) {{ asset($user_details->user_form_back) }} @else {{ asset('admin_uploads/no_image.jpg') }} @endif"  class="@if(!isset($is_update))  @endif" width="100px" height="100px"/>
+                                        </a>
                                         @if(@file_exists($user_details->user_form_back))
-                                            <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_back','path'=>$user_details->user_form_back]) }}" onclick="ajaxRequest(this)" id="remove_user_form_back">
-                                                <i class="fa fa-times"></i>
-                                            </a>
+                                            @can('document-delete')
+                                                <a   href="javascript:void(0)" class="btn btn-danger btn-sm rounded position-absolute" style="top: 0;right:0" data-url="{{ route('admin.users.remove_attachment',['id'=>$user_details->hashid,'type'=>'nic_back','path'=>$user_details->user_form_back]) }}" onclick="ajaxRequest(this)" id="remove_user_form_back">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            @endif
                                         @endif
                                     </div>
         
